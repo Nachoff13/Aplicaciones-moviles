@@ -11,7 +11,7 @@
         android:id="@+id/twIniciarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Iniciar sesión"
+        android:text="UTN-FRLP\nAplicaciones Móviles"
         android:textSize="24dp"
         android:gravity="center"
         android:textColor="@color/white"
