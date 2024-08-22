@@ -1,0 +1,93 @@
+ # Sistema operativo
+ .DS_Store
+ Thumbs.db
+
+ # Archivos generados por Gradle
+ .gradle/
+ build/
+ **/build/
+
+ # Archivos locales de Android Studio
+ .idea/
+ *.iml
+ *.hprof
+
+ # Archivos de configuración local de usuario
+ local.properties
+ .idea/libraries/
+ .idea/workspace.xml
+ .idea/gradle.xml
+ .idea/modules.xml
+ .idea/.name
+ .idea/misc.xml
+ .idea/assetWizardSettings.xml
+ .idea/compiler.xml
+
+ # Archivos de configuraciones externas
+ .externalNativeBuild/
+ .cxx/
+ local.gradle
+
+ # Carpetas generadas por el empaquetador de Android
+ captures/
+ outputs/
+ generated/
+
+ # Dependencias en formato binario
+ *.jar
+ *.war
+ *.ear
+
+ # Archivos de configuración de la caché de Android Studio
+ .idea/caches/
+
+ .idea/encodings.xml
+ .idea/modules/
+ .idea/tasks.xml
+ .idea/tasks/
+
+
+ # Archivos relacionados con el sistema operativo
+ *.swp
+ *~
+ *.log
+ *.tmp
+ *.temp
+
+ # Dependencias locales de Gradle
+ gradle-app.setting/
+ gradle/
+ out/
+
+ # Archivos de configuración del paquete de Android
+ /gradle/wrapper/gradle-wrapper.properties
+
+ # Archivos de configuración de Maven
+ /.mvn/timing.properties
+
+ # Archivos de configuración de Keystore
+ *.jks
+ *.keystore
+
+ # Otros archivos y carpetas innecesarios
+ # Dependencias específicas del proyecto
+ **/app/app.iml
+ **/.idea/
+ **/app.iml
+ **/gradle/
+ **/local.properties
+ **/captures/
+ **/outputs/
+ **/gradle-wrapper.jar
+ **/mavenLocal/
+ **/intermediates/
+ **/.gradle
+ **/.idea/workspace.xml
+ **/.idea/tasks.xml
+ **/.idea/dictionaries
+
+ # Carpetas de configuración de lint
+ **/lint/intermediates/
+ **/lint/generated/
+ **/lint/reports/
+ **/lint/tmp/
