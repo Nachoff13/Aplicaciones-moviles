@@ -13,4 +13,7 @@
     <string name="etCorreo">Correo</string>
     <string name="etRepetirContrasena">Repetir contraseña</string>
     <string name="bRegistrarse">Registrarse</string>
+    <string name="tvYaTienesCuenta">¿Ya tienes una cuenta?</string>
+    <string name="bIniciaSesion">Inicia sesión</string>
+
 </resources>

@@ -15,7 +15,7 @@
         android:gravity="center"
         android:text="@string/tvRegistrarse"
         android:textColor="@color/white"
-        android:textSize="24dp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@id/etNombre"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -93,7 +93,7 @@
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/bRegistrarse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -101,4 +101,27 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etRepetirContraseña" />
+
+    <TextView
+        android:id="@+id/tvYaTienesCuenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tvYaTienesCuenta"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bIniciaSesion"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bRegistrarse" />
+
+    <Button
+        android:id="@+id/bIniciaSesion"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bIniciaSesion"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvYaTienesCuenta"
+        app:layout_constraintTop_toBottomOf="@+id/bRegistrarse" />
 </androidx.constraintlayout.widget.ConstraintLayout>
