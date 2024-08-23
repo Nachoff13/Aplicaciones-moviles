@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">LoginTP1</string>
+    <string name="twIniciarSesion">UTN-FRLP\nAplicaciones Móviles</string>
+    <string name="etUsuario">Usuario</string>
+    <string name="etContrasena">Contraseña</string>
+    <string name="bIniciarSesion">Iniciar Sesión</string>
 </resources>

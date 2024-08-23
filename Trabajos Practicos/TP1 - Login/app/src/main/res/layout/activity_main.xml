@@ -11,10 +11,10 @@
         android:id="@+id/twIniciarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="UTN-FRLP\nAplicaciones Móviles"
-        android:textSize="24dp"
         android:gravity="center"
+        android:text="@string/twIniciarSesion"
         android:textColor="@color/white"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/etUsuario"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -25,32 +25,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="40dp"
-        android:hint="Usuario"
+        android:hint="@string/etUsuario"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20sp"
         android:inputType="text"
         android:padding="18dp"
+        android:autofillHints="username"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="VisualLintTextFieldSize" />
 
     <EditText
         android:id="@+id/etContrasena"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="40dp"
-        android:hint="Contraseña"
+        android:hint="@string/etContrasena"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
         android:textSize="20sp"
         android:inputType="textPassword"
         android:padding="18dp"
+        android:autofillHints="password"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etUsuario"
-        app:layout_constraintBottom_toTopOf="@id/bIniciarSesion" />
+        app:layout_constraintBottom_toTopOf="@id/bIniciarSesion"
+        tools:ignore="VisualLintTextFieldSize" />
 
 
 
@@ -58,7 +62,7 @@
         android:id="@+id/bIniciarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
+        android:text="@string/bIniciarSesion"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
