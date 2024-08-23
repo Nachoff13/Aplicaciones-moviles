@@ -1,5 +1,6 @@
 package moviles.utnfrlp.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -46,6 +47,14 @@ class MainActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val bRegistrate = findViewById<Button>(R.id.bRegistrate)
+        bRegistrate.setOnClickListener{
+            Log.d(tag, "Botón de registro presionado")
+
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 }
