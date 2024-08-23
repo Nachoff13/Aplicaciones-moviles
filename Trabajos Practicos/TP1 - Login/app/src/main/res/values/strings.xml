@@ -8,7 +8,7 @@
     <string name="bRegistrate">Regístrate</string>
 
     <!-- Vista de Register: -->
-    <string name="twRegistrarse">Registrarse</string>
+    <string name="tvRegistrarse">Registrarse</string>
     <string name="etNombre">Nombre</string>
     <string name="etCorreo">Correo</string>
     <string name="etRepetirContrasena">Repetir contraseña</string>

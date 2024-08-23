@@ -9,11 +9,11 @@
     tools:context=".RegisterActivity">
 
     <TextView
-        android:id="@+id/twRegistrarse"
+        android:id="@+id/tvRegistrarse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/twRegistrarse"
+        android:text="@string/tvRegistrarse"
         android:textColor="@color/white"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="@id/etNombre"
