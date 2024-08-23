@@ -8,11 +8,11 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/twIniciarSesion"
+        android:id="@+id/tvIniciarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/twIniciarSesion"
+        android:text="@string/tvIniciarSesion"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/etUsuario"
@@ -56,8 +56,6 @@
         app:layout_constraintBottom_toTopOf="@id/bIniciarSesion"
         tools:ignore="VisualLintTextFieldSize" />
 
-
-
     <Button
         android:id="@+id/bIniciarSesion"
         android:layout_width="wrap_content"
@@ -68,4 +66,27 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etUsuario" />
 
+
+    <TextView
+        android:id="@+id/tvNoTienesCuenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tvNoTienesCuenta"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bRegistrate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bIniciarSesion" />
+
+    <Button
+        android:id="@+id/bRegistrate"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bRegistrate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvNoTienesCuenta"
+        app:layout_constraintTop_toBottomOf="@+id/bIniciarSesion" />
 </androidx.constraintlayout.widget.ConstraintLayout>
