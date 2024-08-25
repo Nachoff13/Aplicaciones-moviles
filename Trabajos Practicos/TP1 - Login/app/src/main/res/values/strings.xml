@@ -16,4 +16,12 @@
     <string name="tvYaTienesCuenta">¿Ya tienes una cuenta?</string>
     <string name="bIniciaSesion">Inicia sesión</string>
 
+    <!-- Vista de Welcome -->
+    <string name="tvWelcomeMessage">Bienvenido a la aplicación</string>
+    <string name="rbAndroid">Android</string>
+    <string name="rbIOS">iOS</string>
+    <string name="cbOther">Otra</string>
+    <string name="etOtherPreference">Especificar otra preferencia</string>
+    <string name="desc_platform_logo">Logo de la plataforma seleccionada</string>
+
 </resources>
