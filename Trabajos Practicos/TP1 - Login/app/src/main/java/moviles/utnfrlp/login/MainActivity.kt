@@ -38,9 +38,11 @@ class MainActivity : AppCompatActivity() {
             Log.d(tag, "Contraseña ingresada: $etContrasena")
 
             if (etUsuario == "Juan Torres" && etContrasena == "1234utn"){
-
                 Log.i(tag, "Login correcto")
-
+                val intent = Intent(this, WelcomeActivity::class.java).apply {
+                    putExtra("USERNAME", etUsuario)
+                }
+                startActivity(intent)
                 Toast.makeText(this, "Login correcto", Toast.LENGTH_SHORT).show()
             } else {
                 Log.e(tag, "Usuario o contraseña incorrectos")
