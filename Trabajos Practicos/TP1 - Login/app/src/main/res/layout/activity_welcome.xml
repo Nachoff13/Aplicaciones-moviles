@@ -125,9 +125,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/etOtherPreference"
-        android:textColor="#FFFFFF"
         android:visibility="gone"
         android:layout_margin="16dp"
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/cbOtra"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

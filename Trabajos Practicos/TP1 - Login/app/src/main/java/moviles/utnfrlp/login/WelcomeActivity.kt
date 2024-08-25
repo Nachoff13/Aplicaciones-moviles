@@ -76,7 +76,6 @@ class WelcomeActivity : AppCompatActivity() {
             }
         }
 
-        // Ahora puedes usar `preferencesList` como necesites
         Toast.makeText(this, "Preferencias seleccionadas: $preferencesList", Toast.LENGTH_LONG).show()
     }
 }
