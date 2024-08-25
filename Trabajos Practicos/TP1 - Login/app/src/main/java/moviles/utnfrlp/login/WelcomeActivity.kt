@@ -1,15 +1,9 @@
 package moviles.utnfrlp.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.RadioGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -27,6 +21,7 @@ class WelcomeActivity : AppCompatActivity() {
         val platformImageView = findViewById<ImageView>(R.id.ivPlatformLogo)
         val cbOtra = findViewById<CheckBox>(R.id.cbOtra)
         val etOtherPreference = findViewById<EditText>(R.id.etOtherPreference)
+        val submitButton = findViewById<Button>(R.id.submitButton)
 
         // Configurar el listener para el RadioGroup
         platformRadioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -44,5 +39,44 @@ class WelcomeActivity : AppCompatActivity() {
         cbOtra.setOnCheckedChangeListener { _, isChecked ->
             etOtherPreference.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
+
+        // Configurar el listener para el botón de enviar
+        submitButton.setOnClickListener {
+            collectPreferences()
+        }
+    }
+
+    private fun collectPreferences() {
+        val preferencesList = mutableListOf<String>()
+
+        // Obtener las preferencias seleccionadas
+        val cbProgramacion = findViewById<CheckBox>(R.id.cbProgramacion)
+        val cbRedes = findViewById<CheckBox>(R.id.cbRedes)
+        val cbSeguridad = findViewById<CheckBox>(R.id.cbSeguridad)
+        val cbHardware = findViewById<CheckBox>(R.id.cbHardware)
+        val cbOtra = findViewById<CheckBox>(R.id.cbOtra)
+        val etOtherPreference = findViewById<EditText>(R.id.etOtherPreference)
+
+        if (cbProgramacion.isChecked) {
+            preferencesList.add(cbProgramacion.text.toString())
+        }
+        if (cbRedes.isChecked) {
+            preferencesList.add(cbRedes.text.toString())
+        }
+        if (cbSeguridad.isChecked) {
+            preferencesList.add(cbSeguridad.text.toString())
+        }
+        if (cbHardware.isChecked) {
+            preferencesList.add(cbHardware.text.toString())
+        }
+        if (cbOtra.isChecked) {
+            val otherPreference = etOtherPreference.text.toString().trim()
+            if (otherPreference.isNotEmpty()) {
+                preferencesList.add(otherPreference)
+            }
+        }
+
+        // Ahora puedes usar `preferencesList` como necesites
+        Toast.makeText(this, "Preferencias seleccionadas: $preferencesList", Toast.LENGTH_LONG).show()
     }
 }
