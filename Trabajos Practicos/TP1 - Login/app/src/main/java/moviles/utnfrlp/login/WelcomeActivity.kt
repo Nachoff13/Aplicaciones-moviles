@@ -20,7 +20,7 @@ class WelcomeActivity : AppCompatActivity() {
         val platformRadioGroup = findViewById<RadioGroup>(R.id.rgPlataforma)
         val platformImageView = findViewById<ImageView>(R.id.ivPlatformLogo)
         val cbOtra = findViewById<CheckBox>(R.id.cbOtra)
-        val etOtherPreference = findViewById<EditText>(R.id.etOtherPreference)
+        val etOtherPreference = findViewById<EditText>(R.id.etOtraPreferencia)
         val submitButton = findViewById<Button>(R.id.submitButton)
 
         // Configurar el listener para el RadioGroup
@@ -55,7 +55,7 @@ class WelcomeActivity : AppCompatActivity() {
         val cbSeguridad = findViewById<CheckBox>(R.id.cbSeguridad)
         val cbHardware = findViewById<CheckBox>(R.id.cbHardware)
         val cbOtra = findViewById<CheckBox>(R.id.cbOtra)
-        val etOtherPreference = findViewById<EditText>(R.id.etOtherPreference)
+        val etOtherPreference = findViewById<EditText>(R.id.etOtraPreferencia)
 
         if (cbProgramacion.isChecked) {
             preferencesList.add(cbProgramacion.text.toString())

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -12,7 +13,7 @@
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/tvWelcomeMessage"
+        android:text="@string/tvBienvenida"
         android:textColor="#FFFFFF"
         android:textSize="21sp"
         app:layout_constraintBottom_toTopOf="@+id/rgPlataforma"
@@ -37,7 +38,6 @@
             android:text="@string/rbAndroid"
             android:textColor="#FFFFFF"
             android:textSize="18sp"/>
-
 
         <RadioButton
             android:id="@+id/rbIOS"
@@ -64,7 +64,7 @@
         android:id="@+id/cbProgramacion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Programación"
+        android:text="@string/cbProgramacion"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/ivPlatformLogo"
@@ -76,7 +76,7 @@
         android:id="@+id/cbRedes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Redes"
+        android:text="@string/cbRedes"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/cbProgramacion"
@@ -88,7 +88,7 @@
         android:id="@+id/cbSeguridad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Seguridad"
+        android:text="@string/cbSeguridad"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/cbRedes"
@@ -100,7 +100,7 @@
         android:id="@+id/cbHardware"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hardware"
+        android:text="@string/cbHardware"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/cbSeguridad"
@@ -112,7 +112,7 @@
         android:id="@+id/cbOtra"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Otra"
+        android:text="@string/cbOtro"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/cbHardware"
@@ -121,10 +121,10 @@
         app:layout_constraintHorizontal_bias="0.5"/>
 
     <EditText
-        android:id="@+id/etOtherPreference"
+        android:id="@+id/etOtraPreferencia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/etOtherPreference"
+        android:hint="@string/etOtraPreferencia"
         android:visibility="gone"
         android:layout_margin="16dp"
         android:textColorHint="@color/white"
@@ -138,8 +138,8 @@
         android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enviar"
-        app:layout_constraintTop_toBottomOf="@+id/etOtherPreference"
+        android:text="@string/submitButton"
+        app:layout_constraintTop_toBottomOf="@+id/etOtraPreferencia"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
