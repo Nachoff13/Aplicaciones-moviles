@@ -12,6 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tp2_app1.ui.theme.TP2APP1Theme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,11 +30,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TP2APP1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Titulo("Puntaje Actual: 0", Color.Black)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Subtitulo("Mejor Puntaje: 0", Color.Gray)
                 }
             }
         }
@@ -31,17 +46,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Titulo(text: String,color: Color, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = text,
+        color = color,
+        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold,
         modifier = modifier
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    TP2APP1Theme {
-        Greeting("Android")
-    }
+fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        color = color,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+    )
 }
