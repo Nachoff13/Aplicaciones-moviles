@@ -26,10 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import kotlin.random.Random
 
 
 class MainActivity : ComponentActivity() {
+
+    var correctNumber: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        correctNumber = Random.nextInt(1, 6) // el rango es de 1 a 5 ya que la funcion no incluye el valor máximo
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
