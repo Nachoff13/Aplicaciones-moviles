@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -13,15 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tp2_app1.ui.theme.TP2APP1Theme
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-
-
+import androidx.compose.ui.text.style.TextAlign
 
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +41,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Titulo("Puntaje Actual: 0", Color.Black)
                     Spacer(modifier = Modifier.size(8.dp))
+
                     Subtitulo("Mejor Puntaje: 0", Color.Gray)
+                    Spacer(modifier = Modifier.size(300.dp))
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
+                        for (i in 1..5){
+                            NumberButton(number = i)
+                        }
+                    }
+
                 }
             }
         }
@@ -65,4 +77,25 @@ fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
         fontWeight = FontWeight.Bold,
         modifier = modifier
     )
+}
+
+@Composable
+fun NumberButton(number: Int){
+    ElevatedButton(onClick = { /*TODO*/ },
+        modifier = Modifier.size(50.dp),
+        colors = ButtonColors(
+            contentColor = Color.Black,
+            containerColor = Color(0xFFAC18E6),
+            disabledContentColor = Color.Gray,
+            disabledContainerColor = Color.Gray
+        )
+    ){
+        Text(
+            text = number.toString(),
+            color = Color.White,
+            fontSize = 24.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
