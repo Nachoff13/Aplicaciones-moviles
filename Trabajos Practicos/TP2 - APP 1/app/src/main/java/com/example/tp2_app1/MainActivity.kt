@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,8 @@ class MainActivity : ComponentActivity() {
                         .padding(vertical = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    Spacer(modifier = Modifier.size(16.dp))
                     Titulo("Puntaje Actual: 0", Color.Black)
                     Spacer(modifier = Modifier.size(8.dp))
 
@@ -85,10 +88,11 @@ fun NumberButton(number: Int){
         modifier = Modifier.size(50.dp),
         colors = ButtonColors(
             contentColor = Color.Black,
-            containerColor = Color(0xFFAC18E6),
+            containerColor = Color(0xFF9C27B0),
             disabledContentColor = Color.Gray,
-            disabledContainerColor = Color.Gray
-        )
+            disabledContainerColor = Color(0x669C27B0),
+        ),
+        elevation = ButtonDefaults.buttonElevation()
     ){
         Text(
             text = number.toString(),
