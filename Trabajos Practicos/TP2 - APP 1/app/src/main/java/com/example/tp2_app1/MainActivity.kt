@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val puntaje = remember { mutableStateOf(0) }
             val currentCorrectNumber = remember { mutableStateOf(correctNumber) }
+            val tries = remember { mutableStateOf(1) }
             TP2APP1Theme {
                 Column(
                     modifier = Modifier
@@ -60,6 +61,9 @@ class MainActivity : ComponentActivity() {
                     Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 24.sp)
                     Spacer(modifier = Modifier.size(16.dp))
 
+                    Text("Intento Número: ${tries.value}", color = Color.Green, fontSize = 24.sp)
+                    Spacer(modifier = Modifier.size(16.dp))
+
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
                         for (i in 1..5){
                             NumberButton(
@@ -72,8 +76,13 @@ class MainActivity : ComponentActivity() {
 
                                 },
                                 onIncorrectGuess = {
-                                    //Reseteo el puntaje a 0 y genero un nuevo número correcto
-                                    puntaje.value = 0
+                                    //Sumo 1 punto a los intentos y genero un nuevo número correcto
+                                    tries.value += 1
+                                    // Si el score llega a 5, reinicio el puntaje y el score
+                                    if (tries.value == 5){
+                                        puntaje.value = 0
+                                        tries.value = 0
+                                    }
                                     currentCorrectNumber.value = Random.nextInt(1, 6)
                                 }
                             )
@@ -111,12 +120,11 @@ fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
 @Composable
 fun NumberButton(number: Int, correctNumber: Int, onCorrectGuess: () -> Unit, onIncorrectGuess: () -> Unit){
     ElevatedButton(onClick = {
-        if (number == correctNumber) {
-            onCorrectGuess()
+        var tries = 0
+        if (number == correctNumber)
+            onCorrectGuess();
+        else onIncorrectGuess();
 
-        }else{
-            onIncorrectGuess()
-        }
     },
         modifier = Modifier.size(50.dp),
         colors = ButtonColors(
