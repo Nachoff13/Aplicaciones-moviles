@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val puntaje = remember { mutableStateOf(0) }
             val currentCorrectNumber = remember { mutableStateOf(correctNumber) }
-            val tries = remember { mutableStateOf(1) }
+            val tries = remember { mutableStateOf(5) }
             TP2APP1Theme {
                 MainScreen(puntaje, currentCorrectNumber, tries)
             }
@@ -83,6 +83,10 @@ fun MainScreen(puntaje: MutableState<Int>, currentCorrectNumber: MutableState<In
         Spacer(modifier = Modifier.size(8.dp))
 
         Subtitulo("Mejor Puntaje: ${savedMaxScore.value}", Color.Gray)
+        Spacer(modifier = Modifier.size(8.dp))
+
+        // Mostrar corazones como vida
+        VidaCorazones("❤️","🖤", tries.value, )
         Spacer(modifier = Modifier.size(300.dp))
 
         Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 24.sp)
@@ -113,12 +117,12 @@ fun MainScreen(puntaje: MutableState<Int>, currentCorrectNumber: MutableState<In
                     onIncorrectGuess = {
 
                         //Sumo 1 punto a los intentos y genero un nuevo número correcto
-                        tries.value += 1
+                        tries.value -= 1
 
                         // Si el score llega a 5, reinicio el puntaje y el score
-                        if (tries.value == 5){
+                        if (tries.value == 0){
                             puntaje.value = 0
-                            tries.value = 0
+                            tries.value = 5
                         }
                         currentCorrectNumber.value = Random.nextInt(1, 6)
                     }
@@ -151,6 +155,19 @@ fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
         fontWeight = FontWeight.Bold,
         modifier = modifier
     )
+}
+
+@Composable
+fun VidaCorazones(fillHeart: String, emptyHeart: String, heartsCount: Int) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (i in 1..5) {
+            if (i <= heartsCount) {
+                Text(fillHeart, fontSize = 24.sp)
+            } else {
+                Text(emptyHeart, fontSize = 24.sp)
+            }
+        }
+    }
 }
 
 @Composable
