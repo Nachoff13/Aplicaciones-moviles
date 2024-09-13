@@ -40,8 +40,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var puntaje = remember { mutableStateOf(0) }
-            var currentCorrectNumber = remember { mutableStateOf(correctNumber) }
+            val puntaje = remember { mutableStateOf(0) }
+            val currentCorrectNumber = remember { mutableStateOf(correctNumber) }
             TP2APP1Theme {
                 Column(
                     modifier = Modifier
@@ -58,13 +58,6 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.size(300.dp))
 
                     Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 24.sp)
-                    Spacer(modifier = Modifier.size(16.dp))
-
-                    ElevatedButton(onClick = {
-                        currentCorrectNumber.value = Random.nextInt(1, 6)
-                    }) {
-                        Text("Generar Nuevo Número Correcto")
-                    }
                     Spacer(modifier = Modifier.size(16.dp))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
