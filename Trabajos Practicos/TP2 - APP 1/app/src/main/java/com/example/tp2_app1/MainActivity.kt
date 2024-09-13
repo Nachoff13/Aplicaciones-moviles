@@ -40,17 +40,13 @@ import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
 
-    var correctNumber: Int = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        correctNumber = Random.nextInt(1, 6) // el rango es de 1 a 5 ya que la función no incluye el valor máximo
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val puntaje = remember { mutableStateOf(0) }
-            val currentCorrectNumber = remember { mutableStateOf(correctNumber) }
+            val currentCorrectNumber = remember { mutableStateOf(Random.nextInt(1, 6)) }
             val tries = remember { mutableStateOf(5) }
             TP2APP1Theme {
                 MainScreen(puntaje, currentCorrectNumber, tries)
@@ -96,11 +92,8 @@ fun MainScreen(puntaje: MutableState<Int>, currentCorrectNumber: MutableState<In
         VidaCorazones(fillHeart, emptyHeart, tries.value, )
         Spacer(modifier = Modifier.size(300.dp))
 
-        Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 24.sp)
-        Spacer(modifier = Modifier.size(16.dp))
-
-        Text("Intento Número: ${tries.value}", color = Color.Green, fontSize = 24.sp)
-        Spacer(modifier = Modifier.size(16.dp))
+//        Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 8.sp)
+//        Spacer(modifier = Modifier.size(16.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
             for (i in 1..5){
