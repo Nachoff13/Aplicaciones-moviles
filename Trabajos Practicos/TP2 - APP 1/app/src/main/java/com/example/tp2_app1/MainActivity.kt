@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.example.tp2_app1.datastore.StoreMaxScore
@@ -71,6 +74,10 @@ fun MainScreen(puntaje: MutableState<Int>, currentCorrectNumber: MutableState<In
     // get saved max score
     val savedMaxScore = dataStore.getScore.collectAsState(initial = 0)
 
+    // hearts
+    val fillHeart = painterResource(id = R.drawable.filled_heart)
+    val emptyHeart = painterResource(id = R.drawable.empty_heart)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,7 +93,7 @@ fun MainScreen(puntaje: MutableState<Int>, currentCorrectNumber: MutableState<In
         Spacer(modifier = Modifier.size(8.dp))
 
         // Mostrar corazones como vida
-        VidaCorazones("❤️","🖤", tries.value, )
+        VidaCorazones(fillHeart, emptyHeart, tries.value, )
         Spacer(modifier = Modifier.size(300.dp))
 
         Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 24.sp)
@@ -158,13 +165,23 @@ fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun VidaCorazones(fillHeart: String, emptyHeart: String, heartsCount: Int) {
+fun VidaCorazones(fillHeart: Painter, emptyHeart: Painter, heartsCount: Int) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         for (i in 1..5) {
             if (i <= heartsCount) {
-                Text(fillHeart, fontSize = 24.sp)
+                Image(
+                    painter = fillHeart,
+                    contentDescription = "Filled Heart",
+                    modifier = Modifier.size(24.dp)
+                )
+                //Text(text = "❤️")
             } else {
-                Text(emptyHeart, fontSize = 24.sp)
+                Image(
+                    painter = emptyHeart,
+                    contentDescription = "Empty Heart",
+                    modifier = Modifier.size(24.dp)
+                )
+                //Text(text = "🖤")
             }
         }
     }
@@ -174,7 +191,6 @@ fun VidaCorazones(fillHeart: String, emptyHeart: String, heartsCount: Int) {
 fun NumberButton(number: Int, correctNumber: Int, onCorrectGuess: () -> Unit, onIncorrectGuess: () -> Unit){
     ElevatedButton(onClick = {
         if (number == correctNumber)
-
             onCorrectGuess()
         else onIncorrectGuess()
     },
