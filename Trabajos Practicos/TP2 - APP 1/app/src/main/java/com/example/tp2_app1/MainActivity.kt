@@ -120,10 +120,9 @@ fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
 @Composable
 fun NumberButton(number: Int, correctNumber: Int, onCorrectGuess: () -> Unit, onIncorrectGuess: () -> Unit){
     ElevatedButton(onClick = {
-        var tries = 0
         if (number == correctNumber)
-            onCorrectGuess();
-        else onIncorrectGuess();
+            onCorrectGuess()
+        else onIncorrectGuess()
 
     },
         modifier = Modifier.size(50.dp),
