@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
@@ -33,11 +35,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        correctNumber = Random.nextInt(1, 6) // el rango es de 1 a 5 ya que la funcion no incluye el valor máximo
+        correctNumber = Random.nextInt(1, 6) // el rango es de 1 a 5 ya que la función no incluye el valor máximo
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            var puntaje = remember { mutableStateOf(0) }
+            var currentCorrectNumber = remember { mutableStateOf(correctNumber) }
             TP2APP1Theme {
                 Column(
                     modifier = Modifier
@@ -47,15 +51,39 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     Spacer(modifier = Modifier.size(16.dp))
-                    Titulo("Puntaje Actual: 0", Color.Black)
+                    Titulo("Puntaje Actual: ${puntaje.value}", Color.Black)
                     Spacer(modifier = Modifier.size(8.dp))
 
                     Subtitulo("Mejor Puntaje: 0", Color.Gray)
                     Spacer(modifier = Modifier.size(300.dp))
 
+                    Text("Número Correcto: ${currentCorrectNumber.value}", color = Color.Red, fontSize = 24.sp)
+                    Spacer(modifier = Modifier.size(16.dp))
+
+                    ElevatedButton(onClick = {
+                        currentCorrectNumber.value = Random.nextInt(1, 6)
+                    }) {
+                        Text("Generar Nuevo Número Correcto")
+                    }
+                    Spacer(modifier = Modifier.size(16.dp))
+
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
                         for (i in 1..5){
-                            NumberButton(number = i)
+                            NumberButton(
+                                number = i,
+                                correctNumber = currentCorrectNumber.value,
+                                onCorrectGuess = {
+                                    //Sumo 10 puntos al puntaje y genero un nuevo número correcto
+                                    puntaje.value += 10
+                                    currentCorrectNumber.value = Random.nextInt(1, 6)
+
+                                },
+                                onIncorrectGuess = {
+                                    //Reseteo el puntaje a 0 y genero un nuevo número correcto
+                                    puntaje.value = 0
+                                    currentCorrectNumber.value = Random.nextInt(1, 6)
+                                }
+                            )
                         }
                     }
 
@@ -88,8 +116,15 @@ fun Subtitulo(text: String,color: Color, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NumberButton(number: Int){
-    ElevatedButton(onClick = { /*TODO*/ },
+fun NumberButton(number: Int, correctNumber: Int, onCorrectGuess: () -> Unit, onIncorrectGuess: () -> Unit){
+    ElevatedButton(onClick = {
+        if (number == correctNumber) {
+            onCorrectGuess()
+
+        }else{
+            onIncorrectGuess()
+        }
+    },
         modifier = Modifier.size(50.dp),
         colors = ButtonColors(
             contentColor = Color.Black,
