@@ -49,9 +49,17 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 onValueChange = { search = it },
                 label = { Text("Buscar ciudad") },
                 modifier = Modifier
-                    .weight(1f) // Ocupar todo el espacio restante
-                    
+                    .weight(1f)
+                    .padding(end = 15.dp) // Espacio entre TextField y el botón
+
             )
+
+            Button(
+                onClick = { /* Acción para crear una nueva ciudad */ },
+                modifier = Modifier.alignByBaseline() // Alinea el botón con el TextField
+            ) {
+                Text("Agregar nueva")
+            }
 
 
 
