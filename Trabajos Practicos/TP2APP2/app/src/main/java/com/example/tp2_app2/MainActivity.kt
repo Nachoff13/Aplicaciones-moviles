@@ -4,13 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.tp2_app2.ui.theme.TP2APP2Theme
 
 class MainActivity : ComponentActivity() {
@@ -20,8 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TP2APP2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    MainScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -31,17 +30,40 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainScreen(modifier: Modifier = Modifier) {
+
+    Column(modifier = modifier.padding(16.dp)) {
+        Text(
+            text = "Ciudades Capitales",
+            modifier = Modifier
+                .padding(bottom = 35.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        var search by remember { mutableStateOf("") }
+
+        Row(modifier = Modifier.padding(bottom = 8.dp)) {
+
+            TextField(
+                value = search,
+                onValueChange = { search = it },
+                label = { Text("Buscar ciudad") },
+                modifier = Modifier
+                    .weight(1f) // Ocupar todo el espacio restante
+                    
+            )
+
+
+
+        }
+
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainScreenPreview() {
     TP2APP2Theme {
-        Greeting("Android")
+        MainScreen()
     }
 }
