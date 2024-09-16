@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tp2_app2.ui.theme.TP2APP2Theme
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,6 +179,94 @@ fun CountryList(
         }
     }
 }
+
+
+@Composable
+fun TableHeader(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .padding(8.dp),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onPrimary
+    )
+}
+
+@Composable
+fun CityTableRow(city: City) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        TableCell(text = city.name)
+        TableCell(text = city.country)
+        TableCell(text = city.population.toString())
+        TableCell(
+            text = "Acciones", // Aquí puedes poner iconos o botones para acciones
+            modifier = Modifier
+                .clickable { /* Acción de botón */ }
+        )
+    }
+}
+
+@Composable
+fun TableCell(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        modifier = modifier
+            .padding(8.dp),
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+fun CityTableWithHorizontalScroll(
+    cities: List<City>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        // Encabezados de la tabla
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(8.dp)
+        ) {
+            TableHeader(text = "Nombre")
+            TableHeader(text = "País")
+            TableHeader(text = "Población")
+            TableHeader(text = "Acciones")
+        }
+
+        // Lista de ciudades con desplazamiento horizontal
+        LazyRow(modifier = Modifier.fillMaxWidth()) {
+            items(cities) { city ->
+                CityTableRow(city = city)
+            }
+        }
+    }
+}
+
+data class City(
+    val name: String,
+    val country: String,
+    val population: Int
+)
+val sampleCities = listOf(
+    City(name = "Buenos Aires", country = "Argentina", population = 2890151),
+    City(name = "La Paz", country = "Bolivia", population = 764945),
+    City(name = "Brasilia", country = "Brasil", population = 3055149),
+    City(name = "Santiago", country = "Chile", population = 5060680),
+    City(name = "Bogotá", country = "Colombia", population = 7743955),
+    City(name = "Quito", country = "Ecuador", population = 2638616),
+    City(name = "Asunción", country = "Paraguay", population = 528592),
+    City(name = "Lima", country = "Perú", population = 9740910),
+    City(name = "Montevideo", country = "Uruguay", population = 1310530),
+    City(name = "Caracas", country = "Venezuela", population = 2851580)
+)
+
 
 @Preview(showBackground = true)
 @Composable
