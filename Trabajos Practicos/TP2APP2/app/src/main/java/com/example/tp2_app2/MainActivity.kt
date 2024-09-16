@@ -44,6 +44,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
         )
 
         var searchCity by remember { mutableStateOf("") }
+        var searchCountry by remember { mutableStateOf("") }
+        var selectedCountry by remember { mutableStateOf<String?>(null) }
+        var showCountryList by remember { mutableStateOf(true) }
 
         // Lista de países de ejemplo
         val countries = listOf(
@@ -58,81 +61,119 @@ fun MainScreen(modifier: Modifier = Modifier) {
             "Uruguay",
             "Venezuela"
         )
+        val filteredCountries = countries.filter { it.contains(searchCountry, ignoreCase = true) } // países filtrados
 
-        var searchCountry by remember { mutableStateOf("") }
-        val filteredCountries = countries.filter { it.contains(searchCountry, ignoreCase = true) } // paises filtrados
-        var selectedCountry by remember { mutableStateOf<String?>(null) } // Estado para guardar nombre de pais seleccionado
-        var showCountryList by remember { mutableStateOf(true) } // Estado para controlar la visibilidad de la lista
+        SearchCityBar(
+            searchCity = searchCity,
+            onSearchCityChange = { searchCity = it }
+        )
 
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            TextField(
-                value = searchCity,
-                onValueChange = { searchCity = it },
-                label = { Text("Buscar ciudad") },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 15.dp) // Espacio entre TextField y el botón
-            )
+        CountrySearchBar(
+            searchCountry = searchCountry,
+            onSearchCountryChange = { newSearchCountry ->
+                searchCountry = newSearchCountry
+                showCountryList = true
+            },
+            onCountrySelected = { country ->
+                selectedCountry = country
+                searchCountry = country
+                showCountryList = false
+            },
+            showCountryList = showCountryList
+        )
 
-            Button(
-                onClick = { /* Acción para crear una nueva ciudad */ },
-                modifier = Modifier.alignByBaseline() // Alinea el botón con el TextField
-            ) {
-                Text("Agregar nueva")
-            }
-        }
-
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            // Barra de búsqueda de países
-            TextField(
-                value = searchCountry,
-                onValueChange = {
-                    searchCountry = it
-                    showCountryList = true // Muestra la lista cuando se actualiza la búsqueda
+        if (searchCountry.isNotEmpty() && showCountryList) {
+            CountryList(
+                countries = filteredCountries,
+                onCountrySelected = { country ->
+                    selectedCountry = country
+                    searchCountry = country
+                    showCountryList = false
                 },
-                label = { Text("Buscar país") },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp) // Espacio entre TextField y el botón
+                selectedCountry = selectedCountry
             )
-            // Botón para crear un nuevo país
-            Button(
-                onClick = { /* Acción para crear un nuevo país */ },
+        }
+    }
+}
+
+@Composable
+fun SearchCityBar(
+    searchCity: String,
+    onSearchCityChange: (String) -> Unit
+) {
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        TextField(
+            value = searchCity,
+            onValueChange = onSearchCityChange,
+            label = { Text("Buscar ciudad") },
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 15.dp) // Espacio entre TextField y el botón
+        )
+
+        Button(
+            onClick = { /* Acción para crear una nueva ciudad */ },
+            modifier = Modifier.alignByBaseline() // Alinea el botón con el TextField
+        ) {
+            Text("Agregar nueva")
+        }
+    }
+}
+
+@Composable
+fun CountrySearchBar(
+    searchCountry: String,
+    onSearchCountryChange: (String) -> Unit,
+    onCountrySelected: (String) -> Unit,
+    showCountryList: Boolean
+) {
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        TextField(
+            value = searchCountry,
+            onValueChange = onSearchCountryChange,
+            label = { Text("Buscar país") },
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp) // Espacio entre TextField y el botón
+        )
+
+        Button(
+            onClick = { /* Acción para eliminar ciudades asociadas */ },
+            modifier = Modifier
+                .alignByBaseline()
+                .wrapContentHeight() // Permitir que el botón ajuste su altura según el contenido
+        ) {
+            Text(
+                text = "Eliminar ciudades\nasociadas",
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 2
+            )
+        }
+    }
+}
+
+@Composable
+fun CountryList(
+    countries: List<String>,
+    onCountrySelected: (String) -> Unit,
+    selectedCountry: String?
+) {
+    LazyColumn {
+        items(countries) { country ->
+            Text(
+                text = country,
                 modifier = Modifier
-                    .alignByBaseline()
-                    .wrapContentHeight() // Permitir que el botón ajuste su altura según el contenido
-
-            ) { Text("Eliminar ciuades\n asociadas")}
-        }
-
-        Row (modifier = Modifier.padding(bottom = 8.dp)){
-            // Mostrar lista de países filtrados
-            if (searchCountry.isNotEmpty() && showCountryList) {
-                LazyColumn {
-                    items(filteredCountries) { country ->
-                        Text(
-                            text = country,
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .clickable {
-                                    selectedCountry = country
-                                    searchCountry =
-                                        country // Rellena el campo de búsqueda con el país seleccionado
-                                    showCountryList =
-                                        false // Oculta la lista después de seleccionar un país
-                                }
-                                .background(
-                                    if (selectedCountry == country) MaterialTheme.colorScheme.primary.copy(
-                                        alpha = 0.2f
-                                    ) else MaterialTheme.colorScheme.background
-                                )
-                                .padding(16.dp)
-                        )
+                    .padding(vertical = 8.dp)
+                    .clickable {
+                        onCountrySelected(country)
                     }
-                }
-            }
+                    .background(
+                        if (selectedCountry == country) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        else MaterialTheme.colorScheme.background
+                    )
+                    .padding(16.dp)
+            )
         }
-
     }
 }
 
