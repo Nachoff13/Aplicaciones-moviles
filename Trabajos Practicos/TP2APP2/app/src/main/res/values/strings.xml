@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TP2 - APP 2</string>
     <string name="title_activity_add_city">AddCityActivity</string>
+    <string name="title_activity_edit_city">EditCityActivity</string>
 </resources>
