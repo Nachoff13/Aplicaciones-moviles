@@ -96,6 +96,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 selectedCountry = selectedCountry
             )
         }
+        CityTableWithHorizontalScroll(cities = sampleCities)
     }
 }
 
