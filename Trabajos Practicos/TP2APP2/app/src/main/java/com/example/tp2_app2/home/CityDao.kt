@@ -1,4 +1,4 @@
-package com.example.tp2_app2
+package com.example.tp2_app2.home
 
 import androidx.room.Dao
 import androidx.room.Delete
