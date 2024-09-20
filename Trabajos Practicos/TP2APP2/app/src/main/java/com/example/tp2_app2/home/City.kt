@@ -1,13 +1,12 @@
-package com.example.tp2_app2
+package com.example.tp2_app2.home
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.ForeignKey
 
 @Entity
 data class City (
     @PrimaryKey(autoGenerate = true)
-    val cityId: String,
+    val cityId: Int,
     val name: String,
     val population: Int,
     val countryId: Int
