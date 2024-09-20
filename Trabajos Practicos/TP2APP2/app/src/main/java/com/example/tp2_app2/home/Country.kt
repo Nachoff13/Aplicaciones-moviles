@@ -4,9 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class City (
+data class Country (
     @PrimaryKey(autoGenerate = true)
-    val id: String,
+    val countryId: String,
     val name: String,
+    val population: Int,
 
 )
