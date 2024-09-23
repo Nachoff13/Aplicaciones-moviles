@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CountryDao {
-    //aca van las querys a la DB
+    // Inserta o actualiza un país
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCountry(country: List<Country>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE) //con esto realizamos el create y update en conjunto, si el archivo tiene la misma PK q otro, lo reemplaza
-    suspend fun insertCountry(country: Country)
+    // Obtiene todos los países, esta función ya es asincrónica por retornar un Flow
+    @Query("SELECT * FROM country")
+    fun getAllCountry(): Flow<List<Country>>
 
-    @Query ("SELECT * FROM country") //es el read y si o si hay que escribir codigo SQL
-    suspend fun getAllCountry(): Flow<List<Country>>
-
+    // Elimina un país
     @Delete
     suspend fun deleteCountry(country: Country)
 }
