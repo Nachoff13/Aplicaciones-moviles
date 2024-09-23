@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 @Composable
 fun CityItem(
     city: City,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -23,12 +21,6 @@ fun CityItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "${city.name} $${city.population}")
-        IconButton(onClick = onEdit) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
-        }
-        IconButton(onClick = onDelete) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
-        }
+        Text(text = "Ciudad: ${city.name}, Población: ${city.population}, País: ${city.countryId}")
     }
 }
