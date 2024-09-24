@@ -2,9 +2,7 @@ package com.example.tp2_app2.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -15,39 +13,53 @@ import androidx.navigation.NavHostController
 @Composable
 fun SearchCityScreen(navController: NavHostController, viewModel: HomeViewModel) {
     val cityName = remember { mutableStateOf("") }
-    val city = remember { mutableStateOf<City?>(null) }
+    val city = viewModel.selectedCity
+    val countryName = viewModel.countryName
+    val message = "Consulte la ciudad que desee"
+
+    // Resetear el estado cuando se accede a la pantalla
+    LaunchedEffect(Unit) {
+        cityName.value = ""
+    }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp), // Agregar padding
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally // Centrar horizontalmente
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Consultar Ciudad", fontWeight = FontWeight.Bold, fontSize = 24.sp) // Aumentar tamaño de fuente
+        Text("Consultar Ciudad", fontWeight = FontWeight.Bold, fontSize = 24.sp)
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaciador entre el título y el TextField
+        Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = cityName.value,
             onValueChange = { cityName.value = it },
             placeholder = { Text(text = "Nombre de la ciudad") },
-            modifier = Modifier.fillMaxWidth() // Hacer que el TextField llene el ancho
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaciador entre el TextField y el botón
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
                 viewModel.searchCityByName(cityName.value)
             },
-            modifier = Modifier.padding(vertical = 8.dp) // Padding vertical en el botón
+            modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            Text("Buscar Ciudad", fontSize = 20.sp) // Aumentar tamaño de fuente del botón
+            Text("Buscar Ciudad", fontSize = 20.sp)
         }
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaciador entre el botón y el resultado
+        Spacer(modifier = Modifier.height(16.dp))
 
-        city.value?.let {
-            Text("Ciudad: ${it.name}, Población: ${it.population}", fontSize = 18.sp) // Aumentar tamaño de fuente del resultado
-        } ?: Text("Ciudad no encontrada.", fontSize = 18.sp) // Aumentar tamaño de fuente del mensaje
+        // Mostrar la información de la ciudad si se encuentra, o el mensaje por defecto si no
+        if (city != null) {
+            Text("Ciudad: ${city.name}", fontSize = 18.sp)
+            Text("Población: ${city.population}", fontSize = 18.sp)
+            Text("País: $countryName", fontSize = 18.sp)
+        } else {
+            Text(message, fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
