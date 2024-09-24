@@ -11,16 +11,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
+
 @Composable
 fun CityItem(
     city: City,
+    countries: List<Country>,
     modifier: Modifier = Modifier
 ) {
+    // Buscar el país correspondiente
+    val countryName = countries.find { it.countryId == city.countryId }?.name ?: "País desconocido"
+
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Ciudad: ${city.name}, Población: ${city.population}, País: ${city.countryId}")
+        Text(text = "Ciudad: ${city.name}, Población: ${city.population}, País: $countryName")
     }
 }
+
+
