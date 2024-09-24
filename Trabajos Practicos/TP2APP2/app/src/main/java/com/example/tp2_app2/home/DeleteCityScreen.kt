@@ -17,31 +17,31 @@ fun DeleteCityScreen(navController: NavHostController, viewModel: HomeViewModel)
     val cityName = remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp), // Agregar padding
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally // Centrar horizontalmente
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Borrar Ciudad", fontWeight = FontWeight.Bold, fontSize = 24.sp) // Aumentar tamaño de fuente
+        Text("Borrar Ciudad", fontWeight = FontWeight.Bold, fontSize = 24.sp)
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaciador entre el título y el TextField
+        Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = cityName.value,
             onValueChange = { cityName.value = it },
             placeholder = { Text(text = "Nombre de la ciudad") },
-            modifier = Modifier.fillMaxWidth() // Hacer que el TextField llene el ancho
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaciador entre el TextField y el botón
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
                 viewModel.deleteCityByName(cityName.value)
-                navController.navigate("home") // Regresar a la pantalla principal
+                navController.navigate("home")
             },
-            modifier = Modifier.padding(vertical = 8.dp) // Padding vertical en el botón
+            modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            Text("Borrar Ciudad", fontSize = 20.sp) // Aumentar tamaño de fuente del botón
+            Text("Borrar Ciudad", fontSize = 20.sp)
         }
     }
 }
