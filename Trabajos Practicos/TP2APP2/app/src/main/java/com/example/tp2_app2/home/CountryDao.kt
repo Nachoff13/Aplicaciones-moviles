@@ -20,4 +20,8 @@ interface CountryDao {
     // Elimina un país
     @Delete
     suspend fun deleteCountry(country: Country)
+
+    @Query("SELECT * FROM country WHERE countryId = :id LIMIT 1")
+    suspend fun getCountryById(id: Int): Country?
+
 }
