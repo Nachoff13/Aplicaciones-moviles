@@ -1,16 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, Button } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Button, Dimensions } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { Region } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
+import MarcadorFarmacia from '@/components/MarcadorFarmacia';
 
 interface LocationCoords {
   latitude: number;
   longitude: number;
 }
 
+const { height } = Dimensions.get('window');
+
+const generateRandomLocations = (num: number, region: Region): LocationCoords[] => {
+  const locations: LocationCoords[] = [];
+  for (let i = 0; i < num; i++) {
+    const latitude = region.latitude + (Math.random() - 0.5) * region.latitudeDelta;
+    const longitude = region.longitude + (Math.random() - 0.5) * region.longitudeDelta;
+    locations.push({ latitude, longitude });
+  }
+  return locations;
+};
+
 export default function App() {
   const [location, setLocation] = useState<LocationCoords | null>(null);
   const [heading, setHeading] = useState<number | null>(null);
+  const [randomLocations, setRandomLocations] = useState<LocationCoords[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const mapRef = useRef<MapView | null>(null);
 
@@ -39,6 +53,16 @@ export default function App() {
       headingSubscription = await Location.watchHeadingAsync((heading) => {
         setHeading(heading.trueHeading);
       });
+
+      if (location) {
+        const region: Region = {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.1,
+          longitudeDelta: 0.1,
+        };
+        setRandomLocations(generateRandomLocations(10, region));
+      }
     })();
 
     return () => {
@@ -50,7 +74,7 @@ export default function App() {
       }
     };
   }, []);
-
+console.log(location)
   const centerMap = () => {
     if (location && mapRef.current) {
       mapRef.current.animateToRegion({
@@ -84,7 +108,13 @@ export default function App() {
         }}
         showsUserLocation={true}
         showsMyLocationButton={true}
-      />
+      >
+        {randomLocations.map((loc, index) => (
+          <Marker key={index} coordinate={loc}>
+            <MarcadorFarmacia title={`Farmacia ${index + 1}`} />
+          </Marker>
+        ))}
+      </MapView>
       <Button title="Center Map" onPress={centerMap} />
       {heading !== null && (
         <Text style={styles.headingText}>Heading: {heading.toFixed(2)}°</Text>
