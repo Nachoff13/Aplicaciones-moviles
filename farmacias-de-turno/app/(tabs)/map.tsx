@@ -110,7 +110,7 @@ console.log(location)
         showsMyLocationButton={true}
       >
         {randomLocations.map((loc, index) => (
-          <Marker key={index} coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}>
+            <Marker key={index} coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}>
             <MarcadorFarmacia title={`Farmacia ${index + 1}`} />
           </Marker>
         ))}
