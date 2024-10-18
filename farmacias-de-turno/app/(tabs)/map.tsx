@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, Button, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Button, Dimensions, SafeAreaView } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Marker, Region } from 'react-native-maps';
 import MarcadorFarmacia from '@/components/MarcadorFarmacia';
@@ -96,7 +96,7 @@ console.log(location)
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -110,16 +110,18 @@ console.log(location)
         showsMyLocationButton={true}
       >
         {randomLocations.map((loc, index) => (
-           <Marker key={index} coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}>
+          <Marker key={index} coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}>
             <MarcadorFarmacia title={`Farmacia ${index + 1}`} />
           </Marker>
         ))}
       </MapView>
-      <Button title="Center Map" onPress={centerMap} />
-      {heading !== null && (
-        <Text style={styles.headingText}>Heading: {heading.toFixed(2)}°</Text>
-      )}
-    </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Center Map" onPress={centerMap} />
+        {heading !== null && (
+          <Text style={styles.headingText}>Heading: {heading.toFixed(2)}°</Text>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -133,11 +135,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: '50%',
+    transform: [{ translateX: -50 }],
+    padding: 10,
+  },
   headingText: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 80,
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     padding: 10,
     borderRadius: 5,
+    alignSelf: 'center',
   },
 });
