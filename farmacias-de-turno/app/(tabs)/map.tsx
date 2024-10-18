@@ -107,7 +107,7 @@ console.log(location)
           longitudeDelta: 0.01,
         }}
         showsUserLocation={true}
-        showsMyLocationButton={true}
+        showsMyLocationButton={false}
       >
         {randomLocations.map((loc, index) => (
             <Marker key={index} coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}>
