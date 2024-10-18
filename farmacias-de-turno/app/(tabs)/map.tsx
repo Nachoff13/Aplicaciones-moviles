@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, Button, Dimensions, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Dimensions, SafeAreaView, Modal, Button, FlatList   } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Marker, Region } from 'react-native-maps';
 import MarcadorFarmacia from '@/components/MarcadorFarmacia';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 
 interface LocationCoords {
   latitude: number;
@@ -26,6 +28,7 @@ export default function App() {
   const [heading, setHeading] = useState<number | null>(null);
   const [randomLocations, setRandomLocations] = useState<LocationCoords[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const mapRef = useRef<MapView | null>(null);
 
   useEffect(() => {
@@ -74,7 +77,7 @@ export default function App() {
       }
     };
   }, []);
-console.log(location)
+//console.log(location)
   const centerMap = () => {
     if (location && mapRef.current) {
       mapRef.current.animateToRegion({
@@ -117,10 +120,42 @@ console.log(location)
       </MapView>
       <View style={styles.buttonContainer}>
         <Button title="Center Map" onPress={centerMap} />
+        <TouchableOpacity style={styles.roundButton} onPress={() => setModalVisible(true)}>
+          <FontAwesome name="list" size={24} color="white" />
+        </TouchableOpacity>
+
         {heading !== null && (
           <Text style={styles.headingText}>Heading: {heading.toFixed(2)}°</Text>
         )}
       </View>
+
+      {/* Modal para el listado */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Listado de Farmacias</Text>
+            <FlatList
+              data={randomLocations}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <Text style={styles.item}>
+                  Farmacia: {index + 1}{'\n'}
+                  Dirección: ({item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}){'\n'}
+                  Horario: 9:00 - 21:00
+                </Text>
+              )}
+            />
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.buttonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -137,10 +172,24 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 20,
     left: '50%',
     transform: [{ translateX: -50 }],
-    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  roundButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   headingText: {
     position: 'absolute',
@@ -149,5 +198,34 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignSelf: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  closeButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 20,
   },
 });
