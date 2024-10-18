@@ -136,9 +136,9 @@ export default function App() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
+        <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Listado de Farmacias</Text>
+            <Text style={styles.modalTitle}>Listado de Farmacias</Text>       
             <FlatList
               data={randomLocations}
               keyExtractor={(item, index) => index.toString()}
@@ -154,7 +154,7 @@ export default function App() {
               <Text style={styles.buttonText}>Cerrar</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
@@ -210,6 +210,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
+    paddingTop: 20,
+    marginBottom:40,
   },
   modalTitle: {
     fontSize: 20,
