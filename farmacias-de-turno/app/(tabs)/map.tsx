@@ -123,7 +123,6 @@ export default function App() {
         <TouchableOpacity style={styles.roundButton} onPress={() => setModalVisible(true)}>
           <FontAwesome name="list" size={24} color="white" />
         </TouchableOpacity>
-
         {heading !== null && (
           <Text style={styles.headingText}>Heading: {heading.toFixed(2)}°</Text>
         )}
@@ -181,8 +180,8 @@ const styles = StyleSheet.create({
   roundButton: {
     backgroundColor: '#007BFF',
     borderRadius: 30,
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 10,
