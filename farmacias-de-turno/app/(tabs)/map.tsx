@@ -35,7 +35,7 @@ export default function App() {
     let locationSubscription: Location.LocationSubscription | null = null;
     let headingSubscription: Location.LocationSubscription | null = null;
 
-    (async () => {
+    const startLocationUpdates = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -45,28 +45,28 @@ export default function App() {
       locationSubscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 1000, // Actualiza cada segundo
-          distanceInterval: 1, // Actualiza cada metro
+          timeInterval: 1000,
+          distanceInterval: 1,
         },
         (loc) => {
           setLocation(loc.coords);
+
+          const region: Region = {
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          };
+          setRandomLocations(generateRandomLocations(10, region));
         }
       );
 
       headingSubscription = await Location.watchHeadingAsync((heading) => {
         setHeading(heading.trueHeading);
       });
+    };
 
-      if (location) {
-        const region: Region = {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
-        };
-        setRandomLocations(generateRandomLocations(10, region));
-      }
-    })();
+    startLocationUpdates();
 
     return () => {
       if (locationSubscription) {
@@ -77,6 +77,7 @@ export default function App() {
       }
     };
   }, []);
+
 //console.log(location)
   const centerMap = () => {
     if (location && mapRef.current) {
