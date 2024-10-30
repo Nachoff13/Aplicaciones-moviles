@@ -91,3 +91,9 @@
  **/lint/generated/
  **/lint/reports/
  **/lint/tmp/
+
+ 
+**.idea/
+**.gradle/
+**.kotlin/
+**build/
