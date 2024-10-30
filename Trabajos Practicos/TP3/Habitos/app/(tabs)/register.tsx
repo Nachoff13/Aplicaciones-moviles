@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet, Text } from 'react-native';
+import { View, TextInput, Button, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
+import { useRouter } from 'expo-router';
 
-const RegisterScreen = () => {
+const RegisterScreen: React.FC = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -13,6 +15,9 @@ const RegisterScreen = () => {
         // Registro exitoso
         const user = userCredential.user;
         Alert.alert('Registro exitoso', `Usuario registrado: ${user.email}`);
+        
+        // Redirige a la pantalla de inicio de sesion
+        router.push('/login');
       })
       .catch((error) => {
         Alert.alert('Error', error.message);
@@ -37,7 +42,13 @@ const RegisterScreen = () => {
         secureTextEntry
         style={styles.input}
       />
+      
       <Button title="Registrarse" onPress={handleRegister} />
+      
+      <TouchableOpacity onPress={() => router.push('/login')}>
+        <Text style={styles.link}>¿Ya tienes una cuenta? Inicia sesión aquí</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 };
@@ -63,6 +74,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+  },
+  link: {
+    marginTop: 12,
+    color: '#007BFF',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });
 

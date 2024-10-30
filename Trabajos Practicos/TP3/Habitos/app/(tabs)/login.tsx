@@ -1,22 +1,61 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
-import { useNavigation } from 'expo-router'; // Importa useNavigation
+import * as WebBrowser from 'expo-web-browser';
+import { useRouter } from 'expo-router';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const LoginScreen = () => {
-  const navigation = useNavigation(); // Usa useNavigation sin tipos explícitos
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Configuración de Google Sign-In
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
+    redirectUri: makeRedirectUri(),
+  });
+
+  // Maneja la respuesta de Google
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          Alert.alert('Inicio de sesión exitoso', `Bienvenido ${user.email}`);
+          router.push('/home');
+        })
+        .catch((error) => {
+          Alert.alert('Error', error.message);
+        });
+    }
+  }, [response]);
+
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        (navigation as any).navigate('home');
+      .then((userCredential) => {
+        const user = userCredential.user;
+        Alert.alert('Inicio de sesión exitoso', `Bienvenido ${user.email}`);
+        router.push('/home');
       })
       .catch((error) => {
         Alert.alert('Error', error.message);
       });
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await promptAsync();
+    } catch (error) {
+      Alert.alert('Error de autenticación', 'Ocurrió un error al iniciar sesión con Google. Intenta nuevamente.');
+    }
   };
 
   return (
@@ -37,9 +76,15 @@ const LoginScreen = () => {
         secureTextEntry
         style={styles.input}
       />
-      <Button title="Iniciar Sesión" onPress={handleLogin} />
-      <TouchableOpacity onPress={() => (navigation as any).navigate('register')}>
-        <Text style={styles.link}>¿No tienes una cuenta? Crea una nueva aquí</Text>
+
+      <Button title="Iniciar sesión" onPress={handleLogin} />
+
+      <TouchableOpacity onPress={handleGoogleSignIn} style={styles.googleButton}>
+        <Text style={styles.googleButtonText}>Iniciar sesión con Google</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/register')}>
+        <Text style={styles.link}>¿No tienes una cuenta? Crea una aquí</Text>
       </TouchableOpacity>
     </View>
   );
@@ -71,6 +116,17 @@ const styles = StyleSheet.create({
     marginTop: 12,
     color: '#007BFF',
     textAlign: 'center',
+  },
+  googleButton: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#4285F4',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  googleButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
