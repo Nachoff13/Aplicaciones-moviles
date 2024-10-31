@@ -46,7 +46,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Explore Place to use your location."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

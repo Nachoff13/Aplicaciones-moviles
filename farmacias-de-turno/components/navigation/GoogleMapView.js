@@ -2,13 +2,13 @@ import { View, Text, Dimensions } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps'
 import { UserLocationContext } from '../../context/UserLocationContext';
+
 export default function GoogleMapView() {
 
   //Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
 
   const [mapRegion, setMapRegion] = useState(null);
-
 
   useEffect(() => {
     if (location) {
@@ -23,16 +23,16 @@ export default function GoogleMapView() {
 
   if (!mapRegion) {
     return (
-      <View style={{ marginTop: 35, marginHorizontal: 20, overflow: 'hidden' }}>
-        <Text style={{ fontSize: 20, marginBottom: 10, fontWeight: '600', textAlign: 'center' }}>
+      <View style={{ marginTop: 50, marginHorizontal: 20, overflow: 'hidden' }}>
+        <Text style={{ color:'#004686', fontSize: 20, marginBottom: 10, fontWeight: '700', textAlign: 'center' }}>
           Cargando mapa...
         </Text>
       </View>
     );
   }
   return (
-    <View style={{marginTop:35, marginHorizontal:20, overflow:'hidden'}}>
-      <Text style={{fontSize:20, marginBottom:10,fontWeight:'600',textAlign:'center'}}>
+    <View style={{marginTop:50, marginHorizontal:20, overflow:'hidden'}}>
+      <Text style={{color:'#004686', marginBottom:10,fontWeight:'700', fontSize:20 }}>
         Farmacias de Turno
       </Text>
         <MapView
