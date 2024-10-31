@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
-const HomeScreen = () => {
-  const { userName, email } = useLocalSearchParams();
+const HomeScreen: React.FC = () => {
+  const {email} = useAuth(); // Obtiene los valores del contexto
 
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>
-        Bienvenido {userName} ({email})
+        Bienvenido {email}!
       </Text>
     </View>
   );
@@ -19,11 +19,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f7f7f7',
   },
   welcomeText: {
     fontSize: 24,
-    fontWeight: 'bold',
   },
 });
 

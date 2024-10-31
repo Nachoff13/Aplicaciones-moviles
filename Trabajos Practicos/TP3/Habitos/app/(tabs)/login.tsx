@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import * as WebBrowser from 'expo-web-browser';
 import { useRouter } from 'expo-router';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { decodeToken } from 'react-jwt';
+import { useAuth } from '../../context/AuthContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
 interface DecodedToken {
-  name?: string;
   email?: string;
 }
 
 const LoginScreen = () => {
   const router = useRouter();
+  const { login } = useAuth(); // Obtiene la función de inicio de sesión desde el contexto
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -39,43 +40,53 @@ const LoginScreen = () => {
 
       const decodedToken = decodeToken<DecodedToken>(id_token);
 
-      const userName = decodedToken?.name || decodedToken?.email;
-
       const credential = GoogleAuthProvider.credential(id_token);
 
-      // Iniciar sesión con Firebase
+      // Iniciar sesion con Firebase
       signInWithCredential(auth, credential)
-      .then((userCredential) => {
-        const user = userCredential.user;
-
-        // Redirigir a la pantalla de inicio con el nombre y email
-        router.push({
-          pathname: '/home',
-          params: { userName, email: user.email },
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // Redirige a la pantalla de inicio con el nombre y email
+          router.push({
+            pathname: '/home',
+            params: {email: user.email },
+          });
+        })
+        .catch((error: Error) => {
+          Alert.alert('Error', error.message);
         });
-      })
-      .catch((error) => {
-
-      });
-
     }
   }, [response]);
 
-  const handleLogin = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        Alert.alert('Inicio de sesión exitoso', `Bienvenido ${user.email}`);
-        router.push('/home');
-      })
-      .catch((error) => {
+  const handleLogin = async () => {
+    try {
+      await login(email);
+      Alert.alert('Inicio de sesión exitoso', `Bienvenido ${email}`);
+      router.push('/home');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
         Alert.alert('Error', error.message);
-      });
+      } else {
+        Alert.alert('Error', 'Ocurrió un error inesperado.');
+      }
+    }
   };
-
+  
   const handleGoogleSignIn = async () => {
     try {
-      await promptAsync();
+      const result = await promptAsync();
+      if (result?.type === 'success') {
+        const { id_token } = result.params;
+  
+        const decodedToken = decodeToken<DecodedToken>(id_token);
+        const userEmail = decodedToken?.email ?? "sin correo";
+  
+        const credential = GoogleAuthProvider.credential(id_token);
+        await signInWithCredential(auth, credential);
+  
+        await login(userEmail); // Guarda el nombre y el correo en el contexto
+        router.push('/home');
+      }
     } catch (error) {
       Alert.alert('Error de autenticación', 'Ocurrió un error al iniciar sesión con Google. Intenta nuevamente.');
     }
