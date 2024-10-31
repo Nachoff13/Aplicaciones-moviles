@@ -8,20 +8,25 @@ const RegisterScreen: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleRegister = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Registro exitoso
-        const user = userCredential.user;
-        Alert.alert('Registro exitoso', `Usuario registrado: ${user.email}`);
-        
-        // Redirige a la pantalla de inicio de sesion
-        router.push('/login');
-      })
-      .catch((error) => {
-        Alert.alert('Error', error.message);
-      });
+  const handleRegister = async () => {
+    setErrorMessage(null);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      Alert.alert('Registro exitoso', `Usuario registrado: ${user.email}`);
+      
+      // Redirige a la pantalla de inicio de sesión
+      router.push('/login');
+    } catch (error) {
+      if (error instanceof Error) {
+        // Captura el mensaje de error de Firebase
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('Ocurrió un error inesperado.');
+      }
+    }
   };
 
   return (
@@ -43,12 +48,13 @@ const RegisterScreen: React.FC = () => {
         style={styles.input}
       />
       
+      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>} {/* Mensaje de error */}
+      
       <Button title="Registrarse" onPress={handleRegister} />
       
       <TouchableOpacity onPress={() => router.push('/login')}>
         <Text style={styles.link}>¿Ya tienes una cuenta? Inicia sesión aquí</Text>
       </TouchableOpacity>
-      
     </View>
   );
 };
@@ -80,6 +86,11 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     textAlign: 'center',
     textDecorationLine: 'underline',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 12,
+    textAlign: 'center',
   },
 });
 
