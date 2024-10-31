@@ -35,6 +35,8 @@ export default function GoogleMapView() {
       <Text style={{color:'#004686', marginBottom:10,fontWeight:'700', fontSize:20 }}>
         Farmacias de Turno
       </Text>
+      <View style={{ borderRadius: 20, overflow: 'hidden' }}>
+
         <MapView
             style={{
               width:Dimensions.get('screen'),
@@ -46,6 +48,7 @@ export default function GoogleMapView() {
           region={mapRegion}
           >
         </MapView>
+        </View>
     </View>
   )
 }
