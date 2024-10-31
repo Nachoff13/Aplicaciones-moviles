@@ -6,18 +6,25 @@ import * as WebBrowser from 'expo-web-browser';
 import { useRouter } from 'expo-router';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
+import { decodeToken } from 'react-jwt';
 
 WebBrowser.maybeCompleteAuthSession();
+
+interface DecodedToken {
+  name?: string;
+  email?: string;
+}
 
 const LoginScreen = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Configuración de Google Sign-In
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
-    redirectUri: makeRedirectUri(),
+    redirectUri: makeRedirectUri({
+      scheme: 'myapp',
+    }),
   });
 
   // Maneja la respuesta de Google
@@ -25,16 +32,32 @@ const LoginScreen = () => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
 
+      if (!id_token) {
+        Alert.alert('Error', 'No se recibió el id_token.');
+        return;
+      }
+
+      const decodedToken = decodeToken<DecodedToken>(id_token);
+
+      const userName = decodedToken?.name || decodedToken?.email;
+
       const credential = GoogleAuthProvider.credential(id_token);
+
+      // Iniciar sesión con Firebase
       signInWithCredential(auth, credential)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          Alert.alert('Inicio de sesión exitoso', `Bienvenido ${user.email}`);
-          router.push('/home');
-        })
-        .catch((error) => {
-          Alert.alert('Error', error.message);
+      .then((userCredential) => {
+        const user = userCredential.user;
+
+        // Redirigir a la pantalla de inicio con el nombre y email
+        router.push({
+          pathname: '/home',
+          params: { userName, email: user.email },
         });
+      })
+      .catch((error) => {
+
+      });
+
     }
   }, [response]);
 
