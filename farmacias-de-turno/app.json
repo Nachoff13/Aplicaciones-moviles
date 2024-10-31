@@ -21,7 +21,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "googleServicesFile": "./google-services.json",
+        "googleMapsApiKey": "AIzaSyClqeNhCqr59A58Pf5Fw2_z93LqTEe0Ffw"
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
@@ -39,7 +41,12 @@
       }
     },
     "plugins": [
-      "expo-router"
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Explore Place to use your location."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

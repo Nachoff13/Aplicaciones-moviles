@@ -1,39 +1,37 @@
 import { View, Text, Dimensions } from 'react-native'
-import React, { useState, useContextC, useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps'
-
+import { UserLocationContext } from '../../context/UserLocationContext';
 export default function GoogleMapView() {
 
   //Guarda ubicación actual
-  const [location, setLocation] = useState(null);
+  const { location } = useContext(UserLocationContext);
 
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  const [mapRegion, setmapRegion] = useState({
-    latitude: -34.97249957852252 ,
-    longitude: -57.97549635928252,
-    latitudeDelta: 0.0422,
-    longitudeDelta: 0.0421,
-  });
+  const [mapRegion, setMapRegion] = useState(null);
 
 
-  //Verifica mi ubicación todo el tiempo
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permiso de ubicación no otorgado');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  }, []);
+    if (location) {
+      setMapRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0522,
+        longitudeDelta: 0.0921,
+      });
+    }
+  }, [location]);
 
-
-
+  if (!mapRegion) {
+    return (
+      <View style={{ marginTop: 35, marginHorizontal: 20, overflow: 'hidden' }}>
+        <Text style={{ fontSize: 20, marginBottom: 10, fontWeight: '600', textAlign: 'center' }}>
+          Cargando mapa...
+        </Text>
+      </View>
+    );
+  }
   return (
-    <View style={{marginTop:35, marginHorizontal:20}}>
+    <View style={{marginTop:35, marginHorizontal:20, overflow:'hidden'}}>
       <Text style={{fontSize:20, marginBottom:10,fontWeight:'600',textAlign:'center'}}>
         Farmacias de Turno
       </Text>
