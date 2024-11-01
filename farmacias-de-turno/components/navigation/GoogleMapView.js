@@ -47,6 +47,9 @@ export default function GoogleMapView() {
           showsUserLocation={true}
           region={mapRegion}
           >
+          <Marker title='ACA ESTAS VOS LOKITA' coordinate={mapRegion}>
+
+          </Marker>
         </MapView>
         </View>
     </View>

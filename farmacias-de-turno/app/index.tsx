@@ -1,8 +1,8 @@
 import { View, Text } from 'react-native';
 import React from 'react';
-import GoogleMapView from '../../components/navigation/GoogleMapView';
+import GoogleMapView from '../components/navigation/GoogleMapView';
 
-export default function Map() {
+export default function Index() {
   return (
     <View>
       <GoogleMapView />
