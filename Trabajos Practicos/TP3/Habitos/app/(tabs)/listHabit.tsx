@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
 
 // Define el tipo para los parámetros del stack
 type RootStackParamList = {
   detailHabit: { habitId: string };
-
 };
 
 // Define el tipo de navegación
 type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'detailHabit'>;
 
 const ListHabitScreen: React.FC = () => {
-  const navigation = useNavigation<ListHabitScreenNavigationProp>(); // Asigna el tipo de navegación
+  const navigation = useNavigation<ListHabitScreenNavigationProp>();
   const [habits, setHabits] = useState<{ id: string; name: string; importance: string }[]>([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
@@ -22,11 +21,6 @@ const ListHabitScreen: React.FC = () => {
     const initDb = async () => {
       const database = await SQLite.openDatabaseAsync('habits.db');
       setDb(database);
-
-      // Crear la tabla si no existe
-      await database.execAsync(
-        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, importance TEXT);"
-      );
     };
 
     initDb();
@@ -37,8 +31,8 @@ const ListHabitScreen: React.FC = () => {
       if (!db) return;
 
       try {
-        const results = await db.execAsync('SELECT id, name, importance FROM habits;');
-        const fetchedHabits = results[0].rows._array;
+        const results = await db.getAllAsync('SELECT * FROM habits');
+        const fetchedHabits = results as { id: string; name: string; importance: string }[];
         setHabits(fetchedHabits);
       } catch (error) {
         console.error('Error al obtener los hábitos:', error);
@@ -49,20 +43,40 @@ const ListHabitScreen: React.FC = () => {
   }, [db]);
 
   const handlePress = (habitId: string) => {
-    navigation.navigate('detailHabit', { habitId }); // Navegar a la pantalla de detalles
+    navigation.navigate('detailHabit', { habitId });
+  };
+
+  const handleDeleteAll = async () => {
+    if (db) {
+      try {
+        await db.execAsync("DELETE FROM habits;");
+        setHabits([]);
+        Alert.alert('Éxito', 'Todos los hábitos han sido eliminados.');
+      } catch (error) {
+        console.error('Error al eliminar los hábitos:', error);
+        Alert.alert('Error', 'No se pudieron eliminar los hábitos.');
+      }
+    } else {
+      Alert.alert('Error', 'Base de datos no inicializada');
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Hábitos</Text>
+      <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAll}>
+        <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
+      </TouchableOpacity>
       <FlatList
         data={habits}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.habitContainer}>
-            <Text>{item.name}</Text>
-            <Text>{item.importance}</Text>
-            <Button title="Detalles" onPress={() => handlePress(item.id.toString())} />
+            <Text style={styles.subTitle}>{item.name}</Text>
+            <Text style={styles.subTitle}>{item.importance}</Text>
+            <TouchableOpacity style={styles.btn} onPress={() => handlePress(item.id.toString())}>
+              <Text style={styles.btnText}>Detalles</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -76,11 +90,13 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f7f7f7',
   },
+
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 24,
+    marginBottom: 16,
   },
+
   habitContainer: {
     marginBottom: 16,
     padding: 16,
@@ -91,6 +107,35 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
+
+  subTitle: {
+    fontSize: 18,
+  },
+
+  deleteBtn: {
+    backgroundColor: '#ff4d4d',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+    width: '90%',
+    alignSelf: 'center',
+  },
+
+  btn: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  
 });
 
 export default ListHabitScreen;
