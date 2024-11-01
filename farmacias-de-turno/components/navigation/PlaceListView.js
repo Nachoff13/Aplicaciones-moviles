@@ -3,11 +3,17 @@ import React from 'react';
 import PlaceItem from './PlaceItem'
 
 export default function PlaceListView({ placeList }) {
-  // Imprime los nombres y direcciones de las farmacias
-  console.log("*** Farmacia:", Array.isArray(placeList) ? placeList.map(item => ({
-    nombre: item.displayName?.text || 'Nombre no disponible',
-    direccion: item.formattedAddress || 'Dirección no disponible'
-  })) : 'placeList no está disponible o no es un arreglo');
+  // Verifica si placeList es un arreglo y obtiene el primer elemento
+  if (Array.isArray(placeList) && placeList.length > 0) {
+    const firstPlace = placeList[0];
+    console.log("*** Farmacia:", {
+      nombre: firstPlace.displayName?.text || 'Nombre no disponible',
+      direccion: firstPlace.formattedAddress || 'Dirección no disponible',
+      fotos: firstPlace.photos ? firstPlace.photos.map(photo => photo.flagContentUri).join(', ') : 'No hay fotos disponibles'
+    });
+  } else {
+    console.log('placeList no está disponible o no es un arreglo');
+  }
 
   return (
     <View>
