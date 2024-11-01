@@ -3,6 +3,7 @@ import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text } from 'rea
 import * as SQLite from 'expo-sqlite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Alert } from 'react-native';
 
 type RootStackParamList = {
   AddHabit: undefined;
@@ -23,7 +24,7 @@ const AddHabit = () => {
       setDb(database);
       
       await database.execAsync(
-        "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY NOT NULL, done INT, value TEXT);"
+        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT);"
       );
     };
   
@@ -35,27 +36,30 @@ const AddHabit = () => {
   const handleAddHabit = async () => {
     if (db) {
       try {
-
-        await db.execAsync(
-          `INSERT INTO habits (name, importance) VALUES ('${habitName}', ${habitImportance});`
-        );
+        const query = `
+          INSERT INTO habits (name, importance) VALUES ('${habitName}', '${habitImportance}');
+        `;
   
-
+        await db.execAsync(query);
+  
+        // obtener el último ID insertado
         const result = await db.execAsync('SELECT last_insert_rowid();');
   
-
-        const lastInsertId = result[0]?.[0];
+        const lastInsertId = result[0]?.rows?._array[0]?.['last_insert_rowid()'];
   
-        console.log('Hábito agregado con ID:', lastInsertId);
-        navigation.navigate('HabitDetail', { habitId: lastInsertId });
-      } catch (error) {
-        console.error('Error al agregar el hábito:', error);
+        if (lastInsertId !== undefined) {
+          Alert.alert('Éxito', `Hábito agregado con ID: ${lastInsertId}`);
+          navigation.navigate('HabitDetail', { habitId: lastInsertId });
+        } else {
+          Alert.alert('Error', 'No se pudo obtener el último ID insertado.');
+        }
+    } catch (error: any) {
+        Alert.alert('Error', `Error al agregar el hábito: ${error.message}`);
       }
     } else {
-      console.error('Base de datos no inicializada');
+      Alert.alert('Error', 'Base de datos no inicializada');
     }
   };
-  
   
   
 
