@@ -10,13 +10,32 @@ const RegisterScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Función de validacion de correo
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleRegister = async () => {
     setErrorMessage(null);
+
+    // Validacion formato de correo
+    if (!isValidEmail(email)) {
+      setErrorMessage('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+
+    // Validacion contraseña
+    if (password.length < 6) {
+      setErrorMessage('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       Alert.alert('Registro exitoso', `Usuario registrado: ${user.email}`);
-      
+
       // Redirige a la pantalla de inicio de sesión
       router.push('/login');
     } catch (error) {
