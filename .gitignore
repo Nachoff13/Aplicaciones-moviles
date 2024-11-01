@@ -91,5 +91,3 @@
  **/lint/generated/
  **/lint/reports/
  **/lint/tmp/
-
-.env
