@@ -1,14 +1,13 @@
-// listHabit.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack'; // Importa StackNavigationProp
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
 
 // Define el tipo para los parámetros del stack
 type RootStackParamList = {
-  detailHabit: { habitId: string }; // Define el tipo de parámetros para la pantalla de detalles
-  // Otros tipos de parámetros pueden ser añadidos aquí
+  detailHabit: { habitId: string };
+
 };
 
 // Define el tipo de navegación
@@ -39,7 +38,7 @@ const ListHabitScreen: React.FC = () => {
 
       try {
         const results = await db.execAsync('SELECT id, name, importance FROM habits;');
-        const fetchedHabits = results[0].rows._array; // Asegúrate de acceder correctamente a los resultados
+        const fetchedHabits = results[0].rows._array;
         setHabits(fetchedHabits);
       } catch (error) {
         console.error('Error al obtener los hábitos:', error);

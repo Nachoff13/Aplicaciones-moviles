@@ -35,15 +35,15 @@ const AddHabit = () => {
   const handleAddHabit = async () => {
     if (db) {
       try {
-        // Ejecutar la inserción directamente en la base de datos
+
         await db.execAsync(
           `INSERT INTO habits (name, importance) VALUES ('${habitName}', ${habitImportance});`
         );
   
-        // Ejecutar una consulta para obtener el último ID insertado
+
         const result = await db.execAsync('SELECT last_insert_rowid();');
   
-        // Acceder al último ID insertado. Asegúrate de que el resultado sea un array.
+
         const lastInsertId = result[0]?.[0];
   
         console.log('Hábito agregado con ID:', lastInsertId);
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 3, // Para Android
+    elevation: 3,
   },
   button: {
     backgroundColor: '#4285f4',
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 5, // Para Android
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',

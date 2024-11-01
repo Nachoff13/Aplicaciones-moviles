@@ -5,11 +5,11 @@ import * as SQLite from 'expo-sqlite';
 
 // Inicializa la base de datos SQLite
 const openDatabase = async () => {
-  return await SQLite.openDatabaseAsync('habits.db'); // Abre la base de datos
+  return await SQLite.openDatabaseAsync('habits.db');
 };
 
 type HabitDetailRouteParams = {
-  habitId: string; // Cambia esto al tipo correspondiente (ej. number) si es necesario
+  habitId: string;
 };
 
 type HabitDetailScreenProps = {
@@ -18,7 +18,7 @@ type HabitDetailScreenProps = {
 
 const DetailHabitScreen: React.FC = () => {
   const route = useRoute<HabitDetailScreenProps['route']>();
-  const { habitId } = route.params || { habitId: '' }; // Aseguramos que habitId nunca sea undefined
+  const { habitId } = route.params || { habitId: '' };
 
   const [habit, setHabit] = useState<{ name: string; importance: string } | null>(null);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
@@ -28,7 +28,7 @@ const DetailHabitScreen: React.FC = () => {
       const database = await openDatabase();
       setDb(database);
 
-      // Crear la tabla si no existe (opcional)
+      // Crear la tabla si no existe
       await database.execAsync(
         "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, importance TEXT);"
       );

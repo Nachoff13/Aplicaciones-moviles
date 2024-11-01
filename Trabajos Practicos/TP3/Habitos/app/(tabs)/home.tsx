@@ -18,7 +18,7 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'h
 
 const HomeScreen: React.FC = () => {
   const { email } = useAuth(); // Obtiene los valores del contexto
-  const navigation = useNavigation<HomeScreenNavigationProp>(); // Usar el tipo definido para navegación
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
