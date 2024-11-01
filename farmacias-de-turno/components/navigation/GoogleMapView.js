@@ -3,6 +3,8 @@ import React, { useState, useContext, useEffect } from "react";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import { UserLocationContext } from "@/context/UserLocationContext";
 import globalApi from "@/utils/globalApi";
+import { StyleSheet } from "react-native";
+import PlaceListView from "./PlaceListView";
 
 export default function GoogleMapView() {
   //Guarda ubicación actual
@@ -36,7 +38,7 @@ export default function GoogleMapView() {
 
       const response = await globalApi.NewNearbyPlace(data);
 
-      console.log('Respuesta de la API:', response.data);
+      //console.log('Respuesta de la API:', response.data);
 
       setPlaceList(response.data?.places);
       
@@ -110,7 +112,21 @@ export default function GoogleMapView() {
         >
           <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker>
         </MapView>
+
+        <View style={styles.placeListContainer}>
+          {placeList&&<PlaceListView placeList={placeList}></PlaceListView>}
+        </View>
+
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  placeListContainer: {
+    position: "absolute",
+    bottom: 0,
+    zIndex: 10,
+    width: "100%"
+  },
+});
