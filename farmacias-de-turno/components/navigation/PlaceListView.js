@@ -1,5 +1,6 @@
 import { View, Text, FlatList } from 'react-native';
 import React from 'react';
+import PlaceItem from './PlaceItem'
 
 export default function PlaceListView({ placeList }) {
   // Imprime los nombres y direcciones de las farmacias
@@ -12,13 +13,14 @@ export default function PlaceListView({ placeList }) {
     <View>
       <FlatList
         data={Array.isArray(placeList) ? placeList : []}
-        renderItem={({ item }) => (
-          <View>
-            <Text>{item.displayName?.text || 'Nombre no disponible'}</Text>
-            <Text>{item.formattedAddress || 'Dirección no disponible'}</Text>
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+
+        renderItem={({ item,index }) => (
+          <View key={index}>
+            <PlaceItem place={item}/>
           </View>
         )}
-        keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );
