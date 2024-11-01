@@ -23,7 +23,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff",
         "googleServicesFile": "./google-services.json",
-        "googleMapsApiKey": "AIzaSyClqeNhCqr59A58Pf5Fw2_z93LqTEe0Ffw"
+        "googleMapsApiKey": "process.env.GOOGLE_MAPS_API_KEY"
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
