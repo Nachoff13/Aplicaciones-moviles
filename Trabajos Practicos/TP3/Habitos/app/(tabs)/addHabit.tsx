@@ -34,32 +34,32 @@ const AddHabit = () => {
 
 
   const handleAddHabit = async () => {
-    if (db) {
-      try {
-        const query = `
-          INSERT INTO habits (name, importance) VALUES ('${habitName}', '${habitImportance}');
-        `;
-  
-        await db.execAsync(query);
-  
-        // obtener el último ID insertado
-        const result = await db.execAsync('SELECT last_insert_rowid();');
-  
-        const lastInsertId = result[0]?.rows?._array[0]?.['last_insert_rowid()'];
-  
-        if (lastInsertId !== undefined) {
-          Alert.alert('Éxito', `Hábito agregado con ID: ${lastInsertId}`);
-          navigation.navigate('HabitDetail', { habitId: lastInsertId });
-        } else {
-          Alert.alert('Error', 'No se pudo obtener el último ID insertado.');
-        }
-    } catch (error: any) {
-        Alert.alert('Error', `Error al agregar el hábito: ${error.message}`);
-      }
+  if (!db) {
+    Alert.alert('Error', 'Base de datos no inicializada');
+    return;
+  }
+
+  if (!habitName || !habitImportance) {
+    Alert.alert('Error', 'Por favor completa todos los campos.');
+    return;
+  }
+
+  try {
+    const result = await db.runAsync(
+      'INSERT INTO habits (name, importance) VALUES (?, ?)',
+      [habitName, habitImportance]
+    );
+
+    if (result.lastInsertRowId) {
+      Alert.alert('Éxito', `Hábito agregado con ID: ${result.lastInsertRowId}`);
     } else {
-      Alert.alert('Error', 'Base de datos no inicializada');
+      Alert.alert('Error', 'No se pudo obtener el último ID insertado.');
     }
-  };
+  } catch (error) {
+    const errorMessage = (error as Error).message || 'Error desconocido';
+    Alert.alert('Error', `Error al agregar el hábito: ${errorMessage}`);
+  }
+};
   
   
 
