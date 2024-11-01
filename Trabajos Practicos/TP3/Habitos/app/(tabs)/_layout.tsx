@@ -1,11 +1,22 @@
-import { Stack } from 'expo-router';
+// AppLayout.tsx
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/navigation/Navbar';
+import LoginScreen from './login';
+import HomeScreen from './home';
+import RegisterScreen from './register';
+import AddHabitScreen from './addHabit';
+import DetailHabitScreen from './detailHabit';
+import ListHabitScreen from './listHabit';
+
+const Stack = createStackNavigator();
 
 export default function AppLayout() {
   return (
     <AuthProvider>
-      <AuthenticatedApp />
+        <AuthenticatedApp />
     </AuthProvider>
   );
 }
@@ -18,11 +29,14 @@ function AuthenticatedApp() {
       {/* Muestra el Navbar solo si el usuario está autenticado */}
       {email && <Navbar />}
       
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="login" />
-        <Stack.Screen name="home" />
-        <Stack.Screen name="register" />
-      </Stack>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="login" component={LoginScreen} />
+        <Stack.Screen name="home" component={HomeScreen} />
+        <Stack.Screen name="register" component={RegisterScreen} />
+        <Stack.Screen name="addHabit" component={AddHabitScreen} />
+        <Stack.Screen name="detailHabit" component={DetailHabitScreen} />
+        <Stack.Screen name="listHabit" component={ListHabitScreen} />
+      </Stack.Navigator>
     </>
   );
 }
