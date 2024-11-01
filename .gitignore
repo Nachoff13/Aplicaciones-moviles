@@ -93,3 +93,5 @@
  **/lint/tmp/
 
 .env
+/Trabajos Practicos/
+.idea
