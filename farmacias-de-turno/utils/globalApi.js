@@ -9,7 +9,8 @@ const config = {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': API_KEY,
         'X-Goog-FieldMask': ['places.displayName',
-        'places.formattedAddress', 
+        'places.formattedAddress',
+        'places.shortFormattedAddress', 
         'places.location', 
         'places.photos']
     }

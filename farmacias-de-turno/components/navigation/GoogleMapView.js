@@ -8,6 +8,10 @@ export default function GoogleMapView() {
   //Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
 
+  //Guarda la lista de lugares cercanos de la api
+  const [placeList, setPlaceList] = useState([]);
+
+  //Guarda la región del mapa
   const [mapRegion, setMapRegion] = useState(null);
 
   // Va a traer las farmacias cercanas
@@ -29,12 +33,15 @@ export default function GoogleMapView() {
         },
       };
       console.log('Datos enviados a la API:', JSON.stringify(data));
+
       const response = await globalApi.NewNearbyPlace(data);
+
       console.log('Respuesta de la API:', response.data);
+
+      setPlaceList(response.data?.places);
+      
     } catch (error) {
       if (error.response) {
-        // La solicitud se realizó y el servidor respondió con un código de estado
-        // que cae fuera del rango de 2xx
         console.error('Error al llamar a la API:', error.response.data['error']['message']);
         console.error('Código de estado:', error.response.status);
         console.error('Encabezados:', error.response.headers);
