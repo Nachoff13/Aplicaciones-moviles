@@ -24,11 +24,11 @@ const LoginScreen = () => {
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
-    //redirectUri: makeRedirectUri({
-    //  scheme: 'myapp',
-   // }),
+    redirectUri: makeRedirectUri({
+      scheme: 'myapp',
+    }),
     //para ngrok: 
-    redirectUri: 'https://4a2b-190-188-226-111.ngrok-free.app/auth/google/callback',
+   // redirectUri: 'https://4a2b-190-188-226-111.ngrok-free.app/auth/google/callback',
   });
 
   useEffect(() => {
