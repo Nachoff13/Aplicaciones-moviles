@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>865233704774-3grs3co3m8mmf61t4vlkbjue07f7agm2.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.865233704774-3grs3co3m8mmf61t4vlkbjue07f7agm2</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>865233704774-7qmn4c60uilcktedar6i4bcb26res3cg.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBXSWp__7PjRlSg3ffUGVN9Fak3B5FNuEA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>865233704774</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.utn-frlp.habitos</string>
+	<key>PROJECT_ID</key>
+	<string>habitos-6168a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>habitos-6168a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:865233704774:ios:85be18d109d7cd2b8ff747</string>
+</dict>
+</plist>

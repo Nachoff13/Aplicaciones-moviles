@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "865233704774",
+    "project_id": "habitos-6168a",
+    "storage_bucket": "habitos-6168a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865233704774:android:cac07ccbefb5e6cb8ff747",
+        "android_client_info": {
+          "package_name": "com.utn_frlp.habitos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865233704774-7qmn4c60uilcktedar6i4bcb26res3cg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.utn_frlp.habitos",
+            "certificate_hash": "db059e4fa73c9697850f844fad546041529e56d5"
+          }
+        },
+        {
+          "client_id": "865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEMyJqmkppTL5CvssdNGsdczgQVmOK-Xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "865233704774-3grs3co3m8mmf61t4vlkbjue07f7agm2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.utn-frlp.habitos"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
