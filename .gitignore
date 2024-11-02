@@ -92,10 +92,7 @@
  **/lint/reports/
  **/lint/tmp/
 
- 
-**.idea/
-**.gradle/
-**.kotlin/
-**build/
-
-/node_modules
+.env
+/Trabajos Practicos/
+.idea
+farmacias-de-turno/.env
