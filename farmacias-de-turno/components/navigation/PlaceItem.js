@@ -15,10 +15,11 @@ export default function PlaceItem({ place }) {
   return (
     <View 
       style={{
-        width: Dimensions.get('screen').width * 0.9,
+        width: Dimensions.get('screen').width * 0.91,
         backgroundColor: '#FFFFFF',
         paddingBottom: 10,
         marginRight: 10,
+        borderRadius: 20,
       }}
     >
       {imageUrl ? (
@@ -29,11 +30,28 @@ export default function PlaceItem({ place }) {
       ) : (
         <Image 
           source={require('../../assets/images/farmacia-item.jpg')} // Imagen por defecto
-          style={{ width: '100%', borderRadius: 10, height: 130 }} 
+          style={{ width: '100%', borderRadius: 10, height: 130}} 
         />
       )}
-      <Text>{place.displayName?.text || 'Nombre no disponible'}</Text>
-      <Text>{place.formattedAddress || 'Dirección no disponible'}</Text>
+      <Text
+        style={{
+          color: '#004686',
+          fontSize: 16,
+          fontWeight: '700',
+          marginTop: 10,
+          marginBottom: 5,
+          marginLeft: 5
+        }}
+      >
+        {place.displayName?.text || 'Nombre no disponible'}
+      </Text>
+      <Text
+        style={{
+          color: '#004686',
+          fontSize: 14,
+          marginLeft: 5,
+        }}
+      >{place.formattedAddress || 'Dirección no disponible'}</Text>
     </View>
   );
 }
