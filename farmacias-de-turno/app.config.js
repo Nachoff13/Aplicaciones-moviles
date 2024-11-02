@@ -28,7 +28,8 @@ export default {
       permissions: [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
-      ]
+      ],
+      package: "com.anonymous.farmaciasdeturno" // Agrega esta línea
     },
     web: {
       bundler: "metro",
