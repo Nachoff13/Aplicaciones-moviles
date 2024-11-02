@@ -63,7 +63,7 @@ const ListHabitScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lista de Hábitos</Text>
+      <Text style={styles.title}>Lista de Hábitos Activos</Text>
       <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAll}>
         <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
       </TouchableOpacity>
@@ -74,9 +74,6 @@ const ListHabitScreen: React.FC = () => {
           <View style={styles.habitContainer}>
             <Text style={styles.subTitle}>{item.name}</Text>
             <Text style={styles.subTitle}>{item.importance}</Text>
-            <TouchableOpacity style={styles.btn} onPress={() => handlePress(item.id.toString())}>
-              <Text style={styles.btnText}>Detalles</Text>
-            </TouchableOpacity>
           </View>
         )}
       />
