@@ -163,6 +163,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+    // Sombra para iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // Elevación para Android
+    elevation: 3,
   },
   link: {
     marginTop: 12,
@@ -175,6 +182,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#4285F4',
     borderRadius: 8,
     alignItems: 'center',
+    // Sombra para iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // Elevación para Android
+    elevation: 3,
   },
   googleButtonText: {
     color: '#fff',
