@@ -191,7 +191,12 @@ const DetailHabitScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#f7f7f7' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    alignSelf: 'center',
+  },
   habitContainer: { marginBottom: 16, padding: 16, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
   subTitle: { fontSize: 18 },
   deleteBtn: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5, alignItems: 'center', marginVertical: 10, width: '90%', alignSelf: 'center' },

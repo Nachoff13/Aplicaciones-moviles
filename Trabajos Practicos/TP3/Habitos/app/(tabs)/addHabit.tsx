@@ -65,6 +65,7 @@ const AddHabit = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Agregar Hábitos</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre del hábito"
@@ -87,9 +88,14 @@ const AddHabit = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f8f8f8',
+    padding: 16,
+    backgroundColor: '#f7f7f7',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    alignSelf: 'center',
   },
   input: {
     height: 50,
