@@ -20,7 +20,6 @@ export default function GoogleMapView() {
   // TODO: Poner restricción que sea solo farmacias de turno que vengan del csv
   const getNearbyPlace = async () => {
     try {
-      console.log('getNearbyPlace se está ejecutando');
       const data = {
         includedTypes: ['pharmacy'],
         maxResultCount: 10,
@@ -34,7 +33,6 @@ export default function GoogleMapView() {
           },
         },
       };
-      console.log('Datos enviados a la API:', JSON.stringify(data));
 
       const response = await globalApi.NewNearbyPlace(data);
 

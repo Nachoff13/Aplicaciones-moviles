@@ -34,8 +34,6 @@ export default function PlaceItem({ place }) {
     fetchPhotoUrl();
   }, [place]);
 
-  // Agrega un console.log para los enlaces de las fotos
-  console.log('Photo URL:', photoUrl);
   return (
     <View
       style={{

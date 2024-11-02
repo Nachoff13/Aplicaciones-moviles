@@ -6,11 +6,7 @@ export default function PlaceListView({ placeList }) {
   // Verifica si placeList es un arreglo y obtiene el primer elemento
   if (Array.isArray(placeList) && placeList.length > 0) {
     const firstPlace = placeList[0];
-    console.log("*** Farmacia:", {
-      nombre: firstPlace.displayName?.text || 'Nombre no disponible',
-      direccion: firstPlace.formattedAddress || 'Dirección no disponible',
-      fotos: firstPlace.photos ? firstPlace.photos.map(photo => photo.flagContentUri).join(', ') : 'No hay fotos disponibles'
-    });
+
   } else {
     console.log('placeList no está disponible o no es un arreglo');
   }
