@@ -8,14 +8,17 @@ import RegisterScreen from './register';
 import AddHabitScreen from './addHabit';
 import DetailHabitScreen from './detailHabit';
 import ListHabitScreen from './listHabit';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 
 export default function AppLayout() {
   return (
+    <PaperProvider>
     <AuthProvider>
         <AuthenticatedApp />
     </AuthProvider>
+    </PaperProvider>
   );
 }
 
