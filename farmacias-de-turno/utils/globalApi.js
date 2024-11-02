@@ -18,4 +18,4 @@ const config = {
 console.log(config);
 const NewNearbyPlace = (data) => axios.post(BASE_URL,data,config);
 
-export default { NewNearbyPlace };
+export default { NewNearbyPlace, API_KEY };
