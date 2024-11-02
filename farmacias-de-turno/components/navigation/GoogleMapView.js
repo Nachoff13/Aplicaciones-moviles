@@ -5,6 +5,13 @@ import { UserLocationContext } from "@/context/UserLocationContext";
 import globalApi from "@/utils/globalApi";
 import { StyleSheet } from "react-native";
 import PlaceListView from "./PlaceListView";
+import { initializeApp } from "firebase/app"; 
+import { getFirestore, collection, addDoc } from "firebase/firestore"; 
+import { firebaseConfig } from "../../database/firebase";	
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default function GoogleMapView() {
   //Guarda ubicación actual
@@ -15,6 +22,19 @@ export default function GoogleMapView() {
 
   //Guarda la región del mapa
   const [mapRegion, setMapRegion] = useState(null);
+
+  // Función para guardar farmacias en Firestore
+  const savePharmaciesToFirestore = async (pharmacies) => {
+    try {
+      const pharmaciesCollection = collection(db, 'pharmacies');
+      for (const pharmacy of pharmacies) {
+        await addDoc(pharmaciesCollection, pharmacy);
+      }
+      console.log('Farmacias guardadas exitosamente en Firestore');
+    } catch (e) {
+      console.error('Error al guardar las farmacias en Firestore: ', e);
+    }
+  };
 
   // Va a traer las farmacias cercanas
   // TODO: Poner restricción que sea solo farmacias de turno que vengan del csv
@@ -38,34 +58,31 @@ export default function GoogleMapView() {
 
       //console.log('Respuesta de la API:', response.data);
 
-      setPlaceList(response.data?.places);
+      const pharmacies = response.data?.places;
+      setPlaceList(pharmacies);
+
+      // Guardar farmacias en Firestore
+      await savePharmaciesToFirestore(pharmacies);
       
     } catch (error) {
       if (error.response) {
         console.error('Error al llamar a la API:', error.response.data['error']['message']);
-        console.error('Código de estado:', error.response.status);
-        console.error('Encabezados:', error.response.headers);
-      } else if (error.request) {
-        // La solicitud se realizó pero no se recibió respuesta
-        console.error('No se recibió respuesta de la API:', error.request);
       } else {
-        // Algo sucedió al configurar la solicitud que desencadenó un error
-        console.error('Error al configurar la solicitud:', error.message);
+        console.error('Error al llamar a la API:', error.message);
       }
-      console.error('Configuración de la solicitud:', error.config);
     }
   };
 
   useEffect(() => {
-    location &&
+    if (location) {
       setMapRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         latitudeDelta: 0.0522,
         longitudeDelta: 0.0921,
       });
-    
-    location && getNearbyPlace();
+      getNearbyPlace();
+    }
   }, [location]);
 
   if (!mapRegion) {
@@ -100,7 +117,7 @@ export default function GoogleMapView() {
       <View style={{ borderRadius: 20, overflow: "hidden" }}>
         <MapView
           style={{
-            width: Dimensions.get("screen"),
+            width: Dimensions.get("screen").width,
             height: Dimensions.get("screen").height * 0.8,
             borderRadius: 20,
           }}
@@ -112,9 +129,8 @@ export default function GoogleMapView() {
         </MapView>
 
         <View style={styles.placeListContainer}>
-          {placeList&&<PlaceListView placeList={placeList}></PlaceListView>}
+          {placeList && <PlaceListView placeList={placeList}></PlaceListView>}
         </View>
-
       </View>
     </View>
   );
