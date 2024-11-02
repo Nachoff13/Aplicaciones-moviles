@@ -62,7 +62,7 @@ export default function GoogleMapView() {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         latitudeDelta: 0.0522,
-        longitudeDelta: 0.0921,
+        longitudeDelta: 0.0490,
       });
     
     location && getNearbyPlace();
