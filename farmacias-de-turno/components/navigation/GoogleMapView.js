@@ -88,7 +88,6 @@ export default function GoogleMapView() {
       </View>
     );
   }
-  console.log('GoogleMapView:', selectedMarker)
   return (
     <SelectMarkerContext.Provider value={{selectedMarker,setSelectedMarker}}>
     <View>
@@ -121,8 +120,8 @@ export default function GoogleMapView() {
           ))}
         </MapView>
         <View style={styles.placeListContainer}>
-          {placeList&&<PlaceListView placeList={placeList} selectedMarker={selectedMarker}></PlaceListView>}
-          
+          {placeList&&<PlaceListView placeList={placeList} ></PlaceListView>}
+          {console.log('GoogleMapView:', selectedMarker)}
         </View>
 
       </View>

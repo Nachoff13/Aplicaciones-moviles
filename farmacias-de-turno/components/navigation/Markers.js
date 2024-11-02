@@ -6,7 +6,7 @@ import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 
 export default function Markers({index, place}) {
     const {selectedMarker, setSelectedMarker} = useContext(SelectMarkerContext);
-   //console.log('Markers:', selectedMarker)
+   console.log('Markers:', selectedMarker)
   return place &&(
     <Marker
         coordinate={{
