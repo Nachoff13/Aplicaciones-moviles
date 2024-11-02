@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
-import { FontAwesome } from '@expo/vector-icons';
+import HabitList from '../../components/HabitList';
+import HabitModal from '../../components/HabitModal';
+import SearchBar from '../../components/SearchBar';
+
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -14,6 +17,7 @@ type Habit = {
   name: string;
   importance: string;
 };
+
 
 const DetailHabitScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'detailHabit'>>();
@@ -41,7 +45,7 @@ const DetailHabitScreen: React.FC = () => {
 
       try {
         const results: unknown = await db.getAllAsync('SELECT * FROM habits');
-        const fetchedHabits: Habit[] = results as Habit[]; // Casting manual
+        const fetchedHabits: Habit[] = results as Habit[];
 
         setHabits(fetchedHabits);
         setFilteredHabits(fetchedHabits);
@@ -133,58 +137,20 @@ const DetailHabitScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Detalles de Hábitos</Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar hábito"
-        value={searchText}
-        onChangeText={handleSearch}
-      />
+      <SearchBar searchText={searchText} onSearch={handleSearch} />
       <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAll}>
         <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
       </TouchableOpacity>
-      <FlatList
-        data={filteredHabits}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.habitContainer}>
-            <Text style={styles.subTitle}>{item.name}</Text>
-            <Text style={styles.subTitle}>Importancia: {item.importance}</Text>
-            <View style={styles.actionButtons}>
-              <TouchableOpacity onPress={() => handleEditHabit(item)}>
-                <FontAwesome name="edit" size={24} color="blue" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeleteHabit(item.id)}>
-                <FontAwesome name="trash" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+      <HabitList habits={filteredHabits} onEdit={handleEditHabit} onDelete={handleDeleteHabit} />
+      <HabitModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onSave={handleSaveEdit}
+        editName={editName}
+        setEditName={setEditName}
+        editImportance={editImportance}
+        setEditImportance={setEditImportance}
       />
-      <Modal visible={isModalVisible} animationType="slide">
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Editar Hábito</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre del hábito"
-            value={editName}
-            onChangeText={setEditName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Importancia (Alta, Media, Baja)"
-            value={editImportance}
-            onChangeText={setEditImportance}
-          />
-          <View style={styles.modalButtons}>
-            <TouchableOpacity style={styles.modalButton} onPress={handleSaveEdit}>
-              <Text style={styles.btnText}>Aceptar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.btnText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
