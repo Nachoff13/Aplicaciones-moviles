@@ -17,7 +17,7 @@ const Navbar = () => {
   return (
     <Provider>
       <View style={styles.navbar}>
-        <Text style={styles.title}>Mi Aplicación</Text>
+        <Text style={styles.title}>Mis Habitos!</Text>
         <Menu
           visible={visible}
           onDismiss={() => setVisible(false)}
