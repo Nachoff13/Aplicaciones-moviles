@@ -5,6 +5,7 @@ import { UserLocationContext } from "@/context/UserLocationContext";
 import globalApi from "@/utils/globalApi";
 import { StyleSheet } from "react-native";
 import PlaceListView from "./PlaceListView";
+import Markers from "./Markers";
 
 export default function GoogleMapView() {
   //Guarda ubicación actual
@@ -107,7 +108,10 @@ export default function GoogleMapView() {
           showsUserLocation={true}
           region={mapRegion}
         >
-          <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker>
+          {/* <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker> */}
+          {placeList && placeList.map((place, index) => (
+            <Markers key={index} place={place}/>
+          ))}
         </MapView>
 
         <View style={styles.placeListContainer}>
