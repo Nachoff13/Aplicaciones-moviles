@@ -3,7 +3,6 @@ import Constants from 'expo-constants';
 
 const BASE_URL = 'https://places.googleapis.com/v1/places:searchNearby';
 const API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey;
-console.log(API_KEY);
 const config = {
     headers:{
         'Content-Type': 'application/json',
@@ -15,7 +14,6 @@ const config = {
         'places.photos']
     }
 }
-console.log(config);
 const NewNearbyPlace = (data) => axios.post(BASE_URL,data,config);
 
 export default { NewNearbyPlace, API_KEY };

@@ -1,9 +1,8 @@
 import { View, Text, Image, Dimensions } from "react-native";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import globalApi from "@/utils/globalApi";
 
 export default function PlaceItem({ place }) {
-
   const PLACE_PHOTO_BASE_URL = "https://places.googleapis.com/v1/";
   const [photoUrl, setPhotoUrl] = useState(null);
   const [imageError, setImageError] = useState(false);
@@ -14,8 +13,8 @@ export default function PlaceItem({ place }) {
         const url = `${PLACE_PHOTO_BASE_URL}${place?.photos[0]?.name}/media?key=${globalApi.API_KEY}&maxHeightPx=800&maxWidthPx=1200`;
         try {
           const response = await fetch(url);
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
             // La respuesta es un JSON (probablemente un error)
             setPhotoUrl(null);
           } else {
@@ -23,7 +22,7 @@ export default function PlaceItem({ place }) {
             setPhotoUrl(url);
           }
         } catch (error) {
-          console.error('Error al verificar la URL de la foto:', error);
+          console.error("Error al verificar la URL de la foto:", error);
           setPhotoUrl(null);
         }
       } else {
@@ -44,13 +43,13 @@ export default function PlaceItem({ place }) {
         borderRadius: 20,
       }}
     >
-<Image
+      <Image
         source={
           imageError || !photoUrl
-            ? require('../../assets/images/farmacia-item.jpg') // Imagen de la farmacia
+            ? require("../../assets/images/farmacia-item.jpg") // Imagen de la farmacia
             : { uri: photoUrl }
         }
-        style={{ width: '100%', borderRadius: 10, height: 130 }}
+        style={{ width: "100%", borderRadius: 10, height: 130 }}
         onError={() => setImageError(true)}
       />
 
