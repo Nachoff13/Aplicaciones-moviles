@@ -55,7 +55,6 @@ export default function GoogleMapView() {
       console.error('Configuración de la solicitud:', error.config);
     }
   };
-
   useEffect(() => {
     location &&
       setMapRegion({
