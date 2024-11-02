@@ -20,7 +20,7 @@ const LoginScreen = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // Estado para mensajes de error
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
@@ -69,7 +69,6 @@ const LoginScreen = () => {
         setErrorMessage('No se pudo obtener el email del usuario.');
       }
     } catch (error: any) {
-      // Comprobar el tipo del error para obtener el mensaje
       if (error.code === 'auth/user-not-found') {
         setErrorMessage('No hay registro de un usuario con este correo.');
       } else if (error.code === 'auth/wrong-password') {
@@ -118,8 +117,7 @@ const LoginScreen = () => {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-
+      
       <TextInput
         placeholder="Contraseña"
         value={password}
@@ -127,7 +125,8 @@ const LoginScreen = () => {
         secureTextEntry
         style={styles.input}
       />
-      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+
+      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
 
       <Button title="Iniciar sesión" onPress={handleLogin} />
 
