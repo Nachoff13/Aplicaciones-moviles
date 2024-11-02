@@ -11,7 +11,7 @@ export default function Index() {
       <GoogleMapView />
       </View>
       <View>
-        <PlaceListView />
+        <PlaceListView placeList={undefined} />
       </View>
     </View>
   );
