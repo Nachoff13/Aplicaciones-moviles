@@ -6,6 +6,7 @@ import globalApi from "@/utils/globalApi";
 import { StyleSheet } from "react-native";
 import PlaceListView from "./PlaceListView";
 import Markers from "./Markers";
+import { SelectMarkerContext } from "@/context/SelectMarkerContext";
 
 export default function GoogleMapView() {
   //Guarda ubicación actual
@@ -16,6 +17,8 @@ export default function GoogleMapView() {
 
   //Guarda la región del mapa
   const [mapRegion, setMapRegion] = useState(null);
+
+  const [selectedMarker, setSelectedMarker] = useState([]);
 
   // Va a traer las farmacias cercanas
   // TODO: Poner restricción que sea solo farmacias de turno que vengan del csv
@@ -85,7 +88,10 @@ export default function GoogleMapView() {
       </View>
     );
   }
+  console.log('GoogleMapView:', selectedMarker)
   return (
+    <SelectMarkerContext.Provider value={{selectedMarker,setSelectedMarker}}>
+    <View>
     <View style={{ marginTop: 50, marginHorizontal: 20, overflow: "hidden" }}>
       <Text
         style={{
@@ -109,17 +115,20 @@ export default function GoogleMapView() {
           region={mapRegion}
         >
           {/* <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker> */}
-          {placeList && placeList.map((place, index) => (
-            <Markers key={index} place={place}/>
+          {placeList && placeList.map((item, index) => (
+            <Markers key={index} place={item} index={index}/>
+            
           ))}
         </MapView>
-
         <View style={styles.placeListContainer}>
-          {placeList&&<PlaceListView placeList={placeList}></PlaceListView>}
+          {placeList&&<PlaceListView placeList={placeList} selectedMarker={selectedMarker}></PlaceListView>}
+          
         </View>
 
       </View>
     </View>
+    </View>
+    </SelectMarkerContext.Provider>
   );
 }
 
