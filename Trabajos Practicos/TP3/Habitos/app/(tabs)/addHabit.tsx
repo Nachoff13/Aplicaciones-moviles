@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Alert } from 'react-native';
+import { auth } from '../../firebaseConfig'; 
 
 type RootStackParamList = {
   AddHabit: undefined;
@@ -22,44 +22,57 @@ const AddHabit = () => {
     const initializeDatabase = async () => {
       const database = await SQLite.openDatabaseAsync('habits.db');
       setDb(database);
-      
+      //await database.execAsync("DROP TABLE IF EXISTS habits;");
+
       await database.execAsync(
-        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT);"
+        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, user_id TEXT);"
       );
     };
-  
+
     initializeDatabase();
   }, []);
-  
-
 
   const handleAddHabit = async () => {
-  if (!db) {
-    Alert.alert('Error', 'Base de datos no inicializada');
-    return;
-  }
-
-  if (!habitName || !habitImportance) {
-    Alert.alert('Error', 'Por favor completa todos los campos.');
-    return;
-  }
-
-  try {
-    const result = await db.runAsync(
-      'INSERT INTO habits (name, importance) VALUES (?, ?)',
-      [habitName, habitImportance]
-    );
-
-    if (result.lastInsertRowId) {
-      Alert.alert('Éxito', `Hábito agregado con ID: ${result.lastInsertRowId}`);
-    } else {
-      Alert.alert('Error', 'No se pudo obtener el último ID insertado.');
+    if (!db) {
+      Alert.alert('Error', 'Base de datos no inicializada');
+      return;
     }
-  } catch (error) {
-    const errorMessage = (error as Error).message || 'Error desconocido';
-    Alert.alert('Error', `Error al agregar el hábito: ${errorMessage}`);
-  }
-};
+
+    if (!habitName || !habitImportance) {
+      Alert.alert('Error', 'Por favor completa todos los campos.');
+      return;
+    }
+
+    // Obtengo el UID del usuario autenticado
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      Alert.alert('Error', 'No se encontró el usuario autenticado');
+      return;
+    }
+    const userId = currentUser.uid;
+
+
+
+    try {
+      const result = await db.runAsync(
+        'INSERT INTO habits (name, importance, user_id) VALUES (?, ?, ?)',
+        [habitName, habitImportance, userId]
+      );
+
+      
+      if (result.lastInsertRowId) {
+        Alert.alert('Éxito', `Hábito agregado con éxito.`);
+        db.closeAsync();
+      } else {
+        Alert.alert('Error', 'Error al agregar hábito.');
+      }
+      
+     
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Error desconocido';
+      Alert.alert('Error', `Error al agregar el hábito: ${errorMessage}`);
+    }
+  };
   
   
 

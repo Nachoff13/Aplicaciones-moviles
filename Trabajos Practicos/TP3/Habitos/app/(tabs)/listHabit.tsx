@@ -3,44 +3,57 @@ import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
+import { auth } from '../../firebaseConfig'; 
 
-// Define el tipo para los parámetros del stack
 type RootStackParamList = {
   detailHabit: { habitId: string };
 };
 
-// Define el tipo de navegación
 type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'detailHabit'>;
 
 const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
   const [habits, setHabits] = useState<{ id: string; name: string; importance: string }[]>([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+  
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    Alert.alert('Error', 'No se encontró el usuario autenticado');
+    return;
+  }
+  const userId = currentUser.uid;
 
   useEffect(() => {
     const initDb = async () => {
       const database = await SQLite.openDatabaseAsync('habits.db');
       setDb(database);
+      fetchHabits(database);
     };
 
     initDb();
   }, []);
 
-  useEffect(() => {
-    const fetchHabits = async () => {
-      if (!db) return;
+  const fetchHabits = async (database: SQLite.SQLiteDatabase) => {
+    if (!userId) {
+      Alert.alert('Error', 'Usuario no autenticado');
+      return;
+    }
 
-      try {
-        const results = await db.getAllAsync('SELECT * FROM habits');
-        const fetchedHabits = results as { id: string; name: string; importance: string }[];
+    try {
+      const results = await database.getAllAsync('SELECT * FROM habits WHERE user_id = ?', [userId]);
+      const fetchedHabits = results as { id: string; name: string; importance: string }[];
+      
+      if (fetchedHabits.length === 0) {
+        Alert.alert('No se encontraron hábitos.');
+      } else {
         setHabits(fetchedHabits);
-      } catch (error) {
-        console.error('Error al obtener los hábitos:', error);
       }
-    };
 
-    fetchHabits();
-  }, [db]);
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Ocurrió un error inesperado';
+      Alert.alert('Error al obtener los hábitos', errorMessage);
+    }
+  };
 
   const handlePress = (habitId: string) => {
     navigation.navigate('detailHabit', { habitId });
@@ -133,7 +146,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  
 });
 
 export default ListHabitScreen;
