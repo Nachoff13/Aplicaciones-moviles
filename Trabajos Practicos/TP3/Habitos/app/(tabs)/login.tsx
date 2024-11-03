@@ -63,7 +63,7 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    setErrorMessage(''); // Resetea el mensaje de error
+    setErrorMessage('');
 
     // Validaciones de entrada
     if (!isValidEmail(email)) {
