@@ -20,7 +20,7 @@ const LoginScreen = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // Estado para mensajes de error
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
@@ -57,7 +57,33 @@ const LoginScreen = () => {
     }
   }, [response]);
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async () => {
+    setErrorMessage('');
+
+    // Validaciones de entrada
+    if (!isValidEmail(email)) {
+      setErrorMessage('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (password.length === 0) {
+      setErrorMessage('La contraseña no debe estar vacía.');
+      return;
+    }
+
+    // Mapeo de errores de Firebase
+    const errorMessages: Record<string, string> = {
+      'auth/user-not-found': 'No hay registro de un usuario con este correo.',
+      'auth/invalid-credential': 'El correo o la contraseña son incorrectos.',
+      'auth/user-disabled': 'El usuario ha sido deshabilitado.',
+      'auth/operation-not-allowed': 'Este método de inicio de sesión no está habilitado.',
+    };
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -69,17 +95,8 @@ const LoginScreen = () => {
         setErrorMessage('No se pudo obtener el email del usuario.');
       }
     } catch (error: any) {
-      // Comprobar el tipo del error para obtener el mensaje
-      if (error.code === 'auth/user-not-found') {
-        setErrorMessage('No hay registro de un usuario con este correo.');
-      } else if (error.code === 'auth/wrong-password') {
-        setErrorMessage('La contraseña es incorrecta.');
-      } else if (error.error && error.error.code === 400) {
-        const errorMessage = error.error.message || 'Error inesperado';
-        setErrorMessage(errorMessage);
-      } else {
-        setErrorMessage(error.message || 'Error inesperado');
-      }
+      const errorCode = error.code;
+      setErrorMessage(errorMessages[errorCode] || error.message || 'Error inesperado');
     }
   };
 
@@ -118,8 +135,7 @@ const LoginScreen = () => {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-
+      
       <TextInput
         placeholder="Contraseña"
         value={password}
@@ -127,7 +143,8 @@ const LoginScreen = () => {
         secureTextEntry
         style={styles.input}
       />
-      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+
+      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
 
       <Button title="Iniciar sesión" onPress={handleLogin} />
 
@@ -163,6 +180,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+    // Sombra para iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // Elevación para Android
+    elevation: 3,
   },
   link: {
     marginTop: 12,
@@ -175,6 +199,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#4285F4',
     borderRadius: 8,
     alignItems: 'center',
+    // Sombra para iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // Elevación para Android
+    elevation: 3,
   },
   googleButtonText: {
     color: '#fff',

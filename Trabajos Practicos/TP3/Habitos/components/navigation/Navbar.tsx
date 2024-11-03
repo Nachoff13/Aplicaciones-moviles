@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Menu, Provider } from 'react-native-paper';
+import { Menu } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'expo-router';
 
@@ -15,22 +15,20 @@ const Navbar = () => {
   };
 
   return (
-    <Provider>
-      <View style={styles.navbar}>
-        <Text style={styles.title}>Mi Aplicación</Text>
-        <Menu
-          visible={visible}
-          onDismiss={() => setVisible(false)}
-          anchor={
-            <TouchableOpacity onPress={() => setVisible(true)}>
-              <Text style={styles.userEmail}>{email}</Text>
-            </TouchableOpacity>
-          }
-        >
-          <Menu.Item onPress={handleLogout} title="Cerrar sesión" />
-        </Menu>
-      </View>
-    </Provider>
+    <View style={styles.navbar}>
+      <Text style={styles.title}>Mis Hábitos!</Text>
+      <Menu
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        anchor={
+          <TouchableOpacity onPress={() => setVisible(true)}>
+            <Text style={styles.userEmail}>{email}</Text>
+          </TouchableOpacity>
+        }
+      >
+        <Menu.Item onPress={handleLogout} title="Cerrar sesión" />
+      </Menu>
+    </View>
   );
 };
 

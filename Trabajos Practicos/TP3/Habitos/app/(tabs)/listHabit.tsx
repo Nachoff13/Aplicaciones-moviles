@@ -3,47 +3,77 @@ import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
+import { auth } from '../../firebaseConfig'; 
 
-// Define el tipo para los parámetros del stack
 type RootStackParamList = {
   detailHabit: { habitId: string };
 };
 
-// Define el tipo de navegación
 type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'detailHabit'>;
 
 const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
-  const [habits, setHabits] = useState<{ id: string; name: string; importance: string }[]>([]);
+  const [habits, setHabits] = useState<
+    {
+      id: string;
+      name: string;
+      importance: string;
+      description: string;
+      active: number;
+    }[]
+  >([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    Alert.alert("Error", "No se encontró el usuario autenticado");
+    return;
+  }
+  const userId = currentUser.uid;
 
   useEffect(() => {
     const initDb = async () => {
-      const database = await SQLite.openDatabaseAsync('habits.db');
+      const database = await SQLite.openDatabaseAsync("habits.db");
       setDb(database);
+      fetchHabits(database);
     };
 
     initDb();
   }, []);
 
-  useEffect(() => {
-    const fetchHabits = async () => {
-      if (!db) return;
+  const fetchHabits = async (database: SQLite.SQLiteDatabase) => {
+    if (!userId) {
+      Alert.alert("Error", "Usuario no autenticado");
+      return;
+    }
 
-      try {
-        const results = await db.getAllAsync('SELECT * FROM habits');
-        const fetchedHabits = results as { id: string; name: string; importance: string }[];
+    try {
+      const results = await database.getAllAsync(
+        "SELECT * FROM habits WHERE user_id = ?",
+        [userId]
+      );
+      const fetchedHabits = results as {
+        id: string;
+        name: string;
+        importance: string;
+        description: string;
+        active: number;
+      }[];
+
+      if (fetchedHabits.length === 0) {
+        Alert.alert("No se encontraron hábitos.");
+      } else {
         setHabits(fetchedHabits);
-      } catch (error) {
-        console.error('Error al obtener los hábitos:', error);
       }
-    };
-
-    fetchHabits();
-  }, [db]);
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || "Ocurrió un error inesperado";
+      Alert.alert("Error al obtener los hábitos", errorMessage);
+    }
+  };
 
   const handlePress = (habitId: string) => {
-    navigation.navigate('detailHabit', { habitId });
+    navigation.navigate("detailHabit", { habitId });
   };
 
   const handleDeleteAll = async () => {
@@ -51,19 +81,19 @@ const ListHabitScreen: React.FC = () => {
       try {
         await db.execAsync("DELETE FROM habits;");
         setHabits([]);
-        Alert.alert('Éxito', 'Todos los hábitos han sido eliminados.');
+        Alert.alert("Éxito", "Todos los hábitos han sido eliminados.");
       } catch (error) {
-        console.error('Error al eliminar los hábitos:', error);
-        Alert.alert('Error', 'No se pudieron eliminar los hábitos.');
+        console.error("Error al eliminar los hábitos:", error);
+        Alert.alert("Error", "No se pudieron eliminar los hábitos.");
       }
     } else {
-      Alert.alert('Error', 'Base de datos no inicializada');
+      Alert.alert("Error", "Base de datos no inicializada");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lista de Hábitos</Text>
+      <Text style={styles.title}>Lista de Hábitos Activos</Text>
       <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAll}>
         <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
       </TouchableOpacity>
@@ -72,11 +102,18 @@ const ListHabitScreen: React.FC = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.habitContainer}>
-            <Text style={styles.subTitle}>{item.name}</Text>
-            <Text style={styles.subTitle}>{item.importance}</Text>
-            <TouchableOpacity style={styles.btn} onPress={() => handlePress(item.id.toString())}>
-              <Text style={styles.btnText}>Detalles</Text>
-            </TouchableOpacity>
+            <View style={styles.row}>
+              <Text style={styles.subTitle}>Nombre: </Text>
+              <Text style={styles.content}>{item.name}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.subTitle}>Importancia: </Text>
+              <Text style={styles.content}>{item.importance}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.subTitle}>Descripción: </Text>
+              <Text style={styles.content}>{item.description}</Text>
+            </View>
           </View>
         )}
       />
@@ -94,7 +131,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 30,
+    alignSelf: 'center',
   },
 
   habitContainer: {
@@ -108,9 +146,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  subTitle: {
-    fontSize: 18,
-  },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
+  subTitle: { fontSize: 18, fontWeight: 'bold' },
+  content: { fontSize: 16, marginLeft: 0 },
 
   deleteBtn: {
     backgroundColor: '#ff4d4d',
@@ -135,7 +173,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  
 });
 
 export default ListHabitScreen;

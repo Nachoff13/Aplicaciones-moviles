@@ -93,6 +93,8 @@
  **/lint/tmp/
 
 .env
-/Trabajos Practicos/
+**.gradle
+**build
 .idea
+**.kotlin
 farmacias-de-turno/.env
