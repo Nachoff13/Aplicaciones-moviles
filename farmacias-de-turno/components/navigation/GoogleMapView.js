@@ -15,7 +15,6 @@ import { SelectMarkerContext } from "@/context/SelectMarkerContext";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-
 export default function GoogleMapView() {
   //Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
@@ -31,7 +30,14 @@ export default function GoogleMapView() {
     try {
       const pharmaciesCollection = collection(db, 'pharmacies');
       for (const pharmacy of pharmacies) {
-        await addDoc(pharmaciesCollection, pharmacy);
+        const { displayName, formattedAddress, location } = pharmacy;
+        const { latitude, longitude } = location;
+        await addDoc(pharmaciesCollection, {
+          displayName,
+          formattedAddress,
+          latitude,
+          longitude
+        });
       }
       console.log('Farmacias guardadas exitosamente en Firestore');
     } catch (e) {
@@ -77,6 +83,7 @@ export default function GoogleMapView() {
       }
     }
   };
+
   useEffect(() => {
     if (location) {
       setMapRegion({
@@ -131,15 +138,14 @@ export default function GoogleMapView() {
           showsUserLocation={true}
           region={mapRegion}
         >
-          {/* <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker> */}
+          <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker>
           {placeList && placeList.map((item, index) => (
             <Markers key={index} place={item} index={index}/>
-            
           ))}
         </MapView>
+
         <View style={styles.placeListContainer}>
-          {placeList&&<PlaceListView placeList={placeList} ></PlaceListView>}
-          {console.log('GoogleMapView:', selectedMarker)}
+          {placeList && <PlaceListView placeList={placeList}></PlaceListView>}
         </View>
       </View>
     </View>
