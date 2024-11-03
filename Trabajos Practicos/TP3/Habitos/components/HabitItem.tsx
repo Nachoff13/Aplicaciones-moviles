@@ -5,9 +5,18 @@ import { FontAwesome } from '@expo/vector-icons';
 const HabitItem = ({ habit, onEdit, onDelete }) => {
   return (
     <View style={styles.habitContainer}>
-      <Text style={styles.subTitle}>Nombre: {habit.name}</Text>
-      <Text style={styles.subTitle}>Importancia: {habit.importance}</Text>
-      <Text style={styles.subTitle}>Descripción: {habit.description}</Text>
+      <View style={styles.row}>
+        <Text style={styles.subTitle}>Nombre: </Text>
+        <Text style={styles.content}>{habit.name}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.subTitle}>Importancia: </Text>
+        <Text style={styles.content}>{habit.importance}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.subTitle}>Descripción: </Text>
+        <Text style={styles.content}>{habit.description}</Text>
+      </View>
       <View style={styles.actionButtons}>
         <TouchableOpacity onPress={() => onEdit(habit)}>
           <FontAwesome name="edit" size={24} color="blue" />
@@ -22,7 +31,9 @@ const HabitItem = ({ habit, onEdit, onDelete }) => {
 
 const styles = StyleSheet.create({
   habitContainer: { marginBottom: 16, padding: 16, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
-  subTitle: { fontSize: 18 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
+  subTitle: { fontSize: 18, fontWeight: 'bold' },
+  content: { fontSize: 16, marginLeft: 0 },
   actionButtons: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 13 },
 });
 

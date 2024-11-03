@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   picker: { height: 50, width: '100%' },
-  label: { fontSize: 16, marginBottom: 8 },
+  label: { fontSize: 16, marginBottom: 8, fontWeight: 'bold' },
 });
 
 export default HabitModal;

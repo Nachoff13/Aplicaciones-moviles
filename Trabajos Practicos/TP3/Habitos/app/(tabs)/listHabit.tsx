@@ -13,19 +13,27 @@ type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'de
 
 const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
-  const [habits, setHabits] = useState<{ id: string; name: string; importance: string; description: string; active: number;}[]>([]);
+  const [habits, setHabits] = useState<
+    {
+      id: string;
+      name: string;
+      importance: string;
+      description: string;
+      active: number;
+    }[]
+  >([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
-  
+
   const currentUser = auth.currentUser;
   if (!currentUser) {
-    Alert.alert('Error', 'No se encontró el usuario autenticado');
+    Alert.alert("Error", "No se encontró el usuario autenticado");
     return;
   }
   const userId = currentUser.uid;
 
   useEffect(() => {
     const initDb = async () => {
-      const database = await SQLite.openDatabaseAsync('habits.db');
+      const database = await SQLite.openDatabaseAsync("habits.db");
       setDb(database);
       fetchHabits(database);
     };
@@ -35,28 +43,37 @@ const ListHabitScreen: React.FC = () => {
 
   const fetchHabits = async (database: SQLite.SQLiteDatabase) => {
     if (!userId) {
-      Alert.alert('Error', 'Usuario no autenticado');
+      Alert.alert("Error", "Usuario no autenticado");
       return;
     }
 
     try {
-      const results = await database.getAllAsync('SELECT * FROM habits WHERE user_id = ?', [userId]);
-      const fetchedHabits = results as { id: string; name: string; importance: string;  description: string; active: number;}[];
-      
+      const results = await database.getAllAsync(
+        "SELECT * FROM habits WHERE user_id = ?",
+        [userId]
+      );
+      const fetchedHabits = results as {
+        id: string;
+        name: string;
+        importance: string;
+        description: string;
+        active: number;
+      }[];
+
       if (fetchedHabits.length === 0) {
-        Alert.alert('No se encontraron hábitos.');
+        Alert.alert("No se encontraron hábitos.");
       } else {
         setHabits(fetchedHabits);
       }
-
     } catch (error) {
-      const errorMessage = (error as Error).message || 'Ocurrió un error inesperado';
-      Alert.alert('Error al obtener los hábitos', errorMessage);
+      const errorMessage =
+        (error as Error).message || "Ocurrió un error inesperado";
+      Alert.alert("Error al obtener los hábitos", errorMessage);
     }
   };
 
   const handlePress = (habitId: string) => {
-    navigation.navigate('detailHabit', { habitId });
+    navigation.navigate("detailHabit", { habitId });
   };
 
   const handleDeleteAll = async () => {
@@ -64,13 +81,13 @@ const ListHabitScreen: React.FC = () => {
       try {
         await db.execAsync("DELETE FROM habits;");
         setHabits([]);
-        Alert.alert('Éxito', 'Todos los hábitos han sido eliminados.');
+        Alert.alert("Éxito", "Todos los hábitos han sido eliminados.");
       } catch (error) {
-        console.error('Error al eliminar los hábitos:', error);
-        Alert.alert('Error', 'No se pudieron eliminar los hábitos.');
+        console.error("Error al eliminar los hábitos:", error);
+        Alert.alert("Error", "No se pudieron eliminar los hábitos.");
       }
     } else {
-      Alert.alert('Error', 'Base de datos no inicializada');
+      Alert.alert("Error", "Base de datos no inicializada");
     }
   };
 
@@ -85,9 +102,18 @@ const ListHabitScreen: React.FC = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.habitContainer}>
-            <Text style={styles.subTitle}>Nombre: {item.name}</Text>
-            <Text style={styles.subTitle}>Importancia: {item.importance}</Text>
-            <Text style={styles.subTitle}>Descripción: {item.description}</Text>
+            <View style={styles.row}>
+              <Text style={styles.subTitle}>Nombre: </Text>
+              <Text style={styles.content}>{item.name}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.subTitle}>Importancia: </Text>
+              <Text style={styles.content}>{item.importance}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.subTitle}>Descripción: </Text>
+              <Text style={styles.content}>{item.description}</Text>
+            </View>
           </View>
         )}
       />
@@ -120,9 +146,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  subTitle: {
-    fontSize: 18,
-  },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
+  subTitle: { fontSize: 18, fontWeight: 'bold' },
+  content: { fontSize: 16, marginLeft: 0 },
 
   deleteBtn: {
     backgroundColor: '#ff4d4d',
