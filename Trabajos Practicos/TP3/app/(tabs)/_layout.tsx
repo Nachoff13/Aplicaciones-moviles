@@ -9,6 +9,7 @@ import AddHabitScreen from './addHabit';
 import DetailHabitScreen from './detailHabit';
 import ListHabitScreen from './listHabit';
 import { Provider as PaperProvider } from 'react-native-paper';
+import PrivateRoute from './privateRoute';
 
 const Stack = createStackNavigator();
 
@@ -27,29 +28,27 @@ function AuthenticatedApp() {
 
   return (
     <>
-      {/* Muestra el Navbar solo si el usuario está autenticado */}
       {isAuthenticated && <Navbar />}
       
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="register" component={RegisterScreen} />
-
-        {/* Rutas protegidas */}
-        <Stack.Screen
-          name="home"
-          component={isAuthenticated ? HomeScreen : LoginScreen}
+        
+        <Stack.Screen 
+          name="home" 
+          component={() => <PrivateRoute component={HomeScreen} />} 
         />
-        <Stack.Screen
-          name="addHabit"
-          component={isAuthenticated ? AddHabitScreen : LoginScreen}
+        <Stack.Screen 
+          name="addHabit" 
+          component={() => <PrivateRoute component={AddHabitScreen} />} 
         />
-        <Stack.Screen
-          name="detailHabit"
-          component={isAuthenticated ? DetailHabitScreen : LoginScreen}
+        <Stack.Screen 
+          name="detailHabit" 
+          component={() => <PrivateRoute component={DetailHabitScreen} />} 
         />
-        <Stack.Screen
-          name="listHabit"
-          component={isAuthenticated ? ListHabitScreen : LoginScreen}
+        <Stack.Screen 
+          name="listHabit" 
+          component={() => <PrivateRoute component={ListHabitScreen} />} 
         />
       </Stack.Navigator>
     </>
