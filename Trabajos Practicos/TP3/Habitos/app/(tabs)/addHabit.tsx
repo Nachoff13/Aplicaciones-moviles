@@ -4,6 +4,7 @@ import * as SQLite from 'expo-sqlite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth } from '../../firebaseConfig'; 
+import { Picker } from '@react-native-picker/picker';
 
 type RootStackParamList = {
   AddHabit: undefined;
@@ -51,8 +52,6 @@ const AddHabit = () => {
     }
     const userId = currentUser.uid;
 
-
-
     try {
       const result = await db.runAsync(
         'INSERT INTO habits (name, importance, user_id) VALUES (?, ?, ?)',
@@ -66,15 +65,11 @@ const AddHabit = () => {
       } else {
         Alert.alert('Error', 'Error al agregar hábito.');
       }
-      
-     
     } catch (error) {
       const errorMessage = (error as Error).message || 'Error desconocido';
       Alert.alert('Error', `Error al agregar el hábito: ${errorMessage}`);
     }
   };
-  
-  
 
   return (
     <View style={styles.container}>
@@ -85,12 +80,21 @@ const AddHabit = () => {
         value={habitName}
         onChangeText={setHabitName}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Importancia"
-        value={habitImportance}
-        onChangeText={setHabitImportance}
-      />
+      
+      <Text style={styles.label}>Importancia</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={habitImportance}
+          onValueChange={(itemValue) => setHabitImportance(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Seleccione una importancia" value="" />
+          <Picker.Item label="Baja" value="Baja" />
+          <Picker.Item label="Media" value="Media" />
+          <Picker.Item label="Alta" value="Alta" />
+        </Picker>
+      </View>
+
       <TouchableOpacity style={styles.button} onPress={handleAddHabit}>
         <Text style={styles.buttonText}>Agregar Hábito</Text>
       </TouchableOpacity>
@@ -124,6 +128,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  pickerContainer: {
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
   button: {
     backgroundColor: '#4285f4',
