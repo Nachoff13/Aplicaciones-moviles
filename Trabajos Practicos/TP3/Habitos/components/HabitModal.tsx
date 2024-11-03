@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-const HabitModal = ({ visible, onClose, onSave, editName, setEditName, editImportance, setEditImportance }) => {
+const HabitModal = ({ visible, onClose, onSave, editName, setEditName, editImportance, setEditImportance, editDescription, setEditDescription, editActive, setEditActive }) => {
   return (
     <Modal visible={visible} animationType="slide">
       <View style={styles.modalContainer}>
@@ -27,6 +27,13 @@ const HabitModal = ({ visible, onClose, onSave, editName, setEditName, editImpor
             <Picker.Item label="Baja" value="Baja" />
           </Picker>
         </View>
+        <Text style={styles.label}>Descripción</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Descripción del hábito"
+          value={editDescription}
+          onChangeText={setEditDescription}
+        />
         <View style={styles.modalButtons}>
           <TouchableOpacity style={styles.modalButton} onPress={onSave}>
             <Text style={styles.btnText}>Aceptar</Text>

@@ -16,6 +16,8 @@ type AddHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add
 const AddHabit = () => {
   const [habitName, setHabitName] = useState<string>('');
   const [habitImportance, setHabitImportance] = useState<string>('');
+  const [habitDescription, setHabitDescription] = useState<string>('');
+  const [habitActive, setHabitActive] = useState<number>(1);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
@@ -26,7 +28,7 @@ const AddHabit = () => {
       //await database.execAsync("DROP TABLE IF EXISTS habits;");
 
       await database.execAsync(
-        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, user_id TEXT);"
+        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 1, user_id TEXT);"
       );
     };
 
@@ -54,8 +56,8 @@ const AddHabit = () => {
 
     try {
       const result = await db.runAsync(
-        'INSERT INTO habits (name, importance, user_id) VALUES (?, ?, ?)',
-        [habitName, habitImportance, userId]
+        'INSERT INTO habits (name, importance, description, active, user_id) VALUES (?, ?, ?, ?, ?)',
+        [habitName, habitImportance, habitDescription, habitActive, userId]
       );
 
       
@@ -96,6 +98,14 @@ const AddHabit = () => {
           <Picker.Item label="Alta" value="Alta" />
         </Picker>
       </View>
+
+      <Text style={styles.label}>Descripción</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Descripción"
+        value={habitDescription}
+        onChangeText={setHabitDescription}
+      />
 
       <TouchableOpacity style={styles.button} onPress={handleAddHabit}>
         <Text style={styles.buttonText}>Agregar Hábito</Text>

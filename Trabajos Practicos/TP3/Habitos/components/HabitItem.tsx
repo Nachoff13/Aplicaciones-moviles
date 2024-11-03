@@ -5,8 +5,9 @@ import { FontAwesome } from '@expo/vector-icons';
 const HabitItem = ({ habit, onEdit, onDelete }) => {
   return (
     <View style={styles.habitContainer}>
-      <Text style={styles.subTitle}>{habit.name}</Text>
+      <Text style={styles.subTitle}>Nombre: {habit.name}</Text>
       <Text style={styles.subTitle}>Importancia: {habit.importance}</Text>
+      <Text style={styles.subTitle}>Descripción: {habit.description}</Text>
       <View style={styles.actionButtons}>
         <TouchableOpacity onPress={() => onEdit(habit)}>
           <FontAwesome name="edit" size={24} color="blue" />

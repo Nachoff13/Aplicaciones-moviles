@@ -16,6 +16,8 @@ type Habit = {
   id: string;
   name: string;
   importance: string;
+  description: string;
+  active: number;
 };
 
 
@@ -29,6 +31,9 @@ const DetailHabitScreen: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editName, setEditName] = useState('');
   const [editImportance, setEditImportance] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editActive, setEditActive] = useState(1);
+
 
   useEffect(() => {
     const initDb = async () => {
@@ -79,6 +84,8 @@ const DetailHabitScreen: React.FC = () => {
     setSelectedHabit(habit);
     setEditName(habit.name);
     setEditImportance(habit.importance);
+    setEditDescription(habit.description);
+    setEditActive(habit.active);
     setIsModalVisible(true);
   };
 
@@ -112,17 +119,28 @@ const DetailHabitScreen: React.FC = () => {
     if (db && selectedHabit) {
       try {
         await db.runAsync(
-          'UPDATE habits SET name = :name, importance = :importance WHERE id = :id',
-          { ':name': editName, ':importance': editImportance, ':id': selectedHabit.id }
+          'UPDATE habits SET name = :name, importance = :importance, description = :description, active = :active WHERE id = :id',
+          {
+            ':name': editName,
+            ':importance': editImportance,
+            ':description': editDescription,
+            ':active': editActive,
+            ':id': selectedHabit.id
+          }
         );
         setHabits((prevHabits) =>
           prevHabits.map((habit) =>
-            habit.id === selectedHabit.id ? { ...habit, name: editName, importance: editImportance } : habit
+            habit.id === selectedHabit.id
+              ? { ...habit, name: editName, importance: editImportance, description: editDescription, active: editActive }
+              : habit
           )
         );
+        
         setFilteredHabits((prevHabits) =>
           prevHabits.map((habit) =>
-            habit.id === selectedHabit.id ? { ...habit, name: editName, importance: editImportance } : habit
+            habit.id === selectedHabit.id
+              ? { ...habit, name: editName, importance: editImportance, description: editDescription, active: editActive }
+              : habit
           )
         );
         Alert.alert('Éxito', 'Hábito editado exitosamente.');
@@ -146,10 +164,18 @@ const DetailHabitScreen: React.FC = () => {
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onSave={handleSaveEdit}
+
         editName={editName}
         setEditName={setEditName}
+
         editImportance={editImportance}
         setEditImportance={setEditImportance}
+
+        editDescription={editDescription}
+        setEditDescription={setEditDescription}
+        
+        editActive={editActive}
+        setEditActive={setEditActive}
       />
     </View>
   );

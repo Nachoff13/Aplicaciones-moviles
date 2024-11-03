@@ -13,7 +13,7 @@ type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'de
 
 const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
-  const [habits, setHabits] = useState<{ id: string; name: string; importance: string }[]>([]);
+  const [habits, setHabits] = useState<{ id: string; name: string; importance: string; description: string; active: number;}[]>([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
   
   const currentUser = auth.currentUser;
@@ -41,7 +41,7 @@ const ListHabitScreen: React.FC = () => {
 
     try {
       const results = await database.getAllAsync('SELECT * FROM habits WHERE user_id = ?', [userId]);
-      const fetchedHabits = results as { id: string; name: string; importance: string }[];
+      const fetchedHabits = results as { id: string; name: string; importance: string;  description: string; active: number;}[];
       
       if (fetchedHabits.length === 0) {
         Alert.alert('No se encontraron hábitos.');
@@ -85,8 +85,9 @@ const ListHabitScreen: React.FC = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.habitContainer}>
-            <Text style={styles.subTitle}>{item.name}</Text>
-            <Text style={styles.subTitle}>{item.importance}</Text>
+            <Text style={styles.subTitle}>Nombre: {item.name}</Text>
+            <Text style={styles.subTitle}>Importancia: {item.importance}</Text>
+            <Text style={styles.subTitle}>Descripción: {item.description}</Text>
           </View>
         )}
       />
