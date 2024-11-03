@@ -3,6 +3,7 @@ import { View, TextInput, Button, Alert, StyleSheet, Text, TouchableOpacity } fr
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useRouter } from 'expo-router';
+import { FirebaseError } from 'firebase/app';
 
 const RegisterScreen: React.FC = () => {
   const router = useRouter();
@@ -16,16 +17,23 @@ const RegisterScreen: React.FC = () => {
     return emailRegex.test(email);
   };
 
+  // Mapeo de errores de Firebase a mensajes
+  const errorMessages: { [key: string]: string } = {
+    'auth/email-already-in-use': 'Este correo electrónico ya está registrado.',
+    'auth/invalid-email': 'El correo electrónico ingresado no es válido.',
+    'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+  };
+
   const handleRegister = async () => {
     setErrorMessage(null);
 
-    // Validacion formato de correo
+    // Validación correo
     if (!isValidEmail(email)) {
-      setErrorMessage('Por favor, ingresa un correo electrónico válido.');
+      setErrorMessage('El correo electrónico ingresado no es válido.');
       return;
     }
 
-    // Validacion contraseña
+    // Validación contraseña
     if (password.length < 6) {
       setErrorMessage('La contraseña debe tener al menos 6 caracteres.');
       return;
@@ -35,13 +43,12 @@ const RegisterScreen: React.FC = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       Alert.alert('Registro exitoso', `Usuario registrado: ${user.email}`);
-
-      // Redirige a la pantalla de inicio de sesión
       router.push('/login');
     } catch (error) {
-      if (error instanceof Error) {
-        // Captura el mensaje de error de Firebase
-        setErrorMessage(error.message);
+      if (error instanceof FirebaseError) {
+        // Captura el código de error de Firebase
+        const userFriendlyMessage = errorMessages[error.code] || 'Ocurrió un error inesperado.';
+        setErrorMessage(userFriendlyMessage);
       } else {
         setErrorMessage('Ocurrió un error inesperado.');
       }
