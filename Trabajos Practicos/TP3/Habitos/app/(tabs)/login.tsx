@@ -57,7 +57,33 @@ const LoginScreen = () => {
     }
   }, [response]);
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async () => {
+    setErrorMessage(''); // Resetea el mensaje de error
+
+    // Validaciones de entrada
+    if (!isValidEmail(email)) {
+      setErrorMessage('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (password.length === 0) {
+      setErrorMessage('La contraseña no debe estar vacía.');
+      return;
+    }
+
+    // Mapeo de errores de Firebase
+    const errorMessages: Record<string, string> = {
+      'auth/user-not-found': 'No hay registro de un usuario con este correo.',
+      'auth/invalid-credential': 'El correo o la contraseña son incorrectos.',
+      'auth/user-disabled': 'El usuario ha sido deshabilitado.',
+      'auth/operation-not-allowed': 'Este método de inicio de sesión no está habilitado.',
+    };
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -69,16 +95,8 @@ const LoginScreen = () => {
         setErrorMessage('No se pudo obtener el email del usuario.');
       }
     } catch (error: any) {
-      if (error.code === 'auth/user-not-found') {
-        setErrorMessage('No hay registro de un usuario con este correo.');
-      } else if (error.code === 'auth/wrong-password') {
-        setErrorMessage('La contraseña es incorrecta.');
-      } else if (error.error && error.error.code === 400) {
-        const errorMessage = error.error.message || 'Error inesperado';
-        setErrorMessage(errorMessage);
-      } else {
-        setErrorMessage(error.message || 'Error inesperado');
-      }
+      const errorCode = error.code;
+      setErrorMessage(errorMessages[errorCode] || error.message || 'Error inesperado');
     }
   };
 
