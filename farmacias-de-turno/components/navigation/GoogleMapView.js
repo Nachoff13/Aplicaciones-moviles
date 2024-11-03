@@ -8,12 +8,13 @@ import PlaceListView from "./PlaceListView";
 import { initializeApp } from "firebase/app"; 
 import { getFirestore, collection, addDoc } from "firebase/firestore"; 
 import { firebaseConfig } from "../../database/firebase";	
+import Markers from "./Markers";
+import { SelectMarkerContext } from "@/context/SelectMarkerContext";
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-import Markers from "./Markers";
-import { SelectMarkerContext } from "@/context/SelectMarkerContext";
+
 
 export default function GoogleMapView() {
   //Guarda ubicación actual
