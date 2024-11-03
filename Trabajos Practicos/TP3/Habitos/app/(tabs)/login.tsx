@@ -22,6 +22,7 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
@@ -51,10 +52,10 @@ const LoginScreen = () => {
           if (userCredential.user.email) {
             login(userCredential.user.email);
             console.log('Usuario autenticado con Google:', userCredential.user.email);
+            router.push('/home');
           } else {
             setErrorMessage('No se pudo obtener el email del usuario.');
           }
-          router.push('/home');
         })
         .catch((error) => {
           setErrorMessage(error.message || 'Error inesperado');
@@ -63,10 +64,11 @@ const LoginScreen = () => {
   }, [response]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !hasRedirected) {
+      setHasRedirected(true);
       router.push('/home');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, hasRedirected]);
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -103,10 +105,10 @@ const LoginScreen = () => {
       if (userCredential.user.email) {
         login(userCredential.user.email);
         console.log('Usuario autenticado:', userCredential.user.email);
+        router.push('/home');
       } else {
         setErrorMessage('No se pudo obtener el email del usuario.');
       }
-      router.push('/home');
     } catch (error: any) {
       const errorCode = error.code;
       setErrorMessage(errorMessages[errorCode] || error.message || 'Error inesperado');
