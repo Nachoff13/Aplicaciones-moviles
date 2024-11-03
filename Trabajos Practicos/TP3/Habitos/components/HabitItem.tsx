@@ -23,7 +23,7 @@ const HabitItem = ({ habit, onEdit, onDelete }) => {
 const styles = StyleSheet.create({
   habitContainer: { marginBottom: 16, padding: 16, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
   subTitle: { fontSize: 18 },
-  actionButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
+  actionButtons: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 13 },
 });
 
 export default HabitItem;
