@@ -67,7 +67,7 @@ const RegisterScreen: React.FC = () => {
         style={styles.input}
       />
       
-      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>} {/* Mensaje de error */}
+      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       
       <Button title="Registrarse" onPress={handleRegister} />
       
