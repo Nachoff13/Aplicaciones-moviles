@@ -41,7 +41,7 @@ const HabitModal = ({ visible, onClose, onSave, editName, setEditName, editImpor
 };
 
 const styles = StyleSheet.create({
-  modalContainer: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#fff' },
+  modalContainer: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f7f7f7'},
   modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
   input: { padding: 10, borderRadius: 5, borderColor: '#ddd', borderWidth: 1, marginBottom: 10 },
   modalButtons: { flexDirection: 'row', justifyContent: 'space-around' },

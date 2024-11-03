@@ -74,6 +74,8 @@ const AddHabit = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Agregar Hábitos</Text>
+      
+      <Text style={styles.label}>Nombre</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre del hábito"
@@ -114,20 +116,13 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     alignSelf: 'center',
   },
-  input: {
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+  input: { 
+    padding: 10, 
+    borderRadius: 5, 
+    borderColor: '#ddd', 
+    borderWidth: 1, 
+    marginBottom: 10, 
     backgroundColor: '#fff',
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
   },
   label: {
     fontSize: 16,
@@ -136,13 +131,14 @@ const styles = StyleSheet.create({
   pickerContainer: {
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 5,
     marginBottom: 20,
     backgroundColor: '#fff',
   },
   picker: {
     height: 50,
     width: '100%',
+    borderRadius: 5,
   },
   button: {
     backgroundColor: '#4285f4',
