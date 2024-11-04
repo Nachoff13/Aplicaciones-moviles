@@ -10,7 +10,7 @@ import { Switch } from 'react-native-paper';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
-  progressHabit: { habitId: string };
+  progressHabit: { habitId: string; days: string[] };
 };
 
 type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'detailHabit'>;
@@ -102,8 +102,9 @@ const ListHabitScreen: React.FC = () => {
     navigation.navigate("detailHabit", { habitId });
   };
 
-  const handleProgressPress = (habitId: string) => {
-    navigation.navigate("progressHabit", { habitId });
+  const handleProgressPress = (habitId: string, days: string) => {
+    const daysArray = days.split(',');
+    navigation.navigate("progressHabit", { habitId, days: daysArray });
   };
 
   const handleDeleteAll = async () => {
@@ -229,7 +230,7 @@ const ListHabitScreen: React.FC = () => {
               </View>
               <TouchableOpacity 
                 style={[styles.progressBtn, currentTheme.progressBtn]} 
-                onPress={() => handleProgressPress(item.id)}
+                onPress={() => handleProgressPress(item.id, item.days)}
               >
                 <Text style={styles.btnText}>Ver Progreso</Text>
               </TouchableOpacity>

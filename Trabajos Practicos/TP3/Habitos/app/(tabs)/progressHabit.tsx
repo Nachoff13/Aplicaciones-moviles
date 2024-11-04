@@ -8,7 +8,7 @@ import { useTheme } from '../../components/ThemeContext';
 import { Calendar } from 'react-native-calendars';
 
 type RootStackParamList = {
-  progressHabit: { habitId: string };
+  progressHabit: { habitId: string; days: string[] };
 };
 
 type ProgressHabitNavigationProp = StackNavigationProp<RootStackParamList, 'progressHabit'>;
@@ -17,10 +17,10 @@ type ProgressHabitRouteProp = RouteProp<RootStackParamList, 'progressHabit'>;
 const ProgressHabit: React.FC = () => {
   const navigation = useNavigation<ProgressHabitNavigationProp>();
   const route = useRoute<ProgressHabitRouteProp>();
-  const { habitId } = route.params || {};
+  const { habitId, days } = route.params || {};
   const { currentTheme } = useTheme();
 
-  const [markedDates, setMarkedDates] = useState<{ [key: string]: { marked: boolean; dotColor: string } }>({});
+  const [markedDates, setMarkedDates] = useState<{ [key: string]: { marked: boolean; dotColor: string; } }>({});
 
   useEffect(() => {
     const initDb = async () => {
@@ -54,20 +54,34 @@ const ProgressHabit: React.FC = () => {
   };
 
   const generateMarkedDates = (records: { date: string; completed: number; }[]) => {
-    const marked = {};
+    const marked: { [key: string]: { marked: boolean; dotColor: string; } } = {};
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     records.forEach(record => {
       const date = record.date;
+      const recordDate = new Date(date);
+      const dayOfWeek = daysOfWeek[recordDate.getDay()];
+
       if (record.completed === 1) {
-        marked[date] = { marked: true, dotColor: 'green' }; // Color verde para completado
+        marked[date] = { marked: true, dotColor: 'green' }; // Circulito verde para completado
       } else {
-        // Marcar solo si fue un día que se esperaba haber completado
-        const recordDate = new Date(date);
-        const dayOfWeek = daysOfWeek[recordDate.getDay()];
-        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']; // Localización en español
-        if (days.includes(dayOfWeek)) {
-          marked[date] = { marked: true, dotColor: 'red' }; // Color rojo para no completado
+        marked[date] = { marked: true, dotColor: 'red' }; // Circulito rojo para no completado
+      }
+    });
+
+    // Marcar días de acuerdo a los días del hábito
+    days.forEach(day => {
+      const dayIndex = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].indexOf(day);
+      if (dayIndex !== -1) {
+        for (let i = 0; i < 31; i++) {
+          const dateToMark = new Date();
+          dateToMark.setDate(i + 1);
+          if (dateToMark.getDay() === dayIndex) {
+            const formattedDate = dateToMark.toISOString().split('T')[0];
+            if (!marked[formattedDate]) {
+              marked[formattedDate] = { marked: true, dotColor: 'rgba(0, 0, 0, 0.1)' }; // Color un poco transparente
+            }
+          }
         }
       }
     });
