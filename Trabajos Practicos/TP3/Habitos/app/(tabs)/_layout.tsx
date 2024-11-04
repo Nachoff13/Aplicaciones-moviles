@@ -8,6 +8,7 @@ import RegisterScreen from './register';
 import AddHabitScreen from './addHabit';
 import DetailHabitScreen from './detailHabit';
 import ListHabitScreen from './listHabit';
+import ProgressHabit from './progressHabit';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 import { ThemeProvider, useTheme } from '../../components/ThemeContext';
@@ -53,12 +54,11 @@ function AuthenticatedApp() {
   const { isAuthenticated } = useAuth();
   useEffect(() => {
     console.log('El estado de autenticación ha cambiado:', isAuthenticated);
-    // Aquí puedes agregar cualquier lógica adicional que necesites cuando el estado de autenticación cambie
+
   }, [isAuthenticated]);
   return (
     <>
       {isAuthenticated && <Navbar />}
-      
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" component={LoginScreen} />
         <Stack.Screen name="register" component={RegisterScreen} />
@@ -66,6 +66,7 @@ function AuthenticatedApp() {
         <Stack.Screen name="addHabit" component={isAuthenticated ? AddHabitScreen : LoginScreen} />
         <Stack.Screen name="detailHabit" component={isAuthenticated ? DetailHabitScreen : LoginScreen} />
         <Stack.Screen name="listHabit" component={isAuthenticated ? ListHabitScreen : LoginScreen} />
+        <Stack.Screen name="progressHabit" component={isAuthenticated ? ProgressHabit : LoginScreen} />
       </Stack.Navigator>
     </>
   );
