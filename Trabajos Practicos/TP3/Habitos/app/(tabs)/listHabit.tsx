@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, Platform } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
@@ -39,9 +39,11 @@ const ListHabitScreen: React.FC = () => {
 
   useEffect(() => {
     const initDb = async () => {
-      const database = await SQLite.openDatabaseAsync("habits.db");
-      setDb(database);
-      fetchHabits(database);
+      if (Platform.OS !== 'web') {
+        const database = await SQLite.openDatabaseAsync("habits.db");
+        setDb(database);
+        fetchHabits(database);
+      }
     };
 
     initDb();

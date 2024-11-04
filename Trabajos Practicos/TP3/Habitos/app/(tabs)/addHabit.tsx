@@ -35,13 +35,14 @@ const AddHabit = () => {
 
   useEffect(() => {
     const initializeDatabase = async () => {
-      const database = await SQLite.openDatabaseAsync('habits.db');
-      setDb(database);
-      //await database.execAsync("DROP TABLE IF EXISTS habits;");
-
-      await database.execAsync(
-        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 1, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
-      );
+      if (Platform.OS !== 'web') {
+        const database = await SQLite.openDatabaseAsync('habits.db');
+        setDb(database);
+        // await database.execAsync("DROP TABLE IF EXISTS habits;");
+        await database.execAsync(
+          "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 1, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
+        );
+      }
     };
 
     initializeDatabase();
