@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Alert, Platform, Modal } from 'react-native';
+import { View, TextInput, Alert, StyleSheet, TouchableOpacity, Text, ScrollView, Platform, Modal } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { auth } from '../../firebaseConfig'; 
+import { auth } from '../../firebaseConfig';
+import { CheckBox } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -19,12 +21,17 @@ const AddHabit = () => {
   const [habitName, setHabitName] = useState<string>('');
   const [habitImportance, setHabitImportance] = useState<string>('');
   const [habitDescription, setHabitDescription] = useState<string>('');
-  const [habitActive, setHabitActive] = useState<number>(1);
+  const [habitActive, setHabitActive] = useState(1);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isPickerVisible, setPickerVisible] = useState(false);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
   const { theme, toggleTheme } = useTheme();
   const currentTheme = theme === 'light' ? styles.light : styles.dark;
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
+  const [isStartPickerVisible, setStartPickerVisible] = useState(false);
+  const [isEndPickerVisible, setEndPickerVisible] = useState(false);
 
   useEffect(() => {
     const initializeDatabase = async () => {
@@ -33,7 +40,7 @@ const AddHabit = () => {
       //await database.execAsync("DROP TABLE IF EXISTS habits;");
 
       await database.execAsync(
-        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 1, user_id TEXT);"
+        "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 1, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
       );
     };
 
@@ -51,7 +58,6 @@ const AddHabit = () => {
       return;
     }
 
-    // Obtengo el UID del usuario autenticado
     const currentUser = auth.currentUser;
     if (!currentUser) {
       Alert.alert('Error', 'No se encontró el usuario autenticado');
@@ -61,11 +67,19 @@ const AddHabit = () => {
 
     try {
       const result = await db.runAsync(
-        'INSERT INTO habits (name, importance, description, active, user_id) VALUES (?, ?, ?, ?, ?)',
-        [habitName, habitImportance, habitDescription, habitActive, userId]
+        'INSERT INTO habits (name, importance, description, active, user_id, days, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          habitName,
+          habitImportance,
+          habitDescription,
+          habitActive,
+          userId,
+          selectedDays.join(','),
+          startTime.toTimeString().split(' ')[0].slice(0, 5), // Formato "HH:mm"
+          endTime.toTimeString().split(' ')[0].slice(0, 5),
+        ]
       );
 
-      
       if (result.lastInsertRowId) {
         Alert.alert('Éxito', `Hábito agregado con éxito.`);
         db.closeAsync();
@@ -78,8 +92,26 @@ const AddHabit = () => {
     }
   };
 
+  const toggleDay = (day: string) => {
+    setSelectedDays((prevDays) =>
+      prevDays.includes(day)
+        ? prevDays.filter((d) => d !== day)
+        : [...prevDays, day]
+    );
+  };
+
+  const handleStartConfirm = (time: Date) => {
+    setStartTime(time);
+    setStartPickerVisible(false);
+  };
+
+  const handleEndConfirm = (time: Date) => {
+    setEndTime(time);
+    setEndPickerVisible(false);
+  };
+
   return (
-    <View style={[styles.container, currentTheme.container]}>
+    <ScrollView style={[styles.container, currentTheme.container]}>
       <Text style={[styles.title, currentTheme.text]}>Agregar Hábitos</Text>
       
       <Text style={[styles.label, currentTheme.text]}>Nombre</Text>
@@ -143,6 +175,38 @@ const AddHabit = () => {
         onChangeText={setHabitDescription}
       />
 
+      <Text style={styles.label}>Días de la semana</Text>
+      {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day) => (
+        <CheckBox
+          key={day}
+          title={day}
+          checked={selectedDays.includes(day)}
+          onPress={() => toggleDay(day)}
+        />
+      ))}
+
+      <Text style={styles.label}>Horario de Inicio</Text>
+      <TouchableOpacity style={styles.buttonHour} onPress={() => setStartPickerVisible(true)}>
+        <Text style={styles.buttonTextHour}>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+      </TouchableOpacity>
+      <DateTimePickerModal
+        isVisible={isStartPickerVisible}
+        mode="time"
+        onConfirm={handleStartConfirm}
+        onCancel={() => setStartPickerVisible(false)}
+      />
+
+      <Text style={styles.label}>Horario de Fin</Text>
+      <TouchableOpacity style={styles.buttonHour} onPress={() => setEndPickerVisible(true)}>
+        <Text style={styles.buttonTextHour}>{endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+      </TouchableOpacity>
+      <DateTimePickerModal
+        isVisible={isEndPickerVisible}
+        mode="time"
+        onConfirm={handleEndConfirm}
+        onCancel={() => setEndPickerVisible(false)}
+      />
+
       <TouchableOpacity style={[styles.button, currentTheme.button]} onPress={handleAddHabit}>
         <Text style={styles.buttonText}>Agregar Hábito</Text>
       </TouchableOpacity>
@@ -156,7 +220,7 @@ const AddHabit = () => {
           />
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -187,7 +251,7 @@ const styles = StyleSheet.create({
     padding: 10, 
     borderRadius: 5, 
     borderWidth: 1, 
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   label: {
     fontSize: 16,
@@ -214,6 +278,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     borderRadius: 5,
+    backgroundColor: '#fff',
   },
   button: {
     borderRadius: 10,
@@ -224,6 +289,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 5,
+    marginBottom: 25,
   },
   buttonText: {
     color: '#fff',
@@ -234,6 +300,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
+  },
+  buttonHour: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    borderColor: '#C3C3C3',
+    borderWidth: 1,
+    marginBottom: 15,
+  },
+  buttonTextHour: {
+    color: '#000000',
+    fontSize: 15,
+    fontWeight: 'bold',
   },
 });
 

@@ -17,6 +17,18 @@ const HabitItem = ({ habit, onEdit, onDelete }) => {
         <Text style={styles.subTitle}>Descripción: </Text>
         <Text style={styles.content}>{habit.description}</Text>
       </View>
+      <View style={styles.row}>
+        <Text style={styles.subTitle}>Días: </Text>
+        <Text style={styles.content}>{habit.days}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.subTitle}>Horario de Inicio: </Text>
+        <Text style={styles.content}>{habit.start_time}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.subTitle}>Horario de Fin: </Text>
+        <Text style={styles.content}>{habit.end_time}</Text>
+      </View>
       <View style={styles.actionButtons}>
         <TouchableOpacity onPress={() => onEdit(habit)}>
           <FontAwesome name="edit" size={24} color="blue" />

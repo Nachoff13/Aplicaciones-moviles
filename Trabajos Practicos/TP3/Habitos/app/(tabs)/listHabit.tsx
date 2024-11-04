@@ -17,21 +17,23 @@ const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
   const { theme, toggleTheme } = useTheme();
   const currentTheme = theme === 'light' ? styles.light : styles.dark;
-  const [habits, setHabits] = useState<
-    {
-      id: string;
-      name: string;
-      importance: string;
-      description: string;
-      active: number;
-    }[]
-  >([]);
+  const [habits, setHabits] = useState<{
+    id: string;
+    name: string;
+    importance: string;
+    description: string;
+    active: number;
+    days: string;
+    start_time: string;
+    end_time: string;
+  }[]>([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
   const currentUser = auth.currentUser;
   if (!currentUser) {
     Alert.alert("Error", "No se encontró el usuario autenticado");
     return null;
+
   }
   const userId = currentUser.uid;
 
@@ -62,12 +64,29 @@ const ListHabitScreen: React.FC = () => {
         importance: string;
         description: string;
         active: number;
+        days: string;
+        start_time: string;
+        end_time: string;
       }[];
 
-      if (fetchedHabits.length === 0) {
-        Alert.alert("No se encontraron hábitos.");
+      const today = new Date();
+      const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const todayName = dayNames[today.getDay()];
+
+      // Filtra habitos que contengan el dia actual
+      const filteredHabits = fetchedHabits.filter(habit => habit.days.includes(todayName));
+
+      // Ordena los hábitos por hora de inicio
+      const sortedHabits = filteredHabits.sort((a, b) => {
+        const [aHours, aMinutes] = a.start_time.split(':').map(Number);
+        const [bHours, bMinutes] = b.start_time.split(':').map(Number);
+        return aHours !== bHours ? aHours - bHours : aMinutes - bMinutes;
+      });
+
+      if (sortedHabits.length === 0) {
+        Alert.alert("No se encontraron hábitos para hoy.");
       } else {
-        setHabits(fetchedHabits);
+        setHabits(sortedHabits);
       }
     } catch (error) {
       const errorMessage =
@@ -105,20 +124,34 @@ const ListHabitScreen: React.FC = () => {
         data={habits}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={[styles.habitContainer, currentTheme.habitContainer]}>
-            <View style={styles.row}>
-              <Text style={[styles.subTitle, currentTheme.text]}>Nombre: </Text>
-              <Text style={[styles.content, currentTheme.text]}>{item.name}</Text>
+          <TouchableOpacity onPress={() => handlePress(item.id)}>
+            <View style={[styles.habitContainer, currentTheme.habitContainer]}>
+              <View style={styles.row}>
+                <Text style={[styles.subTitle, currentTheme.text]}>Nombre: </Text>
+                <Text style={[styles.content, currentTheme.text]}>{item.name}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.subTitle, currentTheme.text]}>Importancia: </Text>
+                <Text style={[styles.content, currentTheme.text]}>{item.importance}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.subTitle, currentTheme.text]}>Descripción: </Text>
+                <Text style={[styles.content, currentTheme.text]}>{item.description}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Días: </Text>
+                <Text style={styles.content}>{item.days}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Horario de Inicio: </Text>
+                <Text style={styles.content}>{item.start_time}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Horario de Fin: </Text>
+                <Text style={styles.content}>{item.end_time}</Text>
+              </View>
             </View>
-            <View style={styles.row}>
-              <Text style={[styles.subTitle, currentTheme.text]}>Importancia: </Text>
-              <Text style={[styles.content, currentTheme.text]}>{item.importance}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={[styles.subTitle, currentTheme.text]}>Descripción: </Text>
-              <Text style={[styles.content, currentTheme.text]}>{item.description}</Text>
-            </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
       <View style={styles.toggleButtonContainer}>

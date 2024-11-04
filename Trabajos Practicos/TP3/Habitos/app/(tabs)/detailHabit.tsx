@@ -19,6 +19,9 @@ type Habit = {
   importance: string;
   description: string;
   active: number;
+  days: string;
+  start_time: string;
+  end_time: string;
 };
 
 const DetailHabitScreen: React.FC = () => {
@@ -35,6 +38,9 @@ const DetailHabitScreen: React.FC = () => {
   const [editImportance, setEditImportance] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editActive, setEditActive] = useState(1);
+  const [editDays, setEditDays] = useState('');
+  const [editStartTime, setEditStartTime] = useState('');
+  const [editEndTime, setEditEndTime] = useState('');
 
   useEffect(() => {
     const initDb = async () => {
@@ -87,6 +93,9 @@ const DetailHabitScreen: React.FC = () => {
     setEditImportance(habit.importance);
     setEditDescription(habit.description);
     setEditActive(habit.active);
+    setEditDays(habit.days);
+    setEditStartTime(habit.start_time);
+    setEditEndTime(habit.end_time);
     setIsModalVisible(true);
   };
 
@@ -120,27 +129,30 @@ const DetailHabitScreen: React.FC = () => {
     if (db && selectedHabit) {
       try {
         await db.runAsync(
-          'UPDATE habits SET name = :name, importance = :importance, description = :description, active = :active WHERE id = :id',
+          'UPDATE habits SET name = :name, importance = :importance, description = :description, active = :active, days = :days, start_time = :start_time, end_time = :end_time WHERE id = :id',
           {
             ':name': editName,
             ':importance': editImportance,
             ':description': editDescription,
             ':active': editActive,
+            ':days': editDays,
+            ':start_time': editStartTime,
+            ':end_time': editEndTime,
             ':id': selectedHabit.id
           }
         );
         setHabits((prevHabits) =>
           prevHabits.map((habit) =>
             habit.id === selectedHabit.id
-              ? { ...habit, name: editName, importance: editImportance, description: editDescription, active: editActive }
+              ? { ...habit, name: editName, importance: editImportance, description: editDescription, active: editActive, days: editDays, start_time: editStartTime, end_time: editEndTime }
               : habit
           )
         );
-        
+
         setFilteredHabits((prevHabits) =>
           prevHabits.map((habit) =>
             habit.id === selectedHabit.id
-              ? { ...habit, name: editName, importance: editImportance, description: editDescription, active: editActive }
+              ? { ...habit, name: editName, importance: editImportance, description: editDescription, active: editActive, days: editDays, start_time: editStartTime, end_time: editEndTime }
               : habit
           )
         );
@@ -177,6 +189,14 @@ const DetailHabitScreen: React.FC = () => {
         
         editActive={editActive}
         setEditActive={setEditActive}
+        editDays={editDays}
+        setEditDays={setEditDays}
+
+        editStartTime={editStartTime}
+        setEditStartTime={setEditStartTime}
+
+        editEndTime={editEndTime}
+        setEditEndTime={setEditEndTime}
       />
 
       <View style={styles.toggleButtonContainer}>
