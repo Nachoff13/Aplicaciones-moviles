@@ -229,12 +229,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     borderColor: '#C3C3C3',
-    borderWidth: 2,
+    borderWidth: 1,
     marginBottom: 15,
   },
   buttonTextHour: {
     color: '#000000',
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
   },
 });

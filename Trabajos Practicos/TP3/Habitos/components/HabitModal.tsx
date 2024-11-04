@@ -114,8 +114,9 @@ const HabitModal: React.FC<HabitModalProps> = ({
             />
           ))}
         </View>
+        <Text style={styles.label}>Horario de Inicio</Text>
         <TouchableOpacity onPress={() => setStartTimePickerVisible(true)} style={styles.timePicker}>
-          <Text style={styles.timeText}>Hora de Inicio: {editStartTime}</Text>
+          <Text style={styles.timeText}>{editStartTime}</Text>
         </TouchableOpacity>
         <DateTimePickerModal
           isVisible={isStartTimePickerVisible}
@@ -123,8 +124,9 @@ const HabitModal: React.FC<HabitModalProps> = ({
           onConfirm={handleStartConfirm}
           onCancel={() => setStartTimePickerVisible(false)}
         />
+        <Text style={styles.label}>Horario de Fin</Text>
         <TouchableOpacity onPress={() => setEndTimePickerVisible(true)} style={styles.timePicker}>
-          <Text style={styles.timeText}>Hora de Fin: {editEndTime}</Text>
+          <Text style={styles.timeText}>{editEndTime}</Text>
         </TouchableOpacity>
         <DateTimePickerModal
           isVisible={isEndTimePickerVisible}
@@ -152,7 +154,12 @@ const styles = StyleSheet.create({
   input: { padding: 10, borderRadius: 5, borderColor: '#ddd', borderWidth: 1, marginBottom: 10 },
   picker: { height: 50, width: '100%' },
   checkboxContainer: { marginBottom: 15 },
-  timePicker: { marginBottom: 15, padding: 10, backgroundColor: '#e0e0e0', borderRadius: 5 },
+  timePicker: { backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    borderColor: '#C3C3C3',
+    borderWidth: 1,
+    marginBottom: 15,},
   timeText: { fontSize: 16 },
   saveButton: { backgroundColor: '#4CAF50', padding: 10, borderRadius: 5, alignItems: 'center' },
   saveButtonText: { color: '#fff', fontSize: 16 },
