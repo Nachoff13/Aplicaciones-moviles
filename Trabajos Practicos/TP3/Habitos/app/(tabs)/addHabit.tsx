@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth } from '../../firebaseConfig'; 
 import { Picker } from '@react-native-picker/picker';
+import { useTheme } from '../../components/ThemeContext';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type RootStackParamList = {
   AddHabit: undefined;
@@ -19,6 +21,8 @@ const AddHabit = () => {
   const [habitDescription, setHabitDescription] = useState<string>('');
   const [habitActive, setHabitActive] = useState<number>(1);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
+  const { theme, toggleTheme } = useTheme();
+  const currentTheme = theme === 'light' ? styles.light : styles.dark;
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
   useEffect(() => {
@@ -74,19 +78,19 @@ const AddHabit = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Agregar Hábitos</Text>
+    <View style={[styles.container, currentTheme.container]}>
+      <Text style={[styles.title, currentTheme.text]}>Agregar Hábitos</Text>
       
-      <Text style={styles.label}>Nombre</Text>
+      <Text style={[styles.label, currentTheme.text]}>Nombre</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, currentTheme.input]}
         placeholder="Nombre del hábito"
         value={habitName}
         onChangeText={setHabitName}
       />
       
-      <Text style={styles.label}>Importancia</Text>
-      <View style={styles.pickerContainer}>
+      <Text style={[styles.label, currentTheme.text]}>Importancia</Text>
+      <View style={[styles.pickerContainer, currentTheme.input]}>
         <Picker
           selectedValue={habitImportance}
           onValueChange={(itemValue) => setHabitImportance(itemValue)}
@@ -99,17 +103,27 @@ const AddHabit = () => {
         </Picker>
       </View>
 
-      <Text style={styles.label}>Descripción</Text>
+      <Text style={[styles.label, currentTheme.text]}>Descripción</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, currentTheme.input]}
         placeholder="Descripción"
         value={habitDescription}
         onChangeText={setHabitDescription}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleAddHabit}>
+      <TouchableOpacity style={[styles.button, currentTheme.button]} onPress={handleAddHabit}>
         <Text style={styles.buttonText}>Agregar Hábito</Text>
       </TouchableOpacity>
+
+      <View style={styles.toggleButtonContainer}>
+        <TouchableOpacity onPress={toggleTheme}>
+          <Icon
+            name={theme === 'light' ? 'weather-night' : 'white-balance-sunny'}
+            size={24}
+            color={theme === 'light' ? '#000' : '#fff'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -118,7 +132,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f7f7f7',
+  },
+  light: {
+    container: { backgroundColor: '#f7f7f7' },
+    text: { color: '#000' },
+    input: { backgroundColor: '#fff', borderColor: '#ddd' },
+    button: { backgroundColor: '#4285f4' },
+  },
+  dark: {
+    container: { backgroundColor: '#000' },
+    text: { color: '#fff' },
+    input: { backgroundColor: '#333', borderColor: '#555' },
+    button: { backgroundColor: '#4285f4' },
   },
   title: {
     fontSize: 24,
@@ -129,21 +154,17 @@ const styles = StyleSheet.create({
   input: { 
     padding: 10, 
     borderRadius: 5, 
-    borderColor: '#ddd', 
     borderWidth: 1, 
     marginBottom: 10, 
-    backgroundColor: '#fff',
   },
   label: {
     fontSize: 16,
     marginBottom: 8,
   },
   pickerContainer: {
-    borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
-    backgroundColor: '#fff',
   },
   picker: {
     height: 50,
@@ -151,7 +172,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    backgroundColor: '#4285f4',
     borderRadius: 10,
     padding: 15,
     alignItems: 'center',
@@ -165,6 +185,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  toggleButtonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
   },
 });
 
