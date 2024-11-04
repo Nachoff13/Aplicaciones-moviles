@@ -20,7 +20,7 @@ const ProgressHabit: React.FC = () => {
   const { habitId, days } = route.params || {};
   const { currentTheme } = useTheme();
 
-  const [markedDates, setMarkedDates] = useState<{ [key: string]: { marked: boolean; dotColor: string; } }>({});
+  const [markedDates, setMarkedDates] = useState<{ [key: string]: any }>({});
 
   useEffect(() => {
     const initDb = async () => {
@@ -46,44 +46,40 @@ const ProgressHabit: React.FC = () => {
         [habitId]
       );
       const fetchedRecords = results as { date: string; completed: number; }[];
-      setMarkedDates(generateMarkedDates(fetchedRecords));
+      setMarkedDates(generateMarkedDates(fetchedRecords, days));
     } catch (error) {
       const errorMessage = (error as Error).message || "Ocurrió un error inesperado";
       Alert.alert("Error al obtener el progreso", errorMessage);
     }
   };
 
-  const generateMarkedDates = (records: { date: string; completed: number; }[]) => {
-    const marked: { [key: string]: { marked: boolean; dotColor: string; } } = {};
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const generateMarkedDates = (records: { date: string; completed: number; }[], days: string[]) => {
+    const marked: { [key: string]: any } = {};
+    const currentYear = new Date().getFullYear();
+    const endOfYear = new Date(currentYear, 11, 31);
 
-    records.forEach(record => {
-      const date = record.date;
-      const recordDate = new Date(date);
-      const dayOfWeek = daysOfWeek[recordDate.getDay()];
-
-      if (record.completed === 1) {
-        marked[date] = { marked: true, dotColor: 'green' }; // Circulito verde para completado
-      } else {
-        marked[date] = { marked: true, dotColor: 'red' }; // Circulito rojo para no completado
-      }
-    });
-
-    // Marcar días de acuerdo a los días del hábito
+    // Marca dias donde debe cumplirse el habito hasta el final del año
     days.forEach(day => {
       const dayIndex = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].indexOf(day);
       if (dayIndex !== -1) {
-        for (let i = 0; i < 31; i++) {
-          const dateToMark = new Date();
-          dateToMark.setDate(i + 1);
+        let dateToMark = new Date();
+        while (dateToMark <= endOfYear) {
           if (dateToMark.getDay() === dayIndex) {
             const formattedDate = dateToMark.toISOString().split('T')[0];
             if (!marked[formattedDate]) {
-              marked[formattedDate] = { marked: true, dotColor: 'rgba(0, 0, 0, 0.1)' }; // Color un poco transparente
+              marked[formattedDate] = { color: 'rgba(0, 0, 0, 0.1)', startingDay: true, endingDay: true, selected: true };
             }
           }
+          dateToMark.setDate(dateToMark.getDate() + 1);
         }
       }
+    });
+
+    // Marca los dias completados
+    records.forEach(record => {
+      const date = record.date;
+      const isCompleted = record.completed === 1;
+      marked[date] = { color: isCompleted ? '#72ff72' : '#fd5555', startingDay: true, endingDay: true, selected: true };
     });
 
     return marked;
@@ -94,16 +90,20 @@ const ProgressHabit: React.FC = () => {
       <View style={[styles.container, currentTheme.container]}>
         <Text style={[styles.title, currentTheme.text]}>Progreso del Hábito</Text>
         <Calendar
-          current={new Date().toISOString().split('T')[0]} // Fecha actual
+          current={new Date().toISOString().split('T')[0]}
+          markingType={'period'}
           markedDates={markedDates}
           style={styles.calendar}
         />
         <View style={styles.colorReference}>
           <Text style={[styles.referenceText, currentTheme.text]}>
-            <Text style={{ color: 'green' }}>⬤</Text> Completado
+            <Text style={{ color: '#72ff72' }}>⬤</Text> Completado
           </Text>
           <Text style={[styles.referenceText, currentTheme.text]}>
-            <Text style={{ color: 'red' }}>⬤</Text> No Completado
+            <Text style={{ color: '#fd5555' }}>⬤</Text> No Completado
+          </Text>
+          <Text style={[styles.referenceText, currentTheme.text]}>
+            <Text style={{ color: 'rgba(0, 0, 0, 0.1)' }}>⬤</Text> Día de cumplimiento
           </Text>
         </View>
       </View>
