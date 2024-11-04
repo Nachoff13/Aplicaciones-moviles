@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider, useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/navigation/Navbar';
@@ -51,7 +51,10 @@ function ThemedApp() {
 
 function AuthenticatedApp() {
   const { isAuthenticated } = useAuth();
-
+  useEffect(() => {
+    console.log('El estado de autenticación ha cambiado:', isAuthenticated);
+    // Aquí puedes agregar cualquier lógica adicional que necesites cuando el estado de autenticación cambie
+  }, [isAuthenticated]);
   return (
     <>
       {isAuthenticated && <Navbar />}

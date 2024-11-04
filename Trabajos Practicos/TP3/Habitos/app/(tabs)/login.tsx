@@ -8,6 +8,7 @@ import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { decodeToken } from 'react-jwt';
 import { useAuth } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,18 +18,17 @@ interface DecodedToken {
 
 const LoginScreen = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: '865233704774-g02ci3hij3cp5sjqlifq1ljn35gbtaso.apps.googleusercontent.com',
     redirectUri: makeRedirectUri({
       scheme: 'myapp',
     }),
-    //para ngrok: 
-   // redirectUri: 'https://4a2b-190-188-226-111.ngrok-free.app/auth/google/callback',
   });
 
   useEffect(() => {
@@ -41,21 +41,34 @@ const LoginScreen = () => {
       }
 
       const decodedToken = decodeToken<DecodedToken>(id_token);
+      console.log('Token decodificado:', decodedToken);
       const credential = GoogleAuthProvider.credential(id_token);
 
       signInWithCredential(auth, credential)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          router.push({
-            pathname: '/home',
-            params: { email: user.email },
-          });
+        .then(async (userCredential) => {
+          const token = await userCredential.user.getIdToken();
+          await AsyncStorage.setItem('userToken', token);
+          console.log('Token guardado:', token);
+          if (userCredential.user.email) {
+            login(userCredential.user.email);
+            console.log('Usuario autenticado con Google:', userCredential.user.email);
+            router.replace('/home');
+          } else {
+            setErrorMessage('No se pudo obtener el email del usuario.');
+          }
         })
         .catch((error) => {
           setErrorMessage(error.message || 'Error inesperado');
         });
     }
   }, [response]);
+
+  useEffect(() => {
+    if (isAuthenticated && !hasRedirected) {
+      setHasRedirected(true);
+      router.replace('/home');
+    }
+  }, [isAuthenticated, hasRedirected]);
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -86,11 +99,13 @@ const LoginScreen = () => {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      if (user.email) {
-        await login(user.email);
-        setErrorMessage('');
-        router.push('/home');
+      const token = await userCredential.user.getIdToken();
+      await AsyncStorage.setItem('userToken', token);
+      console.log('Token guardado:', token);
+      if (userCredential.user.email) {
+        login(userCredential.user.email);
+        console.log('Usuario autenticado:', userCredential.user.email);
+        router.replace('/home');
       } else {
         setErrorMessage('No se pudo obtener el email del usuario.');
       }
@@ -107,6 +122,7 @@ const LoginScreen = () => {
         const { id_token } = result.params;
 
         const decodedToken = decodeToken<DecodedToken>(id_token);
+        console.log('Token decodificado:', decodedToken);
         const userEmail = decodedToken?.email;
 
         if (!userEmail) {
@@ -117,7 +133,8 @@ const LoginScreen = () => {
         const credential = GoogleAuthProvider.credential(id_token);
         await signInWithCredential(auth, credential);
         await login(userEmail);
-        router.push('/home');
+        console.log('Usuario autenticado con Google:', userEmail);
+        router.replace('/home');
       }
     } catch (error) {
       setErrorMessage('Ocurrió un error al iniciar sesión con Google. Intenta nuevamente.');
