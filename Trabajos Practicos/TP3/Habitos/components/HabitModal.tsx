@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   btnText: { color: '#fff', fontSize: 16 },
   cancelButton: { backgroundColor: '#ff4d4d' },
-  modalButtons: { flexDirection: 'row', justifyContent: 'space-around' },
+  modalButtons: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 30},
   modalButton: { backgroundColor: '#007bff', padding: 10, borderRadius: 5, alignItems: 'center', width: '40%' },
   closeButton: { marginTop: 10, alignItems: 'center' },
   closeButtonText: { fontSize: 16, color: 'red' },
