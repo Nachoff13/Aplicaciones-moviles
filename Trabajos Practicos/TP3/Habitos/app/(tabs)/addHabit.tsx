@@ -40,7 +40,7 @@ const AddHabit = () => {
         setDb(database);
         // await database.execAsync("DROP TABLE IF EXISTS habits;");
         await database.execAsync(
-          "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 1, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
+          "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 0, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
         );
       }
     };
