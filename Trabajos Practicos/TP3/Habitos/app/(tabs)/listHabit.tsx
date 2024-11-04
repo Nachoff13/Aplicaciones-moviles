@@ -6,6 +6,7 @@ import * as SQLite from 'expo-sqlite';
 import { auth } from '../../firebaseConfig';
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Switch } from 'react-native-paper';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -33,8 +34,8 @@ const ListHabitScreen: React.FC = () => {
   if (!currentUser) {
     Alert.alert("Error", "No se encontró el usuario autenticado");
     return null;
-
   }
+  
   const userId = currentUser.uid;
 
   useEffect(() => {
@@ -91,8 +92,7 @@ const ListHabitScreen: React.FC = () => {
         setHabits(sortedHabits);
       }
     } catch (error) {
-      const errorMessage =
-        (error as Error).message || "Ocurrió un error inesperado";
+      const errorMessage = (error as Error).message || "Ocurrió un error inesperado";
       Alert.alert("Error al obtener los hábitos", errorMessage);
     }
   };
@@ -113,6 +113,41 @@ const ListHabitScreen: React.FC = () => {
       }
     } else {
       Alert.alert("Error", "Base de datos no inicializada");
+    }
+  };
+
+  const handleCompleteHabit = async (habitId: string, currentActive: number) => {
+    if (!db) {
+      Alert.alert("Error", "Base de datos no inicializada");
+      return;
+    }
+    
+    // Cambia el estado del switch inmediatamente
+    const newActiveState = currentActive === 1 ? 0 : 1;
+    setHabits((prevHabits) =>
+      prevHabits.map((habit) =>
+        habit.id === habitId ? { ...habit, active: newActiveState } : habit
+      )
+    );
+
+    try {
+      await db.runAsync(
+        'UPDATE habits SET active = :active WHERE id = :id',
+        {
+          ':active': newActiveState,
+          ':id': habitId,
+        }
+      );
+      //Alert.alert("Éxito", `Hábito marcado como ${newActiveState === 0 ? "no completado" : "completado"}.`);
+    } catch (error) {
+      console.error("Error al actualizar el estado del hábito:", error);
+      // Si hay un error, revertimos el cambio
+      setHabits((prevHabits) =>
+        prevHabits.map((habit) =>
+          habit.id === habitId ? { ...habit, active: currentActive } : habit
+        )
+      );
+      Alert.alert("Error", "No se pudo actualizar el estado del hábito.");
     }
   };
 
@@ -151,6 +186,14 @@ const ListHabitScreen: React.FC = () => {
               <View style={styles.row}>
                 <Text style={styles.subTitle}>Horario de Fin: </Text>
                 <Text style={styles.content}>{item.end_time}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Completado: </Text>
+                <Switch
+                  value={item.active === 1} // Estado activo o completado
+                  onValueChange={() => handleCompleteHabit(item.id, item.active)}
+                  color="#4CAF50"
+                />
               </View>
             </View>
           </TouchableOpacity>
