@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Alert, StyleSheet, TouchableOpacity, Text, ScrollView, Platform, Modal } from 'react-native';
+import { View, TextInput, Alert, TouchableOpacity, Text, ScrollView, Platform, Modal, Button } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,7 +8,7 @@ import { CheckBox } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useTheme } from '../../components/ThemeContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import styles from '../../constants/AddHabitStyles'; // Importar los estilos
 
 type RootStackParamList = {
   AddHabit: undefined;
@@ -25,7 +25,7 @@ const AddHabit = () => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isPickerVisible, setPickerVisible] = useState(false);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const currentTheme = theme === 'light' ? styles.light : styles.dark;
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
   const [startTime, setStartTime] = useState(new Date());
@@ -38,7 +38,6 @@ const AddHabit = () => {
       if (Platform.OS !== 'web') {
         const database = await SQLite.openDatabaseAsync('habits.db');
         setDb(database);
-        // await database.execAsync("DROP TABLE IF EXISTS habits;");
         await database.execAsync(
           "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 0, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
         );
@@ -119,6 +118,7 @@ const AddHabit = () => {
       <TextInput
         style={[styles.input, currentTheme.input]}
         placeholder="Nombre del hábito"
+        placeholderTextColor={theme === 'light' ? '#000' : '#aaa'}
         value={habitName}
         onChangeText={setHabitName}
       />
@@ -154,11 +154,12 @@ const AddHabit = () => {
        </Modal>
        </>
       ) : (
-        <View style={[styles.pickerContainerAndroid, currentTheme.input]}>
+        <View style={[styles.pickerContainerAndroid, { backgroundColor: theme === 'light' ? '#fff' : '#333' }]}>
         <Picker
           selectedValue={habitImportance}
           onValueChange={(itemValue) => setHabitImportance(itemValue)}
-          style={styles.picker}
+          style={[styles.picker, { color: theme === 'light' ? '#000' : '#fff' }]} // Ajustar el color del texto del Picker
+          dropdownIconColor={theme === 'light' ? '#000' : '#fff'} // Ajustar el color del icono del dropdown
         >
           <Picker.Item label="Seleccione una importancia" value="" />
           <Picker.Item label="Baja" value="Baja" />
@@ -172,23 +173,26 @@ const AddHabit = () => {
       <TextInput
         style={[styles.input, currentTheme.input]}
         placeholder="Descripción"
+        placeholderTextColor={theme === 'light' ? '#000' : '#aaa'}
         value={habitDescription}
         onChangeText={setHabitDescription}
       />
 
-      <Text style={styles.label}>Días de la semana</Text>
+      <Text style={[styles.label, currentTheme.text]}>Días de la semana</Text>
       {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day) => (
         <CheckBox
           key={day}
           title={day}
           checked={selectedDays.includes(day)}
           onPress={() => toggleDay(day)}
+          containerStyle={currentTheme.checkboxContainer}
+          textStyle={currentTheme.text}
         />
       ))}
 
-      <Text style={styles.label}>Horario de Inicio</Text>
-      <TouchableOpacity style={styles.buttonHour} onPress={() => setStartPickerVisible(true)}>
-        <Text style={styles.buttonTextHour}>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+      <Text style={[styles.label, currentTheme.text]}>Horario de Inicio</Text>
+      <TouchableOpacity style={[styles.buttonHour, currentTheme.input]} onPress={() => setStartPickerVisible(true)}>
+        <Text style={[styles.buttonTextHour, currentTheme.text]}>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={isStartPickerVisible}
@@ -197,9 +201,9 @@ const AddHabit = () => {
         onCancel={() => setStartPickerVisible(false)}
       />
 
-      <Text style={styles.label}>Horario de Fin</Text>
-      <TouchableOpacity style={styles.buttonHour} onPress={() => setEndPickerVisible(true)}>
-        <Text style={styles.buttonTextHour}>{endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+      <Text style={[styles.label, currentTheme.text]}>Horario de Fin</Text>
+      <TouchableOpacity style={[styles.buttonHour, currentTheme.input]} onPress={() => setEndPickerVisible(true)}>
+        <Text style={[styles.buttonTextHour, currentTheme.text]}>{endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={isEndPickerVisible}
@@ -211,110 +215,8 @@ const AddHabit = () => {
       <TouchableOpacity style={[styles.button, currentTheme.button]} onPress={handleAddHabit}>
         <Text style={styles.buttonText}>Agregar Hábito</Text>
       </TouchableOpacity>
-
-      <View style={styles.toggleButtonContainer}>
-        <TouchableOpacity onPress={toggleTheme}>
-          <Icon
-            name={theme === 'light' ? 'weather-night' : 'white-balance-sunny'}
-            size={24}
-            color={theme === 'light' ? '#000' : '#fff'}
-          />
-        </TouchableOpacity>
-      </View>
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  light: {
-    container: { backgroundColor: '#f7f7f7' },
-    text: { color: '#000' },
-    input: { backgroundColor: '#fff', borderColor: '#ddd' },
-    button: { backgroundColor: '#4285f4' },
-  },
-  dark: {
-    container: { backgroundColor: '#000' },
-    text: { color: '#fff' },
-    input: { backgroundColor: '#333', borderColor: '#555' },
-    button: { backgroundColor: '#4285f4' },
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    alignSelf: 'center',
-  },
-  input: { 
-    padding: 10, 
-    borderRadius: 5, 
-    borderWidth: 1, 
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  pickerContaineriOS: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-  },
-  pickerContainerAndroid: {
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-  },
-  button: {
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5,
-    marginBottom: 25,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  toggleButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-  },
-  buttonHour: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    borderColor: '#C3C3C3',
-    borderWidth: 1,
-    marginBottom: 15,
-  },
-  buttonTextHour: {
-    color: '#000000',
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-});
 
 export default AddHabit;

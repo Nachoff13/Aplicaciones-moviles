@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
@@ -7,7 +7,7 @@ import HabitList from '../../components/HabitList';
 import HabitModal from '../../components/HabitModal';
 import SearchBar from '../../components/SearchBar';
 import { useTheme } from '../../components/ThemeContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import styles from '../../constants/DetailHabitStyles'; // Importar los estilos
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -26,7 +26,7 @@ type Habit = {
 
 const DetailHabitScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'detailHabit'>>();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const currentTheme = theme === 'light' ? styles.light : styles.dark;
   const [habits, setHabits] = useState<Habit[]>([]);
   const [filteredHabits, setFilteredHabits] = useState<Habit[]>([]);
@@ -200,55 +200,8 @@ const DetailHabitScreen: React.FC = () => {
         editEndTime={editEndTime}
         setEditEndTime={setEditEndTime}
       />
-
-      <View style={styles.toggleButtonContainer}>
-        <TouchableOpacity onPress={toggleTheme}>
-          <Icon
-            name={theme === 'light' ? 'weather-night' : 'white-balance-sunny'}
-            size={24}
-            color={theme === 'light' ? '#000' : '#fff'}
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  light: {
-    container: { backgroundColor: '#fff' },
-    text: { color: '#000' },
-    button: { backgroundColor: '#ff4d4d' },
-  },
-  dark: {
-    container: { backgroundColor: '#000' },
-    text: { color: '#fff' },
-    button: { backgroundColor: '#ff4d4d' },
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    alignSelf: 'center',
-  },
-  habitContainer: { marginBottom: 16, padding: 16, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
-  subTitle: { fontSize: 18 },
-  deleteBtn: { padding: 10, borderRadius: 5, alignItems: 'center', marginVertical: 10, width: '90%', alignSelf: 'center' },
-  btnText: { color: '#fff', fontSize: 16 },
-  searchInput: { padding: 10, borderRadius: 5, borderColor: '#ddd', borderWidth: 1, marginBottom: 10, width: '90%', alignSelf: 'center' },
-  actionButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  modalContainer: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#fff' },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
-  input: { padding: 10, borderRadius: 5, borderColor: '#ddd', borderWidth: 1, marginBottom: 10 },
-  modalButtons: { flexDirection: 'row', justifyContent: 'space-around' },
-  modalButton: { backgroundColor: '#007bff', padding: 10, borderRadius: 5, alignItems: 'center', width: '40%' },
-  cancelButton: { backgroundColor: '#ff4d4d' },
-  toggleButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-  },
-});
 
 export default DetailHabitScreen;
