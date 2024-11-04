@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
-import { auth } from '../../firebaseConfig'; 
+import { auth } from '../../firebaseConfig';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -13,21 +13,22 @@ type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'de
 
 const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
-  const [habits, setHabits] = useState<
-    {
-      id: string;
-      name: string;
-      importance: string;
-      description: string;
-      active: number;
-    }[]
-  >([]);
+  const [habits, setHabits] = useState<{
+    id: string;
+    name: string;
+    importance: string;
+    description: string;
+    active: number;
+    days: string;
+    start_time: string;
+    end_time: string;
+  }[]>([]);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
   const currentUser = auth.currentUser;
   if (!currentUser) {
     Alert.alert("Error", "No se encontró el usuario autenticado");
-    return;
+    return null;
   }
   const userId = currentUser.uid;
 
@@ -58,12 +59,22 @@ const ListHabitScreen: React.FC = () => {
         importance: string;
         description: string;
         active: number;
+        days: string;
+        start_time: string;
+        end_time: string;
       }[];
 
-      if (fetchedHabits.length === 0) {
-        Alert.alert("No se encontraron hábitos.");
+      const today = new Date();
+      const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const todayName = dayNames[today.getDay()];
+
+      // Filtra habitos que contengan el dia actual
+      const filteredHabits = fetchedHabits.filter(habit => habit.days.includes(todayName));
+
+      if (filteredHabits.length === 0) {
+        Alert.alert("No se encontraron hábitos para hoy.");
       } else {
-        setHabits(fetchedHabits);
+        setHabits(filteredHabits);
       }
     } catch (error) {
       const errorMessage =
@@ -101,20 +112,34 @@ const ListHabitScreen: React.FC = () => {
         data={habits}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.habitContainer}>
-            <View style={styles.row}>
-              <Text style={styles.subTitle}>Nombre: </Text>
-              <Text style={styles.content}>{item.name}</Text>
+          <TouchableOpacity onPress={() => handlePress(item.id)}>
+            <View style={styles.habitContainer}>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Nombre: </Text>
+                <Text style={styles.content}>{item.name}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Importancia: </Text>
+                <Text style={styles.content}>{item.importance}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Descripción: </Text>
+                <Text style={styles.content}>{item.description}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Días: </Text>
+                <Text style={styles.content}>{item.days}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Horario de Inicio: </Text>
+                <Text style={styles.content}>{item.start_time}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subTitle}>Horario de Fin: </Text>
+                <Text style={styles.content}>{item.end_time}</Text>
+              </View>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.subTitle}>Importancia: </Text>
-              <Text style={styles.content}>{item.importance}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.subTitle}>Descripción: </Text>
-              <Text style={styles.content}>{item.description}</Text>
-            </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -127,14 +152,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f7f7f7',
   },
-
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 30,
     alignSelf: 'center',
   },
-
   habitContainer: {
     marginBottom: 16,
     padding: 16,
@@ -145,11 +168,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
-
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
   subTitle: { fontSize: 18, fontWeight: 'bold' },
   content: { fontSize: 16, marginLeft: 0 },
-
   deleteBtn: {
     backgroundColor: '#ff4d4d',
     padding: 10,
@@ -160,15 +181,6 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
   },
-
-  btn: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-
   btnText: {
     color: '#fff',
     fontSize: 16,
