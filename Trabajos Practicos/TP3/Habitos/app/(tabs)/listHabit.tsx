@@ -228,7 +228,7 @@ const ListHabitScreen: React.FC = () => {
                 />
               </View>
               <TouchableOpacity 
-                style={[styles.progressBtn, currentTheme.button]} 
+                style={[styles.progressBtn, currentTheme.progressBtn]} 
                 onPress={() => handleProgressPress(item.id)}
               >
                 <Text style={styles.btnText}>Ver Progreso</Text>
@@ -307,6 +307,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
+  },
+  progressBtn: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginVertical: 15,
+    alignItems: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   light: {
     container: {
