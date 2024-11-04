@@ -52,7 +52,7 @@ const LoginScreen = () => {
           if (userCredential.user.email) {
             login(userCredential.user.email);
             console.log('Usuario autenticado con Google:', userCredential.user.email);
-            router.push('/home');
+            router.replace('/home');
           } else {
             setErrorMessage('No se pudo obtener el email del usuario.');
           }
@@ -66,7 +66,7 @@ const LoginScreen = () => {
   useEffect(() => {
     if (isAuthenticated && !hasRedirected) {
       setHasRedirected(true);
-      router.push('/home');
+      router.replace('/home');
     }
   }, [isAuthenticated, hasRedirected]);
 
@@ -105,7 +105,7 @@ const LoginScreen = () => {
       if (userCredential.user.email) {
         login(userCredential.user.email);
         console.log('Usuario autenticado:', userCredential.user.email);
-        router.push('/home');
+        router.replace('/home');
       } else {
         setErrorMessage('No se pudo obtener el email del usuario.');
       }
@@ -134,7 +134,7 @@ const LoginScreen = () => {
         await signInWithCredential(auth, credential);
         await login(userEmail);
         console.log('Usuario autenticado con Google:', userEmail);
-        router.push('/home');
+        router.replace('/home');
       }
     } catch (error) {
       setErrorMessage('Ocurrió un error al iniciar sesión con Google. Intenta nuevamente.');
