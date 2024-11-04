@@ -71,10 +71,17 @@ const ListHabitScreen: React.FC = () => {
       // Filtra habitos que contengan el dia actual
       const filteredHabits = fetchedHabits.filter(habit => habit.days.includes(todayName));
 
-      if (filteredHabits.length === 0) {
+      // Ordena los hábitos por hora de inicio
+      const sortedHabits = filteredHabits.sort((a, b) => {
+        const [aHours, aMinutes] = a.start_time.split(':').map(Number);
+        const [bHours, bMinutes] = b.start_time.split(':').map(Number);
+        return aHours !== bHours ? aHours - bHours : aMinutes - bMinutes;
+      });
+
+      if (sortedHabits.length === 0) {
         Alert.alert("No se encontraron hábitos para hoy.");
       } else {
-        setHabits(filteredHabits);
+        setHabits(sortedHabits);
       }
     } catch (error) {
       const errorMessage =
