@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text, Alert, Platform, Modal } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -20,6 +20,7 @@ const AddHabit = () => {
   const [habitImportance, setHabitImportance] = useState<string>('');
   const [habitDescription, setHabitDescription] = useState<string>('');
   const [habitActive, setHabitActive] = useState<number>(1);
+  const [isPickerVisible, setPickerVisible] = useState(false);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
   const { theme, toggleTheme } = useTheme();
   const currentTheme = theme === 'light' ? styles.light : styles.dark;
@@ -90,7 +91,37 @@ const AddHabit = () => {
       />
       
       <Text style={[styles.label, currentTheme.text]}>Importancia</Text>
-      <View style={[styles.pickerContainer, currentTheme.input]}>
+      {Platform.OS === 'ios' ? (
+        <>
+        <TouchableOpacity onPress={() => setPickerVisible(true)}>
+          <Text style={[styles.input, currentTheme.input]}>{habitImportance || "Seleccione una importancia"}</Text>
+        </TouchableOpacity>
+         <Modal
+         visible={isPickerVisible}
+         transparent={true}
+         animationType="fade"
+         onRequestClose={() => setPickerVisible(false)}
+       >
+         <View style={styles.modalContainer}>
+           <View style={[styles.pickerContaineriOS, currentTheme.input]}>
+             <Picker
+               selectedValue={habitImportance}
+               onValueChange={(itemValue) => {
+                 setHabitImportance(itemValue);
+               }}
+             >
+               <Picker.Item label="Seleccione una importancia" value="" />
+               <Picker.Item label="Baja" value="Baja" />
+               <Picker.Item label="Media" value="Media" />
+               <Picker.Item label="Alta" value="Alta" />
+             </Picker>
+             <Button title="Guardar" onPress={() => setPickerVisible(false)} />
+           </View>
+         </View>
+       </Modal>
+       </>
+      ) : (
+        <View style={[styles.pickerContainerAndroid, currentTheme.input]}>
         <Picker
           selectedValue={habitImportance}
           onValueChange={(itemValue) => setHabitImportance(itemValue)}
@@ -101,7 +132,8 @@ const AddHabit = () => {
           <Picker.Item label="Media" value="Media" />
           <Picker.Item label="Alta" value="Alta" />
         </Picker>
-      </View>
+        </View>
+      )}
 
       <Text style={[styles.label, currentTheme.text]}>Descripción</Text>
       <TextInput
@@ -161,7 +193,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  pickerContainer: {
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  pickerContaineriOS: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  pickerContainerAndroid: {
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
