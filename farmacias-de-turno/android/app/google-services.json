@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1024367125325",
+    "project_id": "react-native-farmacia-8a478",
+    "storage_bucket": "react-native-farmacia-8a478.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024367125325:android:e906f25e126176a7a18d04",
+        "android_client_info": {
+          "package_name": "com.anonymous.farmaciasdeturno"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlI2yWLpDSBLb3KeP79xPGNTGWXTTAtUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
