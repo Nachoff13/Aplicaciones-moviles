@@ -6,7 +6,8 @@ import * as SQLite from 'expo-sqlite';
 import HabitList from '../../components/HabitList';
 import HabitModal from '../../components/HabitModal';
 import SearchBar from '../../components/SearchBar';
-
+import { useTheme } from '../../components/ThemeContext';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -20,9 +21,10 @@ type Habit = {
   active: number;
 };
 
-
 const DetailHabitScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'detailHabit'>>();
+  const { theme, toggleTheme } = useTheme();
+  const currentTheme = theme === 'light' ? styles.light : styles.dark;
   const [habits, setHabits] = useState<Habit[]>([]);
   const [filteredHabits, setFilteredHabits] = useState<Habit[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -33,7 +35,6 @@ const DetailHabitScreen: React.FC = () => {
   const [editImportance, setEditImportance] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editActive, setEditActive] = useState(1);
-
 
   useEffect(() => {
     const initDb = async () => {
@@ -153,10 +154,10 @@ const DetailHabitScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Detalles de Hábitos</Text>
+    <View style={[styles.container, currentTheme.container]}>
+      <Text style={[styles.title, currentTheme.text]}>Detalles de Hábitos</Text>
       <SearchBar searchText={searchText} onSearch={handleSearch} />
-      <TouchableOpacity style={styles.deleteBtn} onPress={handleDeleteAll}>
+      <TouchableOpacity style={[styles.deleteBtn, currentTheme.button]} onPress={handleDeleteAll}>
         <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
       </TouchableOpacity>
       <HabitList habits={filteredHabits} onEdit={handleEditHabit} onDelete={handleDeleteHabit} />
@@ -177,12 +178,32 @@ const DetailHabitScreen: React.FC = () => {
         editActive={editActive}
         setEditActive={setEditActive}
       />
+
+      <View style={styles.toggleButtonContainer}>
+        <TouchableOpacity onPress={toggleTheme}>
+          <Icon
+            name={theme === 'light' ? 'weather-night' : 'white-balance-sunny'}
+            size={24}
+            color={theme === 'light' ? '#000' : '#fff'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#f7f7f7' },
+  container: { flex: 1, padding: 16 },
+  light: {
+    container: { backgroundColor: '#fff' },
+    text: { color: '#000' },
+    button: { backgroundColor: '#ff4d4d' },
+  },
+  dark: {
+    container: { backgroundColor: '#000' },
+    text: { color: '#fff' },
+    button: { backgroundColor: '#ff4d4d' },
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -191,7 +212,7 @@ const styles = StyleSheet.create({
   },
   habitContainer: { marginBottom: 16, padding: 16, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
   subTitle: { fontSize: 18 },
-  deleteBtn: { backgroundColor: '#ff4d4d', padding: 10, borderRadius: 5, alignItems: 'center', marginVertical: 10, width: '90%', alignSelf: 'center' },
+  deleteBtn: { padding: 10, borderRadius: 5, alignItems: 'center', marginVertical: 10, width: '90%', alignSelf: 'center' },
   btnText: { color: '#fff', fontSize: 16 },
   searchInput: { padding: 10, borderRadius: 5, borderColor: '#ddd', borderWidth: 1, marginBottom: 10, width: '90%', alignSelf: 'center' },
   actionButtons: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
@@ -201,6 +222,11 @@ const styles = StyleSheet.create({
   modalButtons: { flexDirection: 'row', justifyContent: 'space-around' },
   modalButton: { backgroundColor: '#007bff', padding: 10, borderRadius: 5, alignItems: 'center', width: '40%' },
   cancelButton: { backgroundColor: '#ff4d4d' },
+  toggleButtonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+  },
 });
 
 export default DetailHabitScreen;
