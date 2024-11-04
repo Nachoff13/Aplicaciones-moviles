@@ -52,11 +52,14 @@ const HabitModal: React.FC<HabitModalProps> = ({
   }, [editDays, visible]);
 
   const toggleDay = (day: string) => {
-    setSelectedDays((prevDays) =>
-      prevDays.includes(day)
+    setSelectedDays((prevDays) => {
+      const newDays = prevDays.includes(day)
         ? prevDays.filter((d) => d !== day)
-        : [...prevDays, day]
-    );
+        : [...prevDays, day];
+
+      setEditDays(newDays.join(','));
+      return newDays;
+    });
   };
 
   const handleStartConfirm = (time: Date) => {
