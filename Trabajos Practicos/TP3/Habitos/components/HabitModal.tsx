@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { CheckBox } from 'react-native-elements';
@@ -45,7 +45,11 @@ const HabitModal: React.FC<HabitModalProps> = ({
 }) => {
   const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
   const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
-  const [selectedDays, setSelectedDays] = useState(editDays.split(','));
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+  useEffect(() => {
+    setSelectedDays(editDays.split(','));
+  }, [editDays, visible]);
 
   const toggleDay = (day: string) => {
     setSelectedDays((prevDays) =>
@@ -59,6 +63,7 @@ const HabitModal: React.FC<HabitModalProps> = ({
     setEditStartTime(time.toTimeString().split(' ')[0].slice(0, 5)); // Formato HH:mm:ss
     setStartTimePickerVisible(false);
   };
+
   const handleEndConfirm = (time: Date) => {
     setEditEndTime(time.toTimeString().split(' ')[0].slice(0, 5)); // Formato HH:mm:ss
     setEndTimePickerVisible(false);
