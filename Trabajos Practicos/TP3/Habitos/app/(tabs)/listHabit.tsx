@@ -10,6 +10,7 @@ import { Switch } from 'react-native-paper';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
+  progressHabit: { habitId: string };
 };
 
 type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'detailHabit'>;
@@ -35,7 +36,7 @@ const ListHabitScreen: React.FC = () => {
     Alert.alert("Error", "No se encontró el usuario autenticado");
     return null;
   }
-  
+
   const userId = currentUser.uid;
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const ListHabitScreen: React.FC = () => {
       const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
       const todayName = dayNames[today.getDay()];
 
-      // Filtra habitos que contengan el dia actual
+      // Filtra hábitos que contengan el día actual
       const filteredHabits = fetchedHabits.filter(habit => habit.days.includes(todayName));
 
       // Ordena los hábitos por hora de inicio
@@ -101,6 +102,10 @@ const ListHabitScreen: React.FC = () => {
     navigation.navigate("detailHabit", { habitId });
   };
 
+  const handleProgressPress = (habitId: string) => {
+    navigation.navigate("progressHabit", { habitId });
+  };
+
   const handleDeleteAll = async () => {
     if (db) {
       try {
@@ -121,7 +126,10 @@ const ListHabitScreen: React.FC = () => {
       Alert.alert("Error", "Base de datos no inicializada");
       return;
     }
-    
+
+    const today = new Date();
+    const todayDateString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
     // Cambia el estado del switch inmediatamente
     const newActiveState = currentActive === 1 ? 0 : 1;
     setHabits((prevHabits) =>
@@ -131,6 +139,7 @@ const ListHabitScreen: React.FC = () => {
     );
 
     try {
+      // Actualiza el estado en la tabla habits
       await db.runAsync(
         'UPDATE habits SET active = :active WHERE id = :id',
         {
@@ -138,10 +147,33 @@ const ListHabitScreen: React.FC = () => {
           ':id': habitId,
         }
       );
-      //Alert.alert("Éxito", `Hábito marcado como ${newActiveState === 0 ? "no completado" : "completado"}.`);
+
+      // Manejo del progreso del hábito
+      if (newActiveState === 1) {
+        // Si se marca como completado, inserta en habit_progress
+        await db.runAsync(
+          'INSERT INTO habit_progress (habit_id, date, completed) VALUES (:habitId, :date, :completed)',
+          {
+            ':habitId': habitId,
+            ':date': todayDateString,
+            ':completed': 1,
+          }
+        );
+      } else {
+        // Si se marca como no completado, elimina de habit_progress
+        await db.runAsync(
+          'DELETE FROM habit_progress WHERE habit_id = :habitId AND date = :date',
+          {
+            ':habitId': habitId,
+            ':date': todayDateString,
+          }
+        );
+      }
+
+      Alert.alert("Éxito", `Hábito marcado como ${newActiveState === 0 ? "no completado" : "completado"}.`);
     } catch (error) {
       console.error("Error al actualizar el estado del hábito:", error);
-      // Si hay un error, revertimos el cambio
+      // Si hay un error, revertimos el cambio en el estado local
       setHabits((prevHabits) =>
         prevHabits.map((habit) =>
           habit.id === habitId ? { ...habit, active: currentActive } : habit
@@ -176,25 +208,31 @@ const ListHabitScreen: React.FC = () => {
                 <Text style={[styles.content, currentTheme.text]}>{item.description}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Días: </Text>
-                <Text style={styles.content}>{item.days}</Text>
+                <Text style={[styles.subTitle]}>Días: </Text>
+                <Text style={[styles.content]}>{item.days}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Horario de Inicio: </Text>
-                <Text style={styles.content}>{item.start_time}</Text>
+                <Text style={[styles.subTitle]}>Horario de Inicio: </Text>
+                <Text style={[styles.content]}>{item.start_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Horario de Fin: </Text>
-                <Text style={styles.content}>{item.end_time}</Text>
+                <Text style={[styles.subTitle]}>Horario de Fin: </Text>
+                <Text style={[styles.content]}>{item.end_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Completado: </Text>
+                <Text style={[styles.subTitle]}>Completado: </Text>
                 <Switch
-                  value={item.active === 1} // Estado activo o completado
+                  value={item.active === 1} // Estado completado o no completado
                   onValueChange={() => handleCompleteHabit(item.id, item.active)}
                   color="#4CAF50"
                 />
               </View>
+              <TouchableOpacity 
+                style={[styles.progressBtn, currentTheme.button]} 
+                onPress={() => handleProgressPress(item.id)}
+              >
+                <Text style={styles.btnText}>Ver Progreso</Text>
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
@@ -236,13 +274,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   habitContainer: {
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 10,
   },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
   subTitle: { fontSize: 18, fontWeight: 'bold' },
@@ -271,6 +307,34 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 20,
+  },
+  light: {
+    container: {
+      backgroundColor: 'white',
+    },
+    text: {
+      color: 'black',
+    },
+    button: {
+      backgroundColor: '#2196F3',
+    },
+    habitContainer: {
+      backgroundColor: '#f9f9f9',
+    },
+  },
+  dark: {
+    container: {
+      backgroundColor: '#121212',
+    },
+    text: {
+      color: 'white',
+    },
+    button: {
+      backgroundColor: '#BB86FC',
+    },
+    habitContainer: {
+      backgroundColor: '#1E1E1E',
+    },
   },
 });
 
