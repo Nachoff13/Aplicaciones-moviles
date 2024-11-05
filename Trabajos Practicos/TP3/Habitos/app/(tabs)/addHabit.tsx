@@ -21,7 +21,7 @@ const AddHabit = () => {
   const [habitName, setHabitName] = useState<string>('');
   const [habitImportance, setHabitImportance] = useState<string>('');
   const [habitDescription, setHabitDescription] = useState<string>('');
-  const [habitActive, setHabitActive] = useState(1);
+  const [habitActive, setHabitActive] = useState(0);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isPickerVisible, setPickerVisible] = useState(false);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
