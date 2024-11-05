@@ -86,7 +86,7 @@ const DetailHabitScreen: React.FC = () => {
     setIsConfirmDeleteVisible(true); // Muestra el modal de confirmación
   };
 
-  // Función que se ejecuta al confirmar la eliminación
+  // Función que se ejecuta al confirmar la eliminación de un hábito
   const confirmDelete = async () => {
     if (habitToDelete) {
       if (db) {
@@ -129,7 +129,12 @@ const DetailHabitScreen: React.FC = () => {
     }
   };
 
-  const handleDeleteAll = async () => {
+  const handleDeleteAll = () => {
+    setIsConfirmDeleteVisible(true); // Muestra el modal de confirmación
+  };
+
+  // Función que se ejecuta al confirmar la eliminación de todos los hábitos
+  const confirmDeleteAll = async () => {
     if (db) {
       try {
         await db.runAsync('DELETE FROM habits', {});
@@ -141,6 +146,7 @@ const DetailHabitScreen: React.FC = () => {
         Alert.alert('Error', 'No se pudieron eliminar los hábitos.');
       }
     }
+    setIsConfirmDeleteVisible(false); // Cierra el modal
   };
 
   const handleSaveEdit = async () => {
@@ -219,8 +225,11 @@ const DetailHabitScreen: React.FC = () => {
 
       <ConfirmDeleteModal
         visible={isConfirmDeleteVisible}
-        onConfirm={confirmDelete}
-        onCancel={() => setIsConfirmDeleteVisible(false)}
+        onConfirm={habitToDelete ? confirmDelete : confirmDeleteAll} // Usa confirmDelete si hay un hábito específico a eliminar
+        onCancel={() => {
+          setIsConfirmDeleteVisible(false);
+          setHabitToDelete(null); // Reinicia la variable
+        }}
       />
       <View style={styles.toggleButtonContainer}>
         <TouchableOpacity onPress={toggleTheme}>

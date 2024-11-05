@@ -18,7 +18,6 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({ visible, onConf
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Confirmar eliminación</Text>
-          <Text style={styles.message}>¿Estás seguro?</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
               <Text style={styles.buttonText}>Cancelar</Text>
