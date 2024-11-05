@@ -1,8 +1,10 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { lightStyles, darkStyles } from '../constants/HabitItemStyles';
 
-const HabitItem = ({ habit, onEdit, onDelete }) => {
+const HabitItem = ({ isDarkMode, habit, onEdit, onDelete }) => {
+  const styles = isDarkMode ? darkStyles : lightStyles;
+
   return (
     <View style={styles.habitContainer}>
       <View style={styles.row}>
@@ -40,13 +42,5 @@ const HabitItem = ({ habit, onEdit, onDelete }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  habitContainer: { marginBottom: 16, padding: 16, backgroundColor: '#fff', borderRadius: 8, elevation: 2 },
-  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
-  subTitle: { fontSize: 18, fontWeight: 'bold' },
-  content: { fontSize: 16, marginLeft: 0 },
-  actionButtons: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 13 },
-});
 
 export default HabitItem;

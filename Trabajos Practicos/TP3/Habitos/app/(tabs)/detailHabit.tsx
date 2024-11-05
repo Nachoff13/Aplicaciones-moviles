@@ -205,7 +205,7 @@ const DetailHabitScreen: React.FC = () => {
       <TouchableOpacity style={[styles.deleteBtn, currentTheme.button]} onPress={handleDeleteAll}>
         <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
       </TouchableOpacity>
-      <HabitList habits={filteredHabits} onEdit={handleEditHabit} onDelete={handleDeleteHabit} />
+      <HabitList isDarkMode={isDark} habits={filteredHabits} onEdit={handleEditHabit} onDelete={handleDeleteHabit} />
       <HabitModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
