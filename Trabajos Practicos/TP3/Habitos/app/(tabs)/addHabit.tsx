@@ -48,15 +48,35 @@ const AddHabit = () => {
 
   useEffect(() => {
     const initializeDatabase = async () => {
-      if (Platform.OS !== "web") {
-        const database = await SQLite.openDatabaseAsync("habits.db");
+      if (Platform.OS !== 'web') {
+        const database = await SQLite.openDatabaseAsync('habits.db');
         setDb(database);
+        //await database.execAsync("DROP TABLE IF EXISTS habits;");
         await database.execAsync(
-          "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY NOT NULL, name TEXT, importance TEXT, description TEXT, active INTEGER DEFAULT 0, user_id TEXT, days TEXT, start_time TEXT, end_time TEXT);"
+          `CREATE TABLE IF NOT EXISTS habits (
+            id INTEGER PRIMARY KEY NOT NULL,
+            name TEXT,
+            importance TEXT,
+            description TEXT,
+            active INTEGER DEFAULT 0,
+            user_id TEXT,
+            days TEXT,
+            start_time TEXT,
+            end_time TEXT
+          );`
+        );
+        await database.execAsync(
+          `CREATE TABLE IF NOT EXISTS habit_progress (
+            id INTEGER PRIMARY KEY NOT NULL,
+            habit_id INTEGER,
+            date TEXT,
+            completed INTEGER DEFAULT 0,
+            FOREIGN KEY (habit_id) REFERENCES habits (id) ON DELETE CASCADE
+          );`
         );
       }
     };
-
+  
     initializeDatabase();
   }, []);
 
