@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
 import HabitList from '../../components/HabitList';
 import HabitModal from '../../components/HabitModal';
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'; // Importa el modal de confirmación
 import SearchBar from '../../components/SearchBar';
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -42,6 +43,10 @@ const DetailHabitScreen: React.FC = () => {
   const [editStartTime, setEditStartTime] = useState('');
   const [editEndTime, setEditEndTime] = useState('');
 
+  // Nuevos estados para el modal de confirmación
+  const [isConfirmDeleteVisible, setIsConfirmDeleteVisible] = useState(false);
+  const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
+
   useEffect(() => {
     const initDb = async () => {
       if (Platform.OS !== 'web') {
@@ -75,18 +80,29 @@ const DetailHabitScreen: React.FC = () => {
     navigation.navigate('detailHabit', { habitId });
   };
 
-  const handleDeleteHabit = async (id: string) => {
-    if (db) {
-      try {
-        await db.runAsync('DELETE FROM habits WHERE id = :id', { ':id': id });
-        setHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== id));
-        setFilteredHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== id));
-        Alert.alert('Éxito', 'Hábito eliminado exitosamente.');
-      } catch (error) {
-        console.error('Error al eliminar el hábito:', error);
-        Alert.alert('Error', 'No se pudo eliminar el hábito.');
+  // Modificación de handleDeleteHabit para mostrar el modal de confirmación
+  const handleDeleteHabit = (id: string) => {
+    setHabitToDelete(id); // Almacena el ID del hábito a eliminar
+    setIsConfirmDeleteVisible(true); // Muestra el modal de confirmación
+  };
+
+  // Función que se ejecuta al confirmar la eliminación
+  const confirmDelete = async () => {
+    if (habitToDelete) {
+      if (db) {
+        try {
+          await db.runAsync('DELETE FROM habits WHERE id = :id', { ':id': habitToDelete });
+          setHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== habitToDelete));
+          setFilteredHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== habitToDelete));
+          Alert.alert('Éxito', 'Hábito eliminado exitosamente.');
+        } catch (error) {
+          console.error('Error al eliminar el hábito:', error);
+          Alert.alert('Error', 'No se pudo eliminar el hábito.');
+        }
       }
     }
+    setHabitToDelete(null); // Reinicia la variable después de confirmar
+    setIsConfirmDeleteVisible(false); // Cierra el modal
   };
 
   const handleEditHabit = (habit: Habit) => {
@@ -201,6 +217,11 @@ const DetailHabitScreen: React.FC = () => {
         setEditEndTime={setEditEndTime}
       />
 
+      <ConfirmDeleteModal
+        visible={isConfirmDeleteVisible}
+        onConfirm={confirmDelete}
+        onCancel={() => setIsConfirmDeleteVisible(false)}
+      />
       <View style={styles.toggleButtonContainer}>
         <TouchableOpacity onPress={toggleTheme}>
           <Icon
