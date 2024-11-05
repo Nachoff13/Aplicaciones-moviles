@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import styles from '../../constants/HomeScreenStyles'; // Importar los estilos
+import { styles, light, dark } from '../../constants/HomeScreenStyles'; // Importar los estilos
 
 // Define los tipos de navegación directamente en este archivo
 type RootStackParamList = {
@@ -23,7 +23,7 @@ const HomeScreen: React.FC = () => {
   const { email } = useAuth(); // Obtiene los valores del contexto
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const { theme } = useTheme();
-  const currentTheme = theme === 'light' ? styles.light : styles.dark;
+  const currentTheme = theme === "light" ? light : dark;
 
   return (
     <View style={[styles.container, currentTheme.container]}>

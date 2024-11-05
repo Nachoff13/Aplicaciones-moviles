@@ -5,22 +5,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  light: {
-    container: { backgroundColor: '#f7f7f7' },
-    text: { color: '#000' },
-    input: { backgroundColor: '#fff', borderColor: '#ddd', color: '#000' }, // Añadir color del texto
-    button: { backgroundColor: '#4285f4' },
-    checkboxContainer: { backgroundColor: '#f7f7f7', borderColor: '#f7f7f7' },
-    searchInput: { backgroundColor: '#fff', borderColor: '#ddd', color: '#000' },
-  },
-  dark: {
-    container: { backgroundColor: '#000' },
-    text: { color: '#fff' },
-    input: { backgroundColor: '#333', borderColor: '#555', color: '#ccc' }, // Añadir color del texto
-    button: { backgroundColor: '#4285f4' },
-    checkboxContainer: { backgroundColor: '#000', borderColor: '#000' },
-    searchInput: { backgroundColor: '#333', borderColor: '#555', color: '#fff' },
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -89,4 +73,22 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+const light = {
+  container: { backgroundColor: '#f7f7f7' },
+  text: { color: '#000' },
+  input: { backgroundColor: '#fff', borderColor: '#ddd', color: '#000' },
+  button: { backgroundColor: '#4285f4' },
+  checkboxContainer: { backgroundColor: '#f7f7f7', borderColor: '#f7f7f7' },
+  searchInput: { backgroundColor: '#fff', borderColor: '#ddd', color: '#000' },
+};
+
+const dark = {
+  container: { backgroundColor: '#000' },
+  text: { color: '#fff' },
+  input: { backgroundColor: '#333', borderColor: '#555', color: '#ccc' },
+  button: { backgroundColor: '#4285f4' },
+  checkboxContainer: { backgroundColor: '#000', borderColor: '#000' },
+  searchInput: { backgroundColor: '#333', borderColor: '#555', color: '#fff' },
+};
+
+export { styles, light, dark };

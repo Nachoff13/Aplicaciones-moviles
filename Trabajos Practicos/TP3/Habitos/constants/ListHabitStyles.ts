@@ -5,22 +5,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  light: {
-    container: { backgroundColor: '#f7f7f7' },
-    text: { color: '#000' },
-    habitContainer: { backgroundColor: '#fff' },
-    button: { backgroundColor: '#ff4d4d' },
-    subTitle: { color: '#000' },
-    content: { color: '#000' },
-  },
-  dark: {
-    container: { backgroundColor: '#000' },
-    text: { color: '#fff' },
-    habitContainer: { backgroundColor: '#333' },
-    button: { backgroundColor: '#ff4d4d' },
-    subTitle: { color: '#fff' },
-    content: { color: '#fff' },
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -88,5 +72,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+const light= {
+  container: { backgroundColor: '#f7f7f7' },
+  text: { color: '#000' },
+  habitContainer: { backgroundColor: '#fff' },
+  button: { backgroundColor: '#ff4d4d' },
+  subTitle: { color: '#000' },
+  content: { color: '#000' },
+  progressBtn: { backgroundColor: '#4CAF50' },
+  
+};
+const dark= {
+  container: { backgroundColor: '#000' },
+  text: { color: '#fff' },
+  habitContainer: { backgroundColor: '#333' },
+  button: { backgroundColor: '#ff4d4d' },
+  subTitle: { color: '#fff' },
+  content: { color: '#fff' },
+  progressBtn: { backgroundColor: '#4CAF50' },
 
-export default styles;
+};
+export { styles, light, dark };

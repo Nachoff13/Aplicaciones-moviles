@@ -8,7 +8,7 @@ import HabitModal from '../../components/HabitModal';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import SearchBar from '../../components/SearchBar';
 import { useTheme } from '../../components/ThemeContext';
-import styles from '../../constants/DetailHabitStyles';
+import { styles, light, dark } from '../../constants/DetailHabitStyles';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -28,7 +28,7 @@ type Habit = {
 const DetailHabitScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'detailHabit'>>();
   const { theme } = useTheme();
-  const currentTheme = theme === 'light' ? styles.light : styles.dark;
+  const currentTheme = theme === "light" ? light : dark;
   const [habits, setHabits] = useState<Habit[]>([]);
   const [filteredHabits, setFilteredHabits] = useState<Habit[]>([]);
   const [searchText, setSearchText] = useState('');

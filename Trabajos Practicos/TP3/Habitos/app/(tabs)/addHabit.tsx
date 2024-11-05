@@ -18,7 +18,8 @@ import { CheckBox } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useTheme } from "../../components/ThemeContext";
-import styles from "../../constants/AddHabitStyles"; // Importar los estilos
+import { styles, light, dark } from "../../constants/AddHabitStyles";
+
 
 type RootStackParamList = {
   AddHabit: undefined;
@@ -39,7 +40,7 @@ const AddHabit = () => {
   const [isPickerVisible, setPickerVisible] = useState(false);
   const navigation = useNavigation<AddHabitScreenNavigationProp>();
   const { theme } = useTheme();
-  const currentTheme = theme === "light" ? styles.light : styles.dark;
+  const currentTheme = theme === "light" ? light : dark;
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());

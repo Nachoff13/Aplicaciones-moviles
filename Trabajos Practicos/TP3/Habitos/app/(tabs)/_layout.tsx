@@ -14,7 +14,6 @@ import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 import { ThemeProvider, useTheme } from '../../components/ThemeContext';
 import { Colors } from '../../constants/Colors';
 import { View, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Stack = createStackNavigator();
 

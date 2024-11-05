@@ -6,16 +6,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  light: {
-    container: { backgroundColor: '#fff' },
-    text: { color: '#000' },
-    card: { backgroundColor: '#f0f0f0' },
-  },
-  dark: {
-    container: { backgroundColor: '#000' },
-    text: { color: '#fff' },
-    card: { backgroundColor: '#333' },
-  },
   welcomeText: {
     fontSize: 24,
     marginBottom: 20,
@@ -40,4 +30,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+const light= {
+  container: { backgroundColor: '#fff' },
+  text: { color: '#000' },
+  card: { backgroundColor: '#f0f0f0' },
+};
+const dark= {
+  container: { backgroundColor: '#000' },
+  text: { color: '#fff' },
+  card: { backgroundColor: '#333' },
+};
+
+export { styles, light, dark };

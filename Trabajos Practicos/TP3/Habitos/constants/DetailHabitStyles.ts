@@ -5,20 +5,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     padding: 16 
   },
-  light: {
-    container: { backgroundColor: '#fff' },
-    text: { color: '#000' },
-    button: { backgroundColor: '#ff4d4d' },
-    searchInput: { backgroundColor: '#f0f0f0', borderColor: '#ddd', color: '#000' },
-    searchLabel: { color: '#000' },
-  },
-  dark: {
-    container: { backgroundColor: '#100' },
-    text: { color: '#fff' },
-    button: { backgroundColor: '#ff4d4d' },
-    searchInput: { backgroundColor: '#555', borderColor: '#fff', color: '#ccc' },
-    searchLabel: { color: '#ccc' },
-  },
+
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -94,5 +81,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff4d4d' 
   },
 });
+const light= {
+  container: { backgroundColor: '#fff' },
+  text: { color: '#000' },
+  button: { backgroundColor: '#ff4d4d' },
+  searchInput: { backgroundColor: '#f0f0f0', borderColor: '#ddd', color: '#000' },
+  searchLabel: { color: '#000' },
+};
+const dark= {
+  container: { backgroundColor: '#100' },
+  text: { color: '#fff' },
+  button: { backgroundColor: '#ff4d4d' },
+  searchInput: { backgroundColor: '#555', borderColor: '#fff', color: '#ccc' },
+  searchLabel: { color: '#ccc' },
+};
 
-export default styles;
+export { styles, light, dark };

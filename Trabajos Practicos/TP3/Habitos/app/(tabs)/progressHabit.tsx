@@ -125,15 +125,15 @@ const ProgressHabit: React.FC = () => {
           markedDates={markedDates}
           style={[styles.calendar, currentTheme.container]}
           theme={{
-            backgroundColor: currentTheme.container.backgroundColor,
-            calendarBackground: currentTheme.container.backgroundColor,
-            textSectionTitleColor: currentTheme.text.color,
-            dayTextColor: currentTheme.text.color,
-            monthTextColor: currentTheme.text.color,
+            backgroundColor: currentTheme.container.backgroundColor as string,
+            calendarBackground: currentTheme.container.backgroundColor as string,
+            textSectionTitleColor: currentTheme.text.color as string,
+            dayTextColor: currentTheme.text.color as string,
+            monthTextColor: currentTheme.text.color as string,
             todayTextColor: '#007bff',
             selectedDayBackgroundColor: '#007bff',
             selectedDayTextColor: '#ffffff',
-            arrowColor: currentTheme.text.color,
+            arrowColor: currentTheme.text.color as string,
           }}
           locale={'es'}
         />

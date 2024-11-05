@@ -6,7 +6,7 @@ import * as SQLite from 'expo-sqlite';
 import { auth } from '../../firebaseConfig';
 import { useTheme } from '../../components/ThemeContext';
 import { Switch } from 'react-native-paper';
-import styles from '../../constants/ListHabitStyles';
+import { styles, light, dark } from '../../constants/ListHabitStyles';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -18,7 +18,7 @@ type ListHabitScreenNavigationProp = StackNavigationProp<RootStackParamList, 'de
 const ListHabitScreen: React.FC = () => {
   const navigation = useNavigation<ListHabitScreenNavigationProp>();
   const { theme, toggleTheme } = useTheme();
-  const currentTheme = theme === 'light' ? styles.light : styles.dark;
+  const currentTheme = theme === "light" ? light : dark;
   const [habits, setHabits] = useState<{
     id: string;
     name: string;
