@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Platform } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
@@ -7,7 +7,7 @@ import HabitList from '../../components/HabitList';
 import HabitModal from '../../components/HabitModal';
 import SearchBar from '../../components/SearchBar';
 import { useTheme } from '../../components/ThemeContext';
-import styles from '../../constants/DetailHabitStyles'; // Importar los estilos
+import styles from '../../constants/DetailHabitStyles';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
