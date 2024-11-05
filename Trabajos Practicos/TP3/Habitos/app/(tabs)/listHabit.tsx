@@ -206,11 +206,17 @@ const ListHabitScreen: React.FC = () => {
               <View style={styles.row}>
                 <Text style={[styles.subTitleSwitch, currentTheme.subTitle]}>Completado: </Text>
                 <Switch
-                  value={item.active === 1} // Estado activo o completado
+                  value={item.active === 1} // Estado no completado o completado
                   onValueChange={() => handleCompleteHabit(item.id, item.active)}
                   color="#4CAF50"
                 />
               </View>
+              <TouchableOpacity 
+                style={[styles.progressBtn, currentTheme.progressBtn]} 
+                onPress={() => handleProgressPress(item.id, item.days)}
+              >
+                <Text style={styles.btnText}>Ver Progreso</Text>
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}

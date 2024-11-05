@@ -79,6 +79,14 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 20,
   },
+  progressBtn: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginVertical: 15,
+    alignItems: 'center',
+  },
 });
 
 export default styles;
