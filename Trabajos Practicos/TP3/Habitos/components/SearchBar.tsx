@@ -1,14 +1,21 @@
 import React from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { TextInput, StyleSheet, TextInputProps } from 'react-native';
 
-const SearchBar = ({ searchText, onSearch }) => {
+interface SearchBarProps extends TextInputProps {
+  searchText: string;
+  onSearch: (text: string) => void;
+  inputStyle: object;
+  placeholderTextColor: string;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ searchText, onSearch, inputStyle, placeholderTextColor }) => {
   return (
     <TextInput
-      style={styles.searchInput}
+      style={[styles.searchInput, inputStyle]}
       placeholder="Buscar hábito"
       value={searchText}
       onChangeText={onSearch}
-      placeholderTextColor="#626262"
+      placeholderTextColor={placeholderTextColor}
     />
   );
 };
@@ -17,7 +24,6 @@ const styles = StyleSheet.create({
   searchInput: { 
     padding: 10, 
     borderRadius: 5, 
-    borderColor: '##464646',
     borderWidth: 1, 
     marginBottom: 10, 
     width: '90%', 

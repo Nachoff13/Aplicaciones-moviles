@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, FlatList, Alert, TouchableOpacity, Platform } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
@@ -7,6 +7,7 @@ import { auth } from '../../firebaseConfig';
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Switch } from 'react-native-paper';
+import styles from '../../constants/ListHabitStyles'; // Importar los estilos
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -209,33 +210,25 @@ const ListHabitScreen: React.FC = () => {
                 <Text style={[styles.content, currentTheme.text]}>{item.description}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={[styles.subTitle]}>Días: </Text>
-                <Text style={[styles.content]}>{item.days}</Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Días: </Text>
+                <Text style={[styles.content, currentTheme.content]}>{item.days}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={[styles.subTitle]}>Horario de Inicio: </Text>
-                <Text style={[styles.content]}>{item.start_time}</Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Horario de Inicio: </Text>
+                <Text style={[styles.content, currentTheme.content]}>{item.start_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={[styles.subTitle]}>Horario de Fin: </Text>
-                <Text style={[styles.content]}>{item.end_time}</Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Horario de Fin: </Text>
+                <Text style={[styles.content, currentTheme.content]}>{item.end_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={[styles.subTitleSwitch]}>Completado: </Text>
-                <View style={styles.switchContainer}>
-                  <Switch
-                    value={item.active === 1}
-                    onValueChange={() => handleCompleteHabit(item.id, item.active)}
-                    color="#4CAF50"
-                  />
-                </View>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Completado: </Text>
+                <Switch
+                  value={item.active === 1} // Estado activo o completado
+                  onValueChange={() => handleCompleteHabit(item.id, item.active)}
+                  color="#4CAF50"
+                />
               </View>
-              <TouchableOpacity 
-                style={[styles.progressBtn, currentTheme.progressBtn]} 
-                onPress={() => handleProgressPress(item.id, item.days)}
-              >
-                <Text style={styles.btnText}>Ver Progreso</Text>
-              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
@@ -252,116 +245,5 @@ const ListHabitScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  subTitleSwitch: {
-    alignSelf: 'center',
-    fontSize: 18,
-    fontWeight: 'bold' 
-  },
-  light: {
-    container: { backgroundColor: '#f7f7f7' },
-    text: { color: '#000' },
-    habitContainer: { backgroundColor: '#fff' },
-    button: { backgroundColor: '#ff4d4d' },
-  },
-  dark: {
-    container: { backgroundColor: '#000' },
-    text: { color: '#fff' },
-    habitContainer: { backgroundColor: '#333' },
-    button: { backgroundColor: '#ff4d4d' },
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    alignSelf: 'center',
-  },
-  habitContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 10,
-  },
-  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
-  subTitle: { fontSize: 18, fontWeight: 'bold' },
-  content: { fontSize: 16, marginLeft: 0 },
-  deleteBtn: {
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginVertical: 10,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  btn: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  btnText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  toggleButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-  },
-  progressBtn: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    marginVertical: 15,
-    alignItems: 'center',
-  },
-  btnText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  light: {
-    container: {
-      backgroundColor: 'white',
-    },
-    text: {
-      color: 'black',
-    },
-    button: {
-      backgroundColor: '#2196F3',
-    },
-    habitContainer: {
-      backgroundColor: '#f9f9f9',
-    },
-  },
-  dark: {
-    container: {
-      backgroundColor: '#121212',
-    },
-    text: {
-      color: 'white',
-    },
-    button: {
-      backgroundColor: '#BB86FC',
-    },
-    habitContainer: {
-      backgroundColor: '#1E1E1E',
-    },
-  },
-});
 
 export default ListHabitScreen;
