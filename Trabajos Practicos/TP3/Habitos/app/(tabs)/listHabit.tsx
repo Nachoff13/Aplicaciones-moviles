@@ -5,9 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import * as SQLite from 'expo-sqlite';
 import { auth } from '../../firebaseConfig';
 import { useTheme } from '../../components/ThemeContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Switch } from 'react-native-paper';
-import styles from '../../constants/ListHabitStyles'; // Importar los estilos
+import styles from '../../constants/ListHabitStyles';
 
 type RootStackParamList = {
   detailHabit: { habitId: string };
@@ -108,20 +107,6 @@ const ListHabitScreen: React.FC = () => {
     navigation.navigate("progressHabit", { habitId, days: daysArray });
   };
 
-  const handleDeleteAll = async () => {
-    if (db) {
-      try {
-        await db.execAsync("DELETE FROM habits;");
-        setHabits([]);
-        Alert.alert("Éxito", "Todos los hábitos han sido eliminados.");
-      } catch (error) {
-        console.error("Error al eliminar los hábitos:", error);
-        Alert.alert("Error", "No se pudieron eliminar los hábitos.");
-      }
-    } else {
-      Alert.alert("Error", "Base de datos no inicializada");
-    }
-  };
 
   const handleCompleteHabit = async (habitId: string, currentActive: number) => {
     if (!db) {
@@ -188,9 +173,6 @@ const ListHabitScreen: React.FC = () => {
   return (
     <View style={[styles.container, currentTheme.container]}>
       <Text style={[styles.title, currentTheme.text]}>Lista de Hábitos Activos</Text>
-      <TouchableOpacity style={[styles.deleteBtn, currentTheme.button]} onPress={handleDeleteAll}>
-        <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
-      </TouchableOpacity>
       <FlatList
         data={habits}
         keyExtractor={(item) => item.id.toString()}
