@@ -6,6 +6,31 @@ import * as SQLite from 'expo-sqlite';
 import { auth } from '../../firebaseConfig';
 import { useTheme } from '../../components/ThemeContext';
 import { Calendar } from 'react-native-calendars';
+import { LocaleConfig } from 'react-native-calendars';
+
+LocaleConfig.locales['es'] = {
+  monthNames: [
+    'Enero', 'Febrero', 'Marzo', 'Abril',
+    'Mayo', 'Junio', 'Julio', 'Agosto',
+    'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ],
+  monthNamesShort: [
+    'Ene', 'Feb', 'Mar', 'Abr',
+    'May', 'Jun', 'Jul', 'Ago',
+    'Sep', 'Oct', 'Nov', 'Dic'
+  ],
+  dayNames: [
+    'Domingo', 'Lunes', 'Martes', 'Miércoles',
+    'Jueves', 'Viernes', 'Sábado'
+  ],
+  dayNamesShort: [
+    'Dom', 'Lun', 'Mar', 'Mié',
+    'Jue', 'Vie', 'Sáb'
+  ],
+  today: 'Hoy'
+};
+LocaleConfig.defaultLocale = 'es';
+
 
 type RootStackParamList = {
   progressHabit: { habitId: string; days: string[] };
@@ -18,9 +43,10 @@ const ProgressHabit: React.FC = () => {
   const navigation = useNavigation<ProgressHabitNavigationProp>();
   const route = useRoute<ProgressHabitRouteProp>();
   const { habitId, days } = route.params || {};
-  const { currentTheme } = useTheme();
+  const { theme, currentTheme } = useTheme();
 
   const [markedDates, setMarkedDates] = useState<{ [key: string]: any }>({});
+  const [componentKey, setComponentKey] = useState(0);
 
   useEffect(() => {
     const initDb = async () => {
@@ -30,6 +56,10 @@ const ProgressHabit: React.FC = () => {
 
     initDb();
   }, []);
+
+  useEffect(() => {
+    setComponentKey(prevKey => prevKey + 1); // Forza el re-render al cambiar el tema
+  }, [theme]);
 
   const fetchProgressRecords = async (database: SQLite.SQLiteDatabase) => {
     const currentUser = auth.currentUser;
@@ -58,7 +88,7 @@ const ProgressHabit: React.FC = () => {
     const currentYear = new Date().getFullYear();
     const endOfYear = new Date(currentYear, 11, 31);
 
-    // Marca dias donde debe cumplirse el habito hasta el final del año
+    // Marca días donde debe cumplirse el hábito hasta el final del año
     days.forEach(day => {
       const dayIndex = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].indexOf(day);
       if (dayIndex !== -1) {
@@ -67,7 +97,7 @@ const ProgressHabit: React.FC = () => {
           if (dateToMark.getDay() === dayIndex) {
             const formattedDate = dateToMark.toISOString().split('T')[0];
             if (!marked[formattedDate]) {
-              marked[formattedDate] = { color: 'rgba(0, 0, 0, 0.1)', startingDay: true, endingDay: true, selected: true };
+              marked[formattedDate] = { color: '#9d9d9d', startingDay: true, endingDay: true, selected: true };
             }
           }
           dateToMark.setDate(dateToMark.getDate() + 1);
@@ -75,7 +105,7 @@ const ProgressHabit: React.FC = () => {
       }
     });
 
-    // Marca los dias completados
+    // Marca los días completados
     records.forEach(record => {
       const date = record.date;
       const isCompleted = record.completed === 1;
@@ -86,14 +116,26 @@ const ProgressHabit: React.FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <ScrollView key={componentKey} contentContainerStyle={styles.scrollContainer}>
       <View style={[styles.container, currentTheme.container]}>
         <Text style={[styles.title, currentTheme.text]}>Progreso del Hábito</Text>
         <Calendar
           current={new Date().toISOString().split('T')[0]}
           markingType={'period'}
           markedDates={markedDates}
-          style={styles.calendar}
+          style={[styles.calendar, currentTheme.container]}
+          theme={{
+            backgroundColor: currentTheme.container.backgroundColor,
+            calendarBackground: currentTheme.container.backgroundColor,
+            textSectionTitleColor: currentTheme.text.color,
+            dayTextColor: currentTheme.text.color,
+            monthTextColor: currentTheme.text.color,
+            todayTextColor: '#007bff',
+            selectedDayBackgroundColor: '#007bff',
+            selectedDayTextColor: '#ffffff',
+            arrowColor: currentTheme.text.color,
+          }}
+          locale={'es'}
         />
         <View style={styles.colorReference}>
           <Text style={[styles.referenceText, currentTheme.text]}>
@@ -122,6 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    alignSelf: 'center',
   },
   calendar: {
     marginBottom: 20,
