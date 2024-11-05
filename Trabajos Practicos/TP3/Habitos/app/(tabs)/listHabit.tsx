@@ -177,19 +177,19 @@ const ListHabitScreen: React.FC = () => {
                 <Text style={[styles.content, currentTheme.text]}>{item.description}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Días: </Text>
-                <Text style={styles.content}>{item.days}</Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Días: </Text>
+                <Text style={[styles.content, currentTheme.content]}>{item.days}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Horario de Inicio: </Text>
-                <Text style={styles.content}>{item.start_time}</Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Horario de Inicio: </Text>
+                <Text style={[styles.content, currentTheme.content]}>{item.start_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Horario de Fin: </Text>
-                <Text style={styles.content}>{item.end_time}</Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Horario de Fin: </Text>
+                <Text style={[styles.content, currentTheme.content]}>{item.end_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.subTitle}>Completado: </Text>
+                <Text style={[styles.subTitle, currentTheme.subTitle]}>Completado: </Text>
                 <Switch
                   value={item.active === 1} // Estado activo o completado
                   onValueChange={() => handleCompleteHabit(item.id, item.active)}

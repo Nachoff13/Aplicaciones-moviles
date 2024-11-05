@@ -10,12 +10,16 @@ const styles = StyleSheet.create({
     text: { color: '#000' },
     habitContainer: { backgroundColor: '#fff' },
     button: { backgroundColor: '#ff4d4d' },
+    subTitle: { color: '#000' },
+    content: { color: '#000' },
   },
   dark: {
     container: { backgroundColor: '#000' },
     text: { color: '#fff' },
     habitContainer: { backgroundColor: '#333' },
     button: { backgroundColor: '#ff4d4d' },
+    subTitle: { color: '#fff' },
+    content: { color: '#fff' },
   },
   title: {
     fontSize: 24,
