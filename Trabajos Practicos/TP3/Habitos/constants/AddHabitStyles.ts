@@ -8,16 +8,18 @@ const styles = StyleSheet.create({
   light: {
     container: { backgroundColor: '#f7f7f7' },
     text: { color: '#000' },
-    input: { backgroundColor: '#fff', borderColor: '#ddd' },
+    input: { backgroundColor: '#fff', borderColor: '#ddd', color: '#000' }, // Añadir color del texto
     button: { backgroundColor: '#4285f4' },
     checkboxContainer: { backgroundColor: '#f7f7f7', borderColor: '#f7f7f7' },
+    searchInput: { backgroundColor: '#fff', borderColor: '#ddd', color: '#000' },
   },
   dark: {
     container: { backgroundColor: '#000' },
     text: { color: '#fff' },
-    input: { backgroundColor: '#333', borderColor: '#555' },
+    input: { backgroundColor: '#333', borderColor: '#555', color: '#ccc' }, // Añadir color del texto
     button: { backgroundColor: '#4285f4' },
     checkboxContainer: { backgroundColor: '#000', borderColor: '#000' },
+    searchInput: { backgroundColor: '#333', borderColor: '#555', color: '#fff' },
   },
   title: {
     fontSize: 24,

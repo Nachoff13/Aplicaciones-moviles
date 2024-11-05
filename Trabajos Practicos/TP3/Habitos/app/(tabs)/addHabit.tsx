@@ -136,27 +136,50 @@ const AddHabit = () => {
         onChangeText={setHabitName}
       />
 
-<Text style={[styles.label, currentTheme.text]}>Importancia</Text>
-{Platform.OS === "ios" ? (
-  <>
-    <TouchableOpacity onPress={() => setPickerVisible(true)}>
-      <Text style={[styles.input, currentTheme.input]}>
-        {habitImportance || "Seleccione una importancia"}
-      </Text>
-    </TouchableOpacity>
-    <Modal
-      visible={isPickerVisible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={() => setPickerVisible(false)}
-    >
-      <View style={styles.modalContainer}>
-        <View style={[styles.pickerContaineriOS, currentTheme.input]}>
+      <Text style={[styles.label, currentTheme.text]}>Importancia</Text>
+      {Platform.OS === "ios" ? (
+        <>
+          <TouchableOpacity onPress={() => setPickerVisible(true)}>
+            <Text style={[styles.input, currentTheme.input]}>
+              {habitImportance || "Seleccione una importancia"}
+            </Text>
+          </TouchableOpacity>
+          <Modal
+            visible={isPickerVisible}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={() => setPickerVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={[styles.pickerContaineriOS, currentTheme.input]}>
+                <Picker
+                  selectedValue={habitImportance}
+                  onValueChange={(itemValue) => {
+                    setHabitImportance(itemValue);
+                  }}
+                  style={{ color: theme === "light" ? "#000" : "#aaa" }} // Ajustar el color del texto del Picker
+                  dropdownIconColor={theme === "light" ? "#000" : "#aaa"} // Ajustar el color del icono del dropdown
+                >
+                  <Picker.Item label="Seleccione una importancia" value="" />
+                  <Picker.Item label="Baja" value="Baja" />
+                  <Picker.Item label="Media" value="Media" />
+                  <Picker.Item label="Alta" value="Alta" />
+                </Picker>
+                <Button title="Guardar" onPress={() => setPickerVisible(false)} />
+              </View>
+            </View>
+          </Modal>
+        </>
+      ) : (
+        <View
+          style={[
+            styles.pickerContainerAndroid,
+            { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          ]}
+        >
           <Picker
             selectedValue={habitImportance}
-            onValueChange={(itemValue) => {
-              setHabitImportance(itemValue);
-            }}
+            onValueChange={(itemValue) => setHabitImportance(itemValue)}
             style={{ color: theme === "light" ? "#000" : "#aaa" }} // Ajustar el color del texto del Picker
             dropdownIconColor={theme === "light" ? "#000" : "#aaa"} // Ajustar el color del icono del dropdown
           >
@@ -165,31 +188,8 @@ const AddHabit = () => {
             <Picker.Item label="Media" value="Media" />
             <Picker.Item label="Alta" value="Alta" />
           </Picker>
-          <Button title="Guardar" onPress={() => setPickerVisible(false)} />
         </View>
-      </View>
-    </Modal>
-  </>
-) : (
-  <View
-    style={[
-      styles.pickerContainerAndroid,
-      { backgroundColor: theme === "light" ? "#fff" : "#333" },
-    ]}
-  >
-    <Picker
-      selectedValue={habitImportance}
-      onValueChange={(itemValue) => setHabitImportance(itemValue)}
-      style={{ color: theme === "light" ? "#000" : "#aaa" }} // Ajustar el color del texto del Picker
-      dropdownIconColor={theme === "light" ? "#000" : "#aaa"} // Ajustar el color del icono del dropdown
-    >
-      <Picker.Item label="Seleccione una importancia" value="" />
-      <Picker.Item label="Baja" value="Baja" />
-      <Picker.Item label="Media" value="Media" />
-      <Picker.Item label="Alta" value="Alta" />
-    </Picker>
-  </View>
-)}
+      )}
 
       <Text style={[styles.label, currentTheme.text]}>Descripción</Text>
       <TextInput
