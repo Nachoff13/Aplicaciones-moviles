@@ -221,12 +221,14 @@ const ListHabitScreen: React.FC = () => {
                 <Text style={[styles.content]}>{item.end_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={[styles.subTitle]}>Completado: </Text>
-                <Switch
-                  value={item.active === 1} // Estado completado o no completado
-                  onValueChange={() => handleCompleteHabit(item.id, item.active)}
-                  color="#4CAF50"
-                />
+                <Text style={[styles.subTitleSwitch]}>Completado: </Text>
+                <View style={styles.switchContainer}>
+                  <Switch
+                    value={item.active === 1}
+                    onValueChange={() => handleCompleteHabit(item.id, item.active)}
+                    color="#4CAF50"
+                  />
+                </View>
               </View>
               <TouchableOpacity 
                 style={[styles.progressBtn, currentTheme.progressBtn]} 
@@ -255,6 +257,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  subTitleSwitch: {
+    alignSelf: 'center',
+    fontSize: 18,
+    fontWeight: 'bold' 
   },
   light: {
     container: { backgroundColor: '#f7f7f7' },
