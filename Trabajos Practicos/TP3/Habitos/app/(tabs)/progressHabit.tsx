@@ -103,7 +103,7 @@ const ProgressHabit: React.FC = () => {
             <Text style={{ color: '#fd5555' }}>⬤</Text> No Completado
           </Text>
           <Text style={[styles.referenceText, currentTheme.text]}>
-            <Text style={{ color: 'rgba(0, 0, 0, 0.1)' }}>⬤</Text> Día de cumplimiento
+            <Text style={{ color: '#9d9d9d' }}>⬤</Text> Día de cumplimiento
           </Text>
         </View>
       </View>
