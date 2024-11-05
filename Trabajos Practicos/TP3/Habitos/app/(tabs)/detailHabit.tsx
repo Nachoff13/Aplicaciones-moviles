@@ -29,6 +29,7 @@ const DetailHabitScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'detailHabit'>>();
   const { theme } = useTheme();
   const currentTheme = theme === "light" ? light : dark;
+  const [isDark, setIsDark] = useState(theme === "dark");
   const [habits, setHabits] = useState<Habit[]>([]);
   const [filteredHabits, setFilteredHabits] = useState<Habit[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -46,6 +47,10 @@ const DetailHabitScreen: React.FC = () => {
   // Nuevos estados para el modal de confirmación
   const [isConfirmDeleteVisible, setIsConfirmDeleteVisible] = useState(false);
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsDark(theme === "dark");
+  }, [theme]);
 
   useEffect(() => {
     const initDb = async () => {
@@ -205,6 +210,7 @@ const DetailHabitScreen: React.FC = () => {
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onSave={handleSaveEdit}
+        isDarkMode={isDark}
 
         editName={editName}
         setEditName={setEditName}

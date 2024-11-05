@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Modal, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { CheckBox } from 'react-native-elements';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { styles, light, dark } from "../constants/HabitModalStyles";
 
 interface HabitModalProps {
   visible: boolean;
@@ -22,6 +23,7 @@ interface HabitModalProps {
   setEditStartTime: React.Dispatch<React.SetStateAction<string>>;
   editEndTime: string; // Formato HH:mm:ss
   setEditEndTime: React.Dispatch<React.SetStateAction<string>>;
+  isDarkMode: boolean; // Nueva prop para el modo oscuro
 }
 
 const HabitModal: React.FC<HabitModalProps> = ({ 
@@ -41,7 +43,8 @@ const HabitModal: React.FC<HabitModalProps> = ({
   editStartTime, 
   setEditStartTime, 
   editEndTime, 
-  setEditEndTime 
+  setEditEndTime,
+  isDarkMode
 }) => {
   const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
   const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
@@ -74,23 +77,25 @@ const HabitModal: React.FC<HabitModalProps> = ({
 
   return (
     <Modal visible={visible} animationType="slide">
-      <ScrollView style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Editar Hábito</Text>
-        <Text style={styles.label}>Nombre</Text>
+      <ScrollView style={[styles.modalContainer, isDarkMode ? dark.container : light.container]}>
+        <Text style={[styles.modalTitle, isDarkMode ? dark.text : light.text]}>Editar Hábito</Text>
+        <Text style={[styles.label, isDarkMode ? dark.text : light.text]}>Nombre</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, isDarkMode ? dark.card : light.card]}
           placeholder="Nombre del hábito"
+          placeholderTextColor={isDarkMode ? '#ccc' : '#999'}
           value={editName}
           onChangeText={setEditName}
         />
-        <Text style={styles.label}>Descripción</Text>
+        <Text style={[styles.label, isDarkMode ? dark.text : light.text]}>Descripción</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, isDarkMode ? dark.card : light.card]}
           placeholder="Descripción"
+          placeholderTextColor={isDarkMode ? '#ccc' : '#999'}
           value={editDescription}
           onChangeText={setEditDescription}
         />
-        <Text style={styles.label}>Importancia</Text>
+        <Text style={[styles.label, isDarkMode ? dark.text : light.text]}>Importancia</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={editImportance}
@@ -103,7 +108,7 @@ const HabitModal: React.FC<HabitModalProps> = ({
             <Picker.Item label="Baja" value="Baja" />
           </Picker>
         </View>
-        <Text style={styles.label}>Días</Text>
+        <Text style={[styles.label, isDarkMode ? dark.text : light.text]}>Días</Text>
         <View style={styles.checkboxContainer}>
           {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day) => (
             <CheckBox
@@ -111,11 +116,13 @@ const HabitModal: React.FC<HabitModalProps> = ({
               title={day}
               checked={selectedDays.includes(day)}
               onPress={() => toggleDay(day)}
+              containerStyle={{ backgroundColor: 'transparent' }}
+              textStyle={isDarkMode ? dark.text : light.text}
             />
           ))}
         </View>
-        <Text style={styles.label}>Horario de Inicio</Text>
-        <TouchableOpacity onPress={() => setStartTimePickerVisible(true)} style={styles.timePicker}>
+        <Text style={[styles.label, isDarkMode ? dark.text : light.text]}>Horario de Inicio</Text>
+        <TouchableOpacity onPress={() => setStartTimePickerVisible(true)} style={[styles.timePicker, isDarkMode ? dark.card : light.card]}>
           <Text style={styles.timeText}>{editStartTime}</Text>
         </TouchableOpacity>
         <DateTimePickerModal
@@ -124,8 +131,8 @@ const HabitModal: React.FC<HabitModalProps> = ({
           onConfirm={handleStartConfirm}
           onCancel={() => setStartTimePickerVisible(false)}
         />
-        <Text style={styles.label}>Horario de Fin</Text>
-        <TouchableOpacity onPress={() => setEndTimePickerVisible(true)} style={styles.timePicker}>
+        <Text style={[styles.label, isDarkMode ? dark.text : light.text]}>Horario de Fin</Text>
+        <TouchableOpacity onPress={() => setEndTimePickerVisible(true)} style={[styles.timePicker, isDarkMode ? dark.card : light.card]}>
           <Text style={styles.timeText}>{editEndTime}</Text>
         </TouchableOpacity>
         <DateTimePickerModal
@@ -135,47 +142,16 @@ const HabitModal: React.FC<HabitModalProps> = ({
           onCancel={() => setEndTimePickerVisible(false)}
         />
         <View style={styles.modalButtons}>
-          <TouchableOpacity style={styles.modalButton} onPress={onSave}>
-            <Text style={styles.btnText}>Aceptar</Text>
+          <TouchableOpacity style={[styles.modalButton, styles.saveButton]} onPress={onSave}>
+            <Text style={[styles.btnText, { color: '#fff' }]}>Aceptar</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={onClose}>
-            <Text style={styles.btnText}>Cancelar</Text>
+            <Text style={[styles.btnText, { color: '#fff' }]}>Cancelar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalContainer: { flex: 1, padding: 20, backgroundColor: '#f7f7f7' },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
-  label: { fontSize: 16, marginBottom: 8, fontWeight: 'bold' },
-  input: { padding: 10, borderRadius: 5, borderColor: '#ddd', borderWidth: 1, marginBottom: 10 },
-  picker: { height: 50, width: '100%' },
-  checkboxContainer: { marginBottom: 15 },
-  timePicker: { backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    borderColor: '#C3C3C3',
-    borderWidth: 1,
-    marginBottom: 15,},
-  timeText: { fontSize: 16 },
-  saveButton: { backgroundColor: '#4CAF50', padding: 10, borderRadius: 5, alignItems: 'center' },
-  saveButtonText: { color: '#fff', fontSize: 16 },
-  pickerContainer: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  btnText: { color: '#fff', fontSize: 16 },
-  cancelButton: { backgroundColor: '#ff4d4d' },
-  modalButtons: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 30},
-  modalButton: { backgroundColor: '#007bff', padding: 10, borderRadius: 5, alignItems: 'center', width: '40%' },
-  closeButton: { marginTop: 10, alignItems: 'center' },
-  closeButtonText: { fontSize: 16, color: 'red' },
-});
 
 export default HabitModal;
