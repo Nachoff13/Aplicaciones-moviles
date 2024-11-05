@@ -222,7 +222,7 @@ const ListHabitScreen: React.FC = () => {
                 <Text style={[styles.content, currentTheme.content]}>{item.end_time}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={[styles.subTitle, currentTheme.subTitle]}>Completado: </Text>
+                <Text style={[styles.subTitleSwitch, currentTheme.subTitle]}>Completado: </Text>
                 <Switch
                   value={item.active === 1} // Estado activo o completado
                   onValueChange={() => handleCompleteHabit(item.id, item.active)}
@@ -233,15 +233,6 @@ const ListHabitScreen: React.FC = () => {
           </TouchableOpacity>
         )}
       />
-      <View style={styles.toggleButtonContainer}>
-        <TouchableOpacity onPress={toggleTheme}>
-          <Icon
-            name={theme === 'light' ? 'weather-night' : 'white-balance-sunny'}
-            size={24}
-            color={theme === 'light' ? '#000' : '#fff'}
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
