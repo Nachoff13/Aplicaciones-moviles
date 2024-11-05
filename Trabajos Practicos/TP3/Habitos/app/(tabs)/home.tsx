@@ -37,7 +37,7 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
         
         <TouchableOpacity style={[styles.card, currentTheme.card]} onPress={() => navigation.navigate('listHabit')}>
-          <Text style={[styles.cardText, currentTheme.text]}>Listar Hábitos</Text>
+          <Text style={[styles.cardText, currentTheme.text]}>Ver Hábitos Del Día</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={[styles.card, currentTheme.card]} onPress={() => navigation.navigate('detailHabit')}>

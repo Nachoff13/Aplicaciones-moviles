@@ -172,7 +172,7 @@ const ListHabitScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, currentTheme.container]}>
-      <Text style={[styles.title, currentTheme.text]}>Lista de Hábitos Activos</Text>
+      <Text style={[styles.title, currentTheme.text]}>Lista de Hábitos del Día</Text>
       <FlatList
         data={habits}
         keyExtractor={(item) => item.id.toString()}
