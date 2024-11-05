@@ -10,13 +10,26 @@ interface AuthContextType {
 
 interface DecodedToken {
   email?: string;
-  // Puedes agregar otras propiedades aquí si es necesario
 }
 
+const base64UrlDecode = (str: string): string => {
+  // Reemplaza caracteres de base64url a base64 estándar
+  const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  // Añade relleno si es necesario
+  const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+  return atob(base64 + padding);
+};
+
 const decodeToken = (token: string): DecodedToken => {
-  // Implementa la lógica de decodificación del token aquí
-  // Este es solo un ejemplo
-  return JSON.parse(atob(token.split('.')[1]));
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) throw new Error("Token no válido");
+    const decoded = base64UrlDecode(payload);
+    return JSON.parse(decoded);
+  } catch (error) {
+    console.error("Error al decodificar el token:", error);
+    return {};
+  }
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,13 +40,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem('userToken');
-      console.log('Token recuperado:', token);
+      //console.log('Token recuperado:', token);
       if (token) {
-        const decodedToken =  decodeToken(token);
-        console.log('Token decodificado:', decodedToken);
+        const decodedToken = decodeToken(token);
+        //console.log('Token decodificado:', decodedToken);
         if (decodedToken?.email) {
-           setEmail(decodedToken.email);
-          console.log('Email establecido:', decodedToken.email);
+          setEmail(decodedToken.email);
+          //console.log('Email establecido:', decodedToken.email);
         }
       }
     };
