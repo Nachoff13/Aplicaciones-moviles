@@ -68,14 +68,14 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: '#4285f4', // Rojo
+    backgroundColor: '#4285f4', // Azul
     padding: 10,
     borderRadius: 5,
     marginRight: 5,
   },
   confirmButton: {
     flex: 1,
-    backgroundColor: '#d9534f', // Azul
+    backgroundColor: '#d9534f', // Rojo
     padding: 10,
     borderRadius: 5,
     marginLeft: 5,
