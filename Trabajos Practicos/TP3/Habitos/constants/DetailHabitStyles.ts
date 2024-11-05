@@ -9,11 +9,15 @@ const styles = StyleSheet.create({
     container: { backgroundColor: '#fff' },
     text: { color: '#000' },
     button: { backgroundColor: '#ff4d4d' },
+    searchInput: { backgroundColor: '#f0f0f0', borderColor: '#ddd', color: '#000' },
+    searchLabel: { color: '#000' },
   },
   dark: {
-    container: { backgroundColor: '#000' },
+    container: { backgroundColor: '#100' },
     text: { color: '#fff' },
     button: { backgroundColor: '#ff4d4d' },
+    searchInput: { backgroundColor: '#555', borderColor: '#fff', color: '#ccc' },
+    searchLabel: { color: '#ccc' },
   },
   title: {
     fontSize: 24,
@@ -46,7 +50,6 @@ const styles = StyleSheet.create({
   searchInput: { 
     padding: 10, 
     borderRadius: 5, 
-    borderColor: '#ddd', 
     borderWidth: 1, 
     marginBottom: 10, 
     width: '90%', 

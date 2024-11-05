@@ -170,7 +170,12 @@ const DetailHabitScreen: React.FC = () => {
   return (
     <View style={[styles.container, currentTheme.container]}>
       <Text style={[styles.title, currentTheme.text]}>Detalles de Hábitos</Text>
-      <SearchBar searchText={searchText} onSearch={handleSearch} />
+      <SearchBar
+        searchText={searchText}
+        onSearch={handleSearch}
+        inputStyle={[styles.searchInput, currentTheme.searchInput]}
+        placeholderTextColor={theme === 'light' ? '#000' : '#fff'}
+      />
       <TouchableOpacity style={[styles.deleteBtn, currentTheme.button]} onPress={handleDeleteAll}>
         <Text style={styles.btnText}>Eliminar todos los hábitos</Text>
       </TouchableOpacity>
