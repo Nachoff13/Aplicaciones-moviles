@@ -45,6 +45,11 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     fontWeight: 'bold' 
   },
+  subTitleSwitch: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
   content: { 
     fontSize: 16, 
     marginLeft: 0 
