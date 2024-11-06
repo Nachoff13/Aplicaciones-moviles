@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 
 import PlaceListView from '@/components/navigation/PlaceListView';
 import GoogleMapView from '@/components/navigation/GoogleMapView';
+import Header from '@/components/navigation/Header';
+
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import Constants from 'expo-constants';
 import { ThemedView } from '@/components/ThemedView';
@@ -13,6 +15,7 @@ export default function Index() {
   return (
     <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
       <ThemedView style={styles.container}>
+        <Header />
         <GoogleMapView />
         <ThemedView style={styles.placeListContainer}>
           <PlaceListView placeList={undefined} selectedMarked={undefined} />
