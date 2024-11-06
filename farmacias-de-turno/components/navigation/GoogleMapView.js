@@ -10,6 +10,8 @@ import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
+import { ThemedView } from '../ThemedView';
+import { ThemedText } from '../ThemedText';
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -100,7 +102,7 @@ export default function GoogleMapView() {
 
   if (!mapRegion) {
     return (
-      <View style={{ marginHorizontal: 20, overflow: 'hidden' }}>
+      <ThemedView style={{ marginHorizontal: 20, overflow: 'hidden' }}>
         <Text
           style={{
             color: '#004686',
@@ -112,24 +114,22 @@ export default function GoogleMapView() {
         >
           Cargando mapa...
         </Text>
-      </View>
+      </ThemedView>
     );
   }
   return (
     <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
-      <View>
-        <View style={{ overflow: 'hidden' }}>
-          <Text
+      <ThemedView>
+        <ThemedView style={{ overflow: 'hidden' }}>
+          <ThemedText
+            type="title"
             style={{
-              color: '#004686',
               marginBottom: 10,
-              fontWeight: '700',
-              fontSize: 20,
             }}
           >
             Farmacias de Turno
-          </Text>
-          <View style={{ borderRadius: 20, overflow: 'hidden' }}>
+          </ThemedText>
+          <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
             <MapView
               style={{
                 width: Dimensions.get('screen').width,
@@ -152,9 +152,9 @@ export default function GoogleMapView() {
                 <PlaceListView placeList={placeList}></PlaceListView>
               )}
             </View>
-          </View>
-        </View>
-      </View>
+          </ThemedView>
+        </ThemedView>
+      </ThemedView>
     </SelectMarkerContext.Provider>
   );
 }

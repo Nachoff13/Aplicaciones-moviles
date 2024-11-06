@@ -4,21 +4,20 @@ import React, { useState } from 'react';
 import PlaceListView from '@/components/navigation/PlaceListView';
 import GoogleMapView from '@/components/navigation/GoogleMapView';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import Constants from 'expo-constants';
+import { ThemedView } from '@/components/ThemedView';
 
 export default function Index() {
   const [selectedMarker, setSelectedMarker] = useState(null);
-  const colorScheme = useColorScheme();
+
   return (
     <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
-      <View style={styles.container}>
+      <ThemedView style={styles.container}>
         <GoogleMapView />
-        <View style={styles.placeListContainer}>
+        <ThemedView style={styles.placeListContainer}>
           <PlaceListView placeList={undefined} selectedMarked={undefined} />
-        </View>
-      </View>
+        </ThemedView>
+      </ThemedView>
     </SelectMarkerContext.Provider>
   );
 }
@@ -27,7 +26,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignContent: 'center',
-    backgroundColor: Colors.light.background,
     paddingTop: Constants.statusBarHeight,
     padding: 10,
   },
