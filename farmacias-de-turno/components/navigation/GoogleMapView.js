@@ -1,15 +1,15 @@
-import { View, Text, Dimensions } from "react-native";
-import React, { useState, useContext, useEffect } from "react";
-import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
-import { UserLocationContext } from "@/context/UserLocationContext";
-import globalApi from "@/utils/globalApi";
-import { StyleSheet } from "react-native";
-import PlaceListView from "./PlaceListView";
-import { initializeApp } from "firebase/app"; 
-import { getFirestore, collection, addDoc } from "firebase/firestore"; 
-import { firebaseConfig } from "../../database/firebase";	
-import Markers from "./Markers";
-import { SelectMarkerContext } from "@/context/SelectMarkerContext";
+import { View, Text, Dimensions } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
+import { UserLocationContext } from '@/context/UserLocationContext';
+import globalApi from '@/utils/globalApi';
+import { StyleSheet } from 'react-native';
+import PlaceListView from './PlaceListView';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { firebaseConfig } from '../../database/firebase';
+import Markers from './Markers';
+import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -36,7 +36,7 @@ export default function GoogleMapView() {
           displayName,
           formattedAddress,
           latitude,
-          longitude
+          longitude,
         });
       }
       console.log('Farmacias guardadas exitosamente en Firestore');
@@ -74,10 +74,12 @@ export default function GoogleMapView() {
 
       // Guardar farmacias en Firestore
       await savePharmaciesToFirestore(pharmacies);
-      
     } catch (error) {
       if (error.response) {
-        console.error('Error al llamar a la API:', error.response.data['error']['message']);
+        console.error(
+          'Error al llamar a la API:',
+          error.response.data['error']['message']
+        );
       } else {
         console.error('Error al llamar a la API:', error.message);
       }
@@ -90,7 +92,7 @@ export default function GoogleMapView() {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         latitudeDelta: 0.0522,
-        longitudeDelta: 0.0490,
+        longitudeDelta: 0.049,
       });
       getNearbyPlace();
     }
@@ -98,14 +100,14 @@ export default function GoogleMapView() {
 
   if (!mapRegion) {
     return (
-      <View style={{ marginTop: 50, marginHorizontal: 20, overflow: "hidden" }}>
+      <View style={{ marginHorizontal: 20, overflow: 'hidden' }}>
         <Text
           style={{
-            color: "#004686",
+            color: '#004686',
             fontSize: 20,
             marginBottom: 10,
-            fontWeight: "700",
-            textAlign: "center",
+            fontWeight: '700',
+            textAlign: 'center',
           }}
         >
           Cargando mapa...
@@ -114,51 +116,54 @@ export default function GoogleMapView() {
     );
   }
   return (
-    <SelectMarkerContext.Provider value={{selectedMarker,setSelectedMarker}}>
-    <View>
-    <View style={{ marginTop: 50, marginHorizontal: 20, overflow: "hidden" }}>
-      <Text
-        style={{
-          color: "#004686",
-          marginBottom: 10,
-          fontWeight: "700",
-          fontSize: 20,
-        }}
-      >
-        Farmacias de Turno
-      </Text>
-      <View style={{ borderRadius: 20, overflow: "hidden" }}>
-        <MapView
-          style={{
-            width: Dimensions.get("screen").width,
-            height: Dimensions.get("screen").height * 0.8,
-            borderRadius: 20,
-          }}
-          provider={PROVIDER_DEFAULT}
-          showsUserLocation={true}
-          region={mapRegion}
-        >
-          <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker>
-          {placeList && placeList.map((item, index) => (
-            <Markers key={index} place={item} index={index}/>
-          ))}
-        </MapView>
+    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
+      <View>
+        <View style={{ overflow: 'hidden' }}>
+          <Text
+            style={{
+              color: '#004686',
+              marginBottom: 10,
+              fontWeight: '700',
+              fontSize: 20,
+            }}
+          >
+            Farmacias de Turno
+          </Text>
+          <View style={{ borderRadius: 20, overflow: 'hidden' }}>
+            <MapView
+              style={{
+                width: Dimensions.get('screen').width,
+                height: Dimensions.get('screen').height * 0.8,
+                borderRadius: 20,
+              }}
+              provider={PROVIDER_DEFAULT}
+              showsUserLocation={true}
+              region={mapRegion}
+            >
+              <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker>
+              {placeList &&
+                placeList.map((item, index) => (
+                  <Markers key={index} place={item} index={index} />
+                ))}
+            </MapView>
 
-        <View style={styles.placeListContainer}>
-          {placeList && <PlaceListView placeList={placeList}></PlaceListView>}
+            <View style={styles.placeListContainer}>
+              {placeList && (
+                <PlaceListView placeList={placeList}></PlaceListView>
+              )}
+            </View>
+          </View>
         </View>
       </View>
-    </View>
-    </View>
     </SelectMarkerContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
   placeListContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     zIndex: 10,
-    width: "100%"
+    width: '100%',
   },
 });
