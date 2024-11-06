@@ -17,7 +17,7 @@ export default function PlaceListView({ placeList }) {
     flatListRef.current?.scrollToIndex({ animated: true, index });
   };
 
-  const getItemLayout = (data, index) => ({
+  const getItemLayout = (_, index) => ({
     length: Dimensions.get('window').width,
     offset: Dimensions.get('window').width * index,
     index,

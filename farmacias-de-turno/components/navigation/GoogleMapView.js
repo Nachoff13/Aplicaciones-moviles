@@ -11,7 +11,6 @@ import { firebaseConfig } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
-import { ThemedText } from '../ThemedText';
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -120,39 +119,26 @@ export default function GoogleMapView() {
   return (
     <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
       <ThemedView>
-        <ThemedView style={{ overflow: 'hidden' }}>
-          <ThemedText
-            type="title"
+        <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
+          <MapView
             style={{
-              marginBottom: 10,
+              width: Dimensions.get('screen').width,
+              height: Dimensions.get('screen').height * 0.8,
+              borderRadius: 20,
             }}
+            provider={PROVIDER_DEFAULT}
+            showsUserLocation={true}
+            region={mapRegion}
           >
-            Farmacias de Turno
-          </ThemedText>
-          <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
-            <MapView
-              style={{
-                width: Dimensions.get('screen').width,
-                height: Dimensions.get('screen').height * 0.8,
-                borderRadius: 20,
-              }}
-              provider={PROVIDER_DEFAULT}
-              showsUserLocation={true}
-              region={mapRegion}
-            >
-              <Marker title="ACA ESTAS VOS" coordinate={mapRegion}></Marker>
-              {placeList &&
-                placeList.map((item, index) => (
-                  <Markers key={index} place={item} index={index} />
-                ))}
-            </MapView>
+            {placeList &&
+              placeList.map((item, index) => (
+                <Markers key={index} place={item} index={index} />
+              ))}
+          </MapView>
 
-            <View style={styles.placeListContainer}>
-              {placeList && (
-                <PlaceListView placeList={placeList}></PlaceListView>
-              )}
-            </View>
-          </ThemedView>
+          <View style={styles.placeListContainer}>
+            {placeList && <PlaceListView placeList={placeList}></PlaceListView>}
+          </View>
         </ThemedView>
       </ThemedView>
     </SelectMarkerContext.Provider>
