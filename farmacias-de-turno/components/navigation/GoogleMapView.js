@@ -11,6 +11,7 @@ import { firebaseConfig } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
+import darkMapStyle from './DarkMapStyle'; 
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -129,6 +130,7 @@ export default function GoogleMapView() {
             provider={PROVIDER_DEFAULT}
             showsUserLocation={true}
             region={mapRegion}
+            customMapStyle={darkMapStyle} // Apply the dark mode style here
           >
             {placeList &&
               placeList.map((item, index) => (
