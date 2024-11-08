@@ -5,11 +5,20 @@ import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 
 export default function PlaceListView({ placeList }) {
   const flatListRef = useRef(null);
-  const { selectedMarker, setSelectedMarker } = useContext(SelectMarkerContext);
+  const { selectedMarker, setSelectedMarker, setMapRegion } = useContext(SelectMarkerContext);
 
   useEffect(() => {
     if (selectedMarker !== null && placeList.length > selectedMarker) {
       scrollToIndex(selectedMarker);
+
+      // Centra el mapa en la farmacia seleccionada
+      const selectedPlace = placeList[selectedMarker];
+      setMapRegion({
+        latitude: selectedPlace.location.latitude,
+        longitude: selectedPlace.location.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
     }
   }, [selectedMarker]);
 
@@ -17,11 +26,10 @@ export default function PlaceListView({ placeList }) {
     flatListRef.current?.scrollToIndex({ animated: true, index });
   };
 
-  const getItemLayout = (_, index) => ({
-    length: Dimensions.get('window').width,
-    offset: Dimensions.get('window').width * index,
-    index,
-  });
+  const getItemLayout = (event) => {
+    const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+    setSelectedMarker(index);
+  };
 
   return (
     <View>
@@ -30,8 +38,8 @@ export default function PlaceListView({ placeList }) {
         horizontal={true}
         pagingEnabled
         ref={flatListRef}
-        getItemLayout={getItemLayout}
         showsHorizontalScrollIndicator={false}
+        getItemLayout={getItemLayout}
         renderItem={({ item, index }) => (
           <View key={index}>
             <PlaceItem place={item} />
