@@ -26,7 +26,7 @@ export default function PlaceListView({ placeList }) {
     flatListRef.current?.scrollToIndex({ animated: true, index });
   };
 
-  const getItemLayout = (event) => {
+  const handleScrollEnd = (event) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
     setSelectedMarker(index);
   };
@@ -39,7 +39,7 @@ export default function PlaceListView({ placeList }) {
         pagingEnabled
         ref={flatListRef}
         showsHorizontalScrollIndicator={false}
-        getItemLayout={getItemLayout}
+        onMomentumScrollEnd={handleScrollEnd}
         renderItem={({ item, index }) => (
           <View key={index}>
             <PlaceItem place={item} />
