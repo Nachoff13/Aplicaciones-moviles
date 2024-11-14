@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, Button, Alert } from 'react-native';
+import { View, Text, Dimensions, Button, Alert, useColorScheme } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import { UserLocationContext } from '@/context/UserLocationContext';
@@ -14,6 +14,7 @@ import { ThemedView } from '../ThemedView';
 import * as DocumentPicker from 'expo-document-picker';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
+import darkMapStyle from './DarkMapStyle'; 
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -23,6 +24,9 @@ export default function GoogleMapView() {
   const { location } = useContext(UserLocationContext);
   const [placeList, setPlaceList] = useState([]);
   const [mapRegion, setMapRegion] = useState(null);
+
+  // Determina el esquema de color del dispositivo
+  const colorScheme = useColorScheme();
   const [selectedMarker, setSelectedMarker] = useState([]);
 
   useEffect(() => {
@@ -166,10 +170,18 @@ export default function GoogleMapView() {
         </Text>
       </ThemedView>
     );
-  }
-
+  }    // Centra el mapa en el marcador seleccionado o en la farmacia seleccionada en el carrusel
+    if (selectedMarker !== null && placeList[selectedMarker]) {
+      const { latitude, longitude } = placeList[selectedMarker].location;
+      setMapRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude,
+        longitude,
+      }));
+    }
+  }, [location, selectedMarker]);
   return (
-    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
+    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker,setMapRegion  }}>
       <ThemedView>
         <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
           <MapView
@@ -177,6 +189,7 @@ export default function GoogleMapView() {
             provider={PROVIDER_DEFAULT}
             showsUserLocation={true}
             region={mapRegion}
+            customMapStyle={colorScheme === 'dark' ? darkMapStyle : []} // Apply the dark mode style if in dark mode
           >
             {placeList &&
               placeList.map((item, index) => (

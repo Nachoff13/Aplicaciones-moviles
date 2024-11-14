@@ -61,7 +61,7 @@ export default function PlaceItem({ place }) {
 }
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get('screen').width * 0.9,
+    width: Dimensions.get('screen').width * 0.9165,
     margin: 5,
     borderRadius: 10,
   },
