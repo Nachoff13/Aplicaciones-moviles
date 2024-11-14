@@ -19,18 +19,18 @@ export default function ShakeModal({ visible, onClose }) {
 
   const handlePasswordSubmit = () => {
     if (password === '123456') {
+      console.log('Contraseña correcta');
       onClose();
-      setPassword('');
       navigation.navigate('admin');
     } else {
       alert('Contraseña incorrecta');
-      setPassword('');
     }
+    setPassword('');
   };
 
   const handleOnClose = () => {
-    setPassword('');
     onClose();
+    setPassword('');
   };
 
   return (

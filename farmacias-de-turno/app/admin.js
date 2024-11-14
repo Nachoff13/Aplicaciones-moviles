@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
 
 export default function admin() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>¡Bienvenido administrador!</Text>
-    </View>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.text}>¡Bienvenido administrador!</ThemedText>
+    </ThemedView>
   );
 }
 
