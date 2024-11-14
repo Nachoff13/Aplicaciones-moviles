@@ -17,7 +17,8 @@ export default {
     ios: {
       supportsTablet: true,
       infoPlist: {
-        NSLocationWhenInUseUsageDescription: "This app uses your location to provide better services."
+        NSLocationWhenInUseUsageDescription: "This app uses your location to provide better services.",
+        NSDocumentsUsageDescription: "Esta aplicación necesita acceder a tus documentos para cargar archivos CSV."
       }
     },
     android: {
@@ -52,7 +53,8 @@ export default {
           "locationAlwaysAndWhenInUsePermission": "Allow Explore Place to use your location."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-router"
     ],
     experiments: {
       typedRoutes: true
