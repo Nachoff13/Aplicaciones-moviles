@@ -1,4 +1,4 @@
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, useColorScheme } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import { UserLocationContext } from '@/context/UserLocationContext';
@@ -11,6 +11,7 @@ import { firebaseConfig } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
+import darkMapStyle from './DarkMapStyle'; 
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -25,6 +26,9 @@ export default function GoogleMapView() {
 
   //Guarda la región del mapa
   const [mapRegion, setMapRegion] = useState(null);
+
+  // Determina el esquema de color del dispositivo
+  const colorScheme = useColorScheme();
 
   // Función para guardar farmacias en Firestore
   const savePharmaciesToFirestore = async (pharmacies) => {
@@ -140,6 +144,7 @@ export default function GoogleMapView() {
             provider={PROVIDER_DEFAULT}
             showsUserLocation={true}
             region={mapRegion}
+            customMapStyle={colorScheme === 'dark' ? darkMapStyle : []} // Apply the dark mode style if in dark mode
           >
             {placeList &&
               placeList.map((item, index) => (
