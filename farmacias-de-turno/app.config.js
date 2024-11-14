@@ -52,7 +52,8 @@ export default {
           "locationAlwaysAndWhenInUsePermission": "Allow Explore Place to use your location."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-router"
     ],
     experiments: {
       typedRoutes: true
