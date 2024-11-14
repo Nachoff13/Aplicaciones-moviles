@@ -88,6 +88,7 @@ export default function GoogleMapView() {
   };
 
   useEffect(() => {
+    // Inicializa el mapa con la ubicación del usuario
     if (location) {
       setMapRegion({
         latitude: location.coords.latitude,
@@ -97,7 +98,17 @@ export default function GoogleMapView() {
       });
       getNearbyPlace();
     }
-  }, [location]);
+  
+    // Centra el mapa en el marcador seleccionado o en la farmacia seleccionada en el carrusel
+    if (selectedMarker !== null && placeList[selectedMarker]) {
+      const { latitude, longitude } = placeList[selectedMarker].location;
+      setMapRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude,
+        longitude,
+      }));
+    }
+  }, [location, selectedMarker]);
 
   if (!mapRegion) {
     return (
@@ -117,7 +128,7 @@ export default function GoogleMapView() {
     );
   }
   return (
-    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>
+    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker,setMapRegion  }}>
       <ThemedView>
         <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
           <MapView
