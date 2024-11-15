@@ -11,7 +11,7 @@ import { firebaseConfig } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
-import darkMapStyle from './DarkMapStyle'; 
+import darkMapStyle from './DarkMapStyle';
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -72,7 +72,7 @@ export default function GoogleMapView() {
 
       const response = await globalApi.NewNearbyPlace(data);
 
-      //console.log('Respuesta de la API:', response.data);
+      console.log('Respuesta de la API:', response.data);
 
       const pharmacies = response.data?.places;
       setPlaceList(pharmacies);
@@ -102,7 +102,7 @@ export default function GoogleMapView() {
       });
       getNearbyPlace();
     }
-  
+
     // Centra el mapa en el marcador seleccionado o en la farmacia seleccionada en el carrusel
     if (selectedMarker !== null && placeList[selectedMarker]) {
       const { latitude, longitude } = placeList[selectedMarker].location;
@@ -132,7 +132,9 @@ export default function GoogleMapView() {
     );
   }
   return (
-    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker,setMapRegion  }}>
+    <SelectMarkerContext.Provider
+      value={{ selectedMarker, setSelectedMarker, setMapRegion }}
+    >
       <ThemedView>
         <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
           <MapView
