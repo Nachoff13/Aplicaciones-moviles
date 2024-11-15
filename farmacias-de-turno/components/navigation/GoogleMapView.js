@@ -18,6 +18,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export default function GoogleMapView() {
+  const [farmaciasHardcodeadas, setFarmaciasHardcodeadas] = useState([
+    { address: 'Av. 60 Esq 10, La Plata' },
+    { address: 'Calle 50 1051 B1900ATO, La Plata' },
+  ]);
+
   //Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
 
@@ -29,7 +34,6 @@ export default function GoogleMapView() {
 
   // Determina el esquema de color del dispositivo
   const colorScheme = useColorScheme();
-
   // Función para guardar farmacias en Firestore
   const savePharmaciesToFirestore = async (pharmacies) => {
     try {
@@ -72,9 +76,34 @@ export default function GoogleMapView() {
 
       const response = await globalApi.NewNearbyPlace(data);
 
-      console.log('Respuesta de la API:', response.data);
+      console.log('Respuesta de la API:', response.data.places);
 
-      const pharmacies = response.data?.places;
+      let pharmacies = response.data?.places;
+      // Verificar las direcciones de las farmacias obtenidas
+      // pharmacies.forEach((pharmacy, index) => {
+      //   console.log(`Farmacia ${index + 1}:`, pharmacy.shortFormattedAddress);
+      // });
+
+      // Filtrar farmacias por direcciones en farmaciasHardcodeadas (serían las farmacias de turno del csv)
+      pharmacies = pharmacies.filter((pharmacy) => {
+        const match =
+          pharmacy.shortFormattedAddress &&
+          farmaciasHardcodeadas.some((addressObj) => {
+            const address = addressObj.address;
+            console.log(
+              `Comparando ${pharmacy.shortFormattedAddress} con ${address}`
+            );
+            return (
+              typeof address === 'string' &&
+              pharmacy.shortFormattedAddress
+                .toLowerCase()
+                .includes(address.toLowerCase())
+            );
+          });
+        console.log(`¿Coincide ${pharmacy.shortFormattedAddress}? ${match}`);
+        return match;
+      });
+
       setPlaceList(pharmacies);
 
       // Guardar farmacias en Firestore
