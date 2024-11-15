@@ -19,8 +19,18 @@ const db = getFirestore(app);
 
 export default function GoogleMapView() {
   const [farmaciasHardcodeadas, setFarmaciasHardcodeadas] = useState([
-    { address: 'Av. 60 Esq 10, La Plata' },
-    { address: 'Calle 50 1051 B1900ATO, La Plata' },
+    { 
+      address: 'Av. 60 Esq 10, La Plata', 
+      turnDate: '2024-11-15',
+      name: 'Farmacia Argentina Homeopática',
+      phone: '221-422-1000',
+    },
+    { 
+      address: 'Calle 50 1051 B1900ATO, La Plata',
+      turnDate: '2024-11-16',
+      name: 'Farmacia de Turno La Plata',
+      phone: '221-423-1000',
+    },
   ]);
 
   //Guarda ubicación actual
@@ -73,26 +83,37 @@ export default function GoogleMapView() {
           },
         },
       };
-
+  
       const response = await globalApi.NewNearbyPlace(data);
-
+  
       console.log('Respuesta de la API:', response.data.places);
-
+  
       let pharmacies = response.data?.places;
+  
       // Verificar las direcciones de las farmacias obtenidas
       // pharmacies.forEach((pharmacy, index) => {
       //   console.log(`Farmacia ${index + 1}:`, pharmacy.shortFormattedAddress);
       // });
-
-      // Filtrar farmacias por direcciones en farmaciasHardcodeadas (serían las farmacias de turno del csv)
+  
+      // Filtra las farmacias que estan de turno el dia de la consulta
+      const filterPharmaciesByDay = () => {
+        const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato 'YYYY-MM-DD'
+  
+        return farmaciasHardcodeadas.filter((pharmacy) => {
+          const pharmacyDate = pharmacy.turnDate;
+  
+          // Compara la fecha de turno con la fecha actual
+          return pharmacyDate === today;
+        });
+      };
+  
+      // Filtra farmacias por direcciones en farmaciasHardcodeadas
       pharmacies = pharmacies.filter((pharmacy) => {
         const match =
           pharmacy.shortFormattedAddress &&
           farmaciasHardcodeadas.some((addressObj) => {
             const address = addressObj.address;
-            console.log(
-              `Comparando ${pharmacy.shortFormattedAddress} con ${address}`
-            );
+            console.log(`Comparando ${pharmacy.shortFormattedAddress} con ${address}`);
             return (
               typeof address === 'string' &&
               pharmacy.shortFormattedAddress
@@ -100,20 +121,25 @@ export default function GoogleMapView() {
                 .includes(address.toLowerCase())
             );
           });
-        console.log(`¿Coincide ${pharmacy.shortFormattedAddress}? ${match}`);
-        return match;
+  
+        // Compara si el dia actual es el mismo que el de turno de la farmacia
+        const isToday = filterPharmaciesByDay().some(
+          (pharmacyToday) => pharmacyToday.address === pharmacy.shortFormattedAddress
+        );
+  
+        console.log(`¿Es hoy el día de turno de ${pharmacy.shortFormattedAddress}? ${isToday}`);
+        return match && isToday; // Solo incluye la farmacia si la dirección y el dia de turno coinciden
       });
-
+  
+      // Actualiza el estado con las farmacias filtradas
       setPlaceList(pharmacies);
-
+  
       // Guardar farmacias en Firestore
       await savePharmaciesToFirestore(pharmacies);
     } catch (error) {
+      // Manejo de errores
       if (error.response) {
-        console.error(
-          'Error al llamar a la API:',
-          error.response.data['error']['message']
-        );
+        console.error('Error al llamar a la API:', error.response.data['error']['message']);
       } else {
         console.error('Error al llamar a la API:', error.message);
       }
