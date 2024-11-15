@@ -37,7 +37,7 @@ export default function PlaceItem({ place }) {
   }, [place]);
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <Image
         source={
           imageError || !photoUrl
@@ -46,7 +46,7 @@ export default function PlaceItem({ place }) {
         }
         style={styles.image}
         onError={() => setImageError(true)}
-      />
+      ></Image>
 
       <ThemedView style={styles.textContainer}>
         <ThemedText type="subtitle">
@@ -56,7 +56,7 @@ export default function PlaceItem({ place }) {
           {place.shortFormattedAddress || 'Dirección no disponible'}
         </ThemedText>
       </ThemedView>
-    </ThemedView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
