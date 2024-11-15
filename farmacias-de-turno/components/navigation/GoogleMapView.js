@@ -24,12 +24,16 @@ export default function GoogleMapView() {
       turnDate: '2024-11-15',
       name: 'Farmacia Argentina Homeopática',
       phone: '221-422-1000',
+      openingTime: '08:00 AM',
+      closingTime: '08:00 PM',
     },
     { 
       address: 'Calle 50 1051 B1900ATO, La Plata',
       turnDate: '2024-11-16',
       name: 'Farmacia de Turno La Plata',
       phone: '221-423-1000',
+      openingTime: '09:00 AM',
+      closingTime: '09:00 PM',
     },
   ]);
 
@@ -107,6 +111,24 @@ export default function GoogleMapView() {
         });
       };
   
+      // Función para verificar si una farmacia está abierta en el horario actual
+      const isPharmacyOpen = (openingTime, closingTime) => {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const currentTime = currentHour + currentMinute / 60; // Convierte la hora actual a formato decimal
+  
+        // Convierte el horario de apertura y cierre de la farmacia a formato decimal
+        const [openingHour, openingMinute] = openingTime.split(':').map(Number);
+        const openingTimeDecimal = openingHour + openingMinute / 60;
+  
+        const [closingHour, closingMinute] = closingTime.split(':').map(Number);
+        const closingTimeDecimal = closingHour + closingMinute / 60;
+  
+        // Verifica si la hora actual está dentro del rango de apertura
+        return currentTime >= openingTimeDecimal && currentTime <= closingTimeDecimal;
+      };
+  
       // Filtra farmacias por direcciones en farmaciasHardcodeadas
       pharmacies = pharmacies.filter((pharmacy) => {
         const match =
@@ -127,8 +149,13 @@ export default function GoogleMapView() {
           (pharmacyToday) => pharmacyToday.address === pharmacy.shortFormattedAddress
         );
   
+        // Filtra por horario de apertura si está fuera de horario
+        const isOpen = isPharmacyOpen(pharmacy.openingTime, pharmacy.closingTime);
+  
+        console.log(`¿Está abierta ${pharmacy.shortFormattedAddress}? ${isOpen}`);
         console.log(`¿Es hoy el día de turno de ${pharmacy.shortFormattedAddress}? ${isToday}`);
-        return match && isToday; // Solo incluye la farmacia si la dirección y el dia de turno coinciden
+  
+        return match && isToday && isOpen; // Solo incluye la farmacia si la dirección, el dia de turno y el horario de apertura coinciden
       });
   
       // Actualiza el estado con las farmacias filtradas
@@ -145,6 +172,7 @@ export default function GoogleMapView() {
       }
     }
   };
+  
 
   useEffect(() => {
     // Inicializa el mapa con la ubicación del usuario
