@@ -57,6 +57,7 @@ export default function ShakeModal({ visible, onClose }) {
                 (colorScheme === 'dark' && styles.inputDarkView)
               }
               placeholder="Contraseña"
+              placeholderTextColor={colorScheme === 'dark' ? '#ccc' : '#999'}
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}

@@ -122,6 +122,7 @@ export default function Admin() {
           (colorScheme === 'dark' && styles.inputDarkView)
         }
         placeholder="Buscar farmacia..."
+        placeholderTextColor={colorScheme === 'dark' ? '#ccc' : '#999'}
         value={searchText}
         onChangeText={setSearchText}
       />
