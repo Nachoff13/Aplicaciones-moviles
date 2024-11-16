@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { StyleSheet, FlatList, View, TextInput, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  FlatList,
+  View,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import Constants from 'expo-constants';
 
 const farmaciasHardcodeadas = [
-  { 
-    address: 'Av. 60 Esq 10, La Plata', 
+  {
+    address: 'Av. 60 Esq 10, La Plata',
     turnDate: '2024-11-15',
     name: 'Farmacia Argentina Homeopática',
     phone: '221-422-1000',
   },
-  { 
+  {
     address: 'Calle 50 1051 B1900ATO, La Plata',
     turnDate: '2024-11-16',
     name: 'Farmacia de Turno La Plata',
@@ -75,11 +82,18 @@ export default function Admin() {
   };
 
   // Filtra las farmacias según el texto de búsqueda (ignorando mayúsculas y tildes)
-  const filteredFarmacias = farmaciasHardcodeadas.filter((item) =>
-    removeAccents(item.name.toLowerCase()).includes(removeAccents(searchText.toLowerCase())) ||
-    removeAccents(item.address.toLowerCase()).includes(removeAccents(searchText.toLowerCase())) ||
-    removeAccents(item.turnDate.toLowerCase()).includes(removeAccents(searchText.toLowerCase())) ||
-    item.phone.includes(searchText)
+  const filteredFarmacias = farmaciasHardcodeadas.filter(
+    (item) =>
+      removeAccents(item.name.toLowerCase()).includes(
+        removeAccents(searchText.toLowerCase())
+      ) ||
+      removeAccents(item.address.toLowerCase()).includes(
+        removeAccents(searchText.toLowerCase())
+      ) ||
+      removeAccents(item.turnDate.toLowerCase()).includes(
+        removeAccents(searchText.toLowerCase())
+      ) ||
+      item.phone.includes(searchText)
   );
 
   const renderItem = ({ item }) => (
@@ -119,9 +133,15 @@ export default function Admin() {
         ListHeaderComponent={
           <View style={styles.row}>
             <ThemedText style={[styles.cell, styles.header]}>Nombre</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>Dirección</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>Fecha de Turno</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>Teléfono</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>
+              Dirección
+            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>
+              Fecha de Turno
+            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>
+              Teléfono
+            </ThemedText>
           </View>
         }
       />
@@ -132,7 +152,9 @@ export default function Admin() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    alignContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+
     paddingHorizontal: 10,
   },
   searchInput: {
