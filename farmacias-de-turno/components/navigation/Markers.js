@@ -17,7 +17,7 @@ export default function Markers({ index, place }) {
       >
         <Image
           source={require('../../assets/images/farmacia-marcador-1.png')}
-          style={{ width: 60, height: 60 }}
+          style={{ width: 40, height: 40 }}
         />
       </Marker>
     )

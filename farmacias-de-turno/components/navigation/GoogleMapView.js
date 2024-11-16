@@ -14,20 +14,47 @@ import { ThemedView } from '../ThemedView';
 import * as DocumentPicker from 'expo-document-picker';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
-import darkMapStyle from './DarkMapStyle'; 
+import darkMapStyle from './DarkMapStyle';
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export default function GoogleMapView() {
+  const [farmaciasHardcodeadas, setFarmaciasHardcodeadas] = useState([
+    { address: 'Av. 60 Esq 10, La Plata' },
+    { address: 'Calle 50 1051 B1900ATO, La Plata' },
+  ]);
+
+  // Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
   const [placeList, setPlaceList] = useState([]);
   const [mapRegion, setMapRegion] = useState(null);
 
   // Determina el esquema de color del dispositivo
   const colorScheme = useColorScheme();
-  const [selectedMarker, setSelectedMarker] = useState([]);
+
+  const savePharmaciesToFirestore = async (pharmacies) => {
+    try {
+      const pharmaciesCollection = collection(db, 'pharmacies');
+      for (const pharmacy of pharmacies) {
+        const { displayName, formattedAddress, location } = pharmacy;
+        const { latitude, longitude } = location;
+        const name = displayName && displayName.text ? displayName.text.split(',')[0] : 'Nombre no disponible'; // Verificación de displayName
+        await addDoc(pharmaciesCollection, {
+          name,
+          address: formattedAddress,
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+        });
+      }
+      console.log('Farmacias guardadas exitosamente en Firestore');
+    } catch (e) {
+      console.error('Error al guardar las farmacias en Firestore: ', e);
+    }
+  };
+
+  const [selectedMarker, setSelectedMarker] = useState(null);
 
   useEffect(() => {
     if (location) {
@@ -40,6 +67,17 @@ export default function GoogleMapView() {
       getNearbyPlace();
     }
   }, [location]);
+
+  useEffect(() => {
+    if (selectedMarker !== null && placeList[selectedMarker]) {
+      const { latitude, longitude } = placeList[selectedMarker].location;
+      setMapRegion((prevRegion) => ({
+        ...prevRegion,
+        latitude,
+        longitude,
+      }));
+    }
+  }, [selectedMarker]);
 
   const getNearbyPlace = async () => {
     try {
@@ -58,7 +96,30 @@ export default function GoogleMapView() {
       };
 
       const response = await globalApi.NewNearbyPlace(data);
-      const pharmacies = response.data?.places;
+      let pharmacies = response.data?.places;
+
+      console.log('Respuesta de la API:', pharmacies);
+
+      // Filtrar farmacias por direcciones en farmaciasHardcodeadas (serían las farmacias de turno del csv)
+      pharmacies = pharmacies.filter((pharmacy) => {
+        const match =
+          pharmacy.shortFormattedAddress &&
+          farmaciasHardcodeadas.some((addressObj) => {
+            const address = addressObj.address;
+            console.log(
+              `Comparando ${pharmacy.shortFormattedAddress} con ${address}`
+            );
+            return (
+              typeof address === 'string' &&
+              pharmacy.shortFormattedAddress
+                .toLowerCase()
+                .includes(address.toLowerCase())
+            );
+          });
+        console.log(`¿Coincide ${pharmacy.shortFormattedAddress}? ${match}`);
+        return match;
+      });
+
       setPlaceList(pharmacies);
       await savePharmaciesToFirestore(pharmacies);
     } catch (error) {
@@ -67,27 +128,6 @@ export default function GoogleMapView() {
       } else {
         console.error('Error al llamar a la API:', error.message);
       }
-    }
-  };
-
-  const savePharmaciesToFirestore = async (pharmacies) => {
-    try {
-      const pharmaciesCollection = collection(db, 'pharmacies');
-      for (const pharmacy of pharmacies) {
-        const { displayName, formattedAddress, location } = pharmacy;
-        const { latitude, longitude } = location;
-        console.log('Procesando farmacia:', pharmacy);
-        const name = displayName && displayName.text ? displayName.text.split(',')[0] : 'Nombre no disponible'; // Verificación de displayName
-        await addDoc(pharmaciesCollection, {
-          name,
-          address: formattedAddress,
-          latitude: latitude.toString(),
-          longitude: longitude.toString(),
-        });
-      }
-      console.log('Farmacias guardadas exitosamente en Firestore');
-    } catch (e) {
-      console.error('Error al guardar las farmacias en Firestore: ', e);
     }
   };
 
@@ -170,18 +210,12 @@ export default function GoogleMapView() {
         </Text>
       </ThemedView>
     );
-  }    // Centra el mapa en el marcador seleccionado o en la farmacia seleccionada en el carrusel
-    if (selectedMarker !== null && placeList[selectedMarker]) {
-      const { latitude, longitude } = placeList[selectedMarker].location;
-      setMapRegion((prevRegion) => ({
-        ...prevRegion,
-        latitude,
-        longitude,
-      }));
-    }
-  }, [location, selectedMarker]);
+  }
+
   return (
-    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker,setMapRegion  }}>
+    <SelectMarkerContext.Provider
+      value={{ selectedMarker, setSelectedMarker, setMapRegion }}
+    >
       <ThemedView>
         <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
           <MapView

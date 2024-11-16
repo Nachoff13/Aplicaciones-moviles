@@ -44,8 +44,8 @@ export default function ShakeModal({ visible, onClose }) {
         <ThemedView style={styles.modalContainer}>
           <ThemedView
             style={
-              (styles.modalViewLight,
-              colorScheme === 'dark' && styles.modalViewDark)
+              (colorScheme === 'light' && styles.modalViewLight) ||
+              (colorScheme === 'dark' && styles.modalViewDark)
             }
           >
             <ThemedText style={styles.modalText}>
@@ -54,13 +54,14 @@ export default function ShakeModal({ visible, onClose }) {
             <TextInput
               style={styles.input}
               placeholder="Contraseña"
+              placeholderTextColor={colorScheme === 'dark' ? '#ccc' : '#999'}
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}
             />
             <ThemedView style={styles.buttonContainer}>
-              <Button onPress={handlePasswordSubmit} title="Enviar" />
               <Button onPress={handleOnClose} title="Cerrar" />
+              <Button onPress={handlePasswordSubmit} title="Enviar" />
             </ThemedView>
           </ThemedView>
         </ThemedView>
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    height: 30,
+    height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 5,
