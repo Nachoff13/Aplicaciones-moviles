@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -74,6 +75,8 @@ const farmaciasHardcodeadas = [
 ];
 
 export default function Admin() {
+  let colorScheme = useColorScheme();
+
   const [searchText, setSearchText] = useState('');
 
   // Función para eliminar acentos y normalizar las cadenas
@@ -114,7 +117,10 @@ export default function Admin() {
     <ThemedView style={styles.container}>
       {/* Input de búsqueda */}
       <TextInput
-        style={styles.searchInput}
+        style={
+          (colorScheme === 'light' && styles.inputLightView) ||
+          (colorScheme === 'dark' && styles.inputDarkView)
+        }
         placeholder="Buscar farmacia..."
         value={searchText}
         onChangeText={setSearchText}
@@ -157,13 +163,23 @@ const styles = StyleSheet.create({
 
     paddingHorizontal: 10,
   },
-  searchInput: {
+  inputLightView: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 15,
     paddingHorizontal: 10,
     borderRadius: 5,
+    color: '#000',
+  },
+  inputDarkView: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    color: '#fff',
   },
   clearButton: {
     backgroundColor: '#007BFF', // Color azul

@@ -52,9 +52,11 @@ export default function ShakeModal({ visible, onClose }) {
               Ingrese la contraseña del administrador
             </ThemedText>
             <TextInput
-              style={styles.input}
+              style={
+                (colorScheme === 'light' && styles.inputLightView) ||
+                (colorScheme === 'dark' && styles.inputDarkView)
+              }
               placeholder="Contraseña"
-              placeholderTextColor={colorScheme === 'dark' ? '#ccc' : '#999'}
               secureTextEntry={true}
               value={password}
               onChangeText={setPassword}
@@ -111,13 +113,23 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
-  input: {
+  inputLightView: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 20,
+    color: '#000',
+  },
+  inputDarkView: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    color: '#fff',
   },
   buttonContainer: {
     flexDirection: 'row',
