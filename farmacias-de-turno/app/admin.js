@@ -8,18 +8,8 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import Constants from 'expo-constants';
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import XLSX from 'xlsx'; // Para convertir el Excel a JSON
-import { firebaseConfig } from '@/database/firebase'; // Configuración de Firebase
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import styles from '@/components/AdminStyles.tsx'; // Importar estilos desde el archivo separado
-
-// Inicializa Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { handleFileUpload } from '@/components/navigation/fileUploadHandler'; // Importar la función desde el nuevo archivo
 
 const farmaciasHardcodeadas = [
   {
@@ -83,7 +73,6 @@ const farmaciasHardcodeadas = [
     phone: '221-431-9000',
   },
 ];
-
 export default function Admin() {
   const colorScheme = useColorScheme();
   const [searchText, setSearchText] = useState('');
@@ -117,62 +106,6 @@ export default function Admin() {
 
   const clearSearch = () => {
     setSearchText('');
-  };
-
-  const handleFileUpload = async () => {
-    try {
-      // Selecciona el archivo
-      const res = await DocumentPicker.getDocumentAsync({
-        type: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-      });
-
-      if (res.type === 'cancel') {
-        console.log('El usuario canceló la selección del archivo');
-        return;
-      }
-
-      // Verifica que la URI del archivo no sea nula
-      const fileUri = res.uri;
-      console.log('File URI:', fileUri); // Agregar console.log para verificar la URI
-      if (!fileUri) {
-        throw new Error('No se pudo obtener la URI del archivo');
-      }
-
-      // Lee el archivo Excel y conviértelo a JSON
-      const fileData = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      const workbook = XLSX.read(fileData, { type: 'base64' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-      console.log('Excel parsed:', jsonData);
-
-      // Convierte cada farmacia a la estructura que Firebase espera
-      const pharmacies = jsonData.map(item => ({
-        year: item.año,
-        month: item.mes,
-        day: item.dia,
-        name: item.nombre,
-        address: item.direccion,
-        phone: item.telefono,
-      }));
-
-      // Guarda las farmacias en Firebase
-      try {
-        const pharmaciesCollection = collection(db, 'pharmacies');
-        for (const pharmacy of pharmacies) {
-          await addDoc(pharmaciesCollection, pharmacy);
-        }
-        console.log('Farmacias guardadas exitosamente en Firestore');
-      } catch (e) {
-        console.error('Error al guardar las farmacias en Firestore: ', e);
-      }
-    } catch (err) {
-      console.error('Error al seleccionar el archivo: ', err);
-    }
   };
 
   return (
