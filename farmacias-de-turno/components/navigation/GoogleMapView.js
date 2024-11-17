@@ -12,10 +12,10 @@ import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
 import darkMapStyle from './DarkMapStyle';
+import { db } from '../../database/firebase';
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+
+
 
 export default function GoogleMapView() {
   const [farmaciasHardcodeadas, setFarmaciasHardcodeadas] = useState([

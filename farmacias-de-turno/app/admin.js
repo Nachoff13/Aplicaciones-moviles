@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet,
   FlatList,
   View,
   TextInput,
@@ -9,7 +8,8 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import Constants from 'expo-constants';
+import styles from '@/components/AdminStyles.tsx'; // Importar estilos desde el archivo separado
+import { handleFileUpload } from '@/components/navigation/fileUploadHandler'; // Importar la función desde el nuevo archivo
 
 const farmaciasHardcodeadas = [
   {
@@ -73,18 +73,14 @@ const farmaciasHardcodeadas = [
     phone: '221-431-9000',
   },
 ];
-
 export default function Admin() {
-  let colorScheme = useColorScheme();
-
+  const colorScheme = useColorScheme();
   const [searchText, setSearchText] = useState('');
 
-  // Función para eliminar acentos y normalizar las cadenas
   const removeAccents = (str) => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
 
-  // Filtra las farmacias según el texto de búsqueda (ignorando mayúsculas y tildes)
   const filteredFarmacias = farmaciasHardcodeadas.filter(
     (item) =>
       removeAccents(item.name.toLowerCase()).includes(
@@ -108,14 +104,12 @@ export default function Admin() {
     </View>
   );
 
-  // Función para limpiar la búsqueda
   const clearSearch = () => {
     setSearchText('');
   };
 
   return (
     <ThemedView style={styles.container}>
-      {/* Input de búsqueda */}
       <TextInput
         style={
           (colorScheme === 'light' && styles.inputLightView) ||
@@ -126,85 +120,27 @@ export default function Admin() {
         value={searchText}
         onChangeText={setSearchText}
       />
-
-      {/* Botón Limpiar Búsqueda */}
       <TouchableOpacity style={styles.clearButton} onPress={clearSearch}>
         <ThemedText style={styles.clearButtonText}>Limpiar Búsqueda</ThemedText>
       </TouchableOpacity>
-
-      {/* Lista filtrada */}
       <FlatList
         data={filteredFarmacias}
         renderItem={renderItem}
-        keyExtractor={(item) => item.phone} // Usamos el teléfono como clave única
+        keyExtractor={(item) => item.phone}
         ListHeaderComponent={
           <View style={styles.row}>
             <ThemedText style={[styles.cell, styles.header]}>Nombre</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Dirección
-            </ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Fecha de Turno
-            </ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Teléfono
-            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Dirección</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Fecha de Turno</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Teléfono</ThemedText>
           </View>
         }
       />
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+          <ThemedText style={styles.uploadButtonText}>Cargar Archivo</ThemedText>
+        </TouchableOpacity>
+      </View>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-
-    paddingHorizontal: 10,
-  },
-  inputLightView: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    color: '#000',
-  },
-  inputDarkView: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    color: '#fff',
-  },
-  clearButton: {
-    backgroundColor: '#007BFF', // Color azul
-    paddingVertical: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  row: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  cell: {
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  header: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
