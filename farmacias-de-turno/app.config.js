@@ -25,6 +25,7 @@ export default {
     },
     android: {
       adaptiveIcon: {
+        permissions: 'READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE',
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
