@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet,
   FlatList,
   View,
   TextInput,
@@ -10,6 +9,17 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import Constants from 'expo-constants';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import XLSX from 'xlsx'; // Para convertir el Excel a JSON
+import { firebaseConfig } from '@/database/firebase'; // Configuración de Firebase
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import styles from '@/components/AdminStyles.tsx'; // Importar estilos desde el archivo separado
+
+// Inicializa Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const farmaciasHardcodeadas = [
   {
@@ -75,16 +85,13 @@ const farmaciasHardcodeadas = [
 ];
 
 export default function Admin() {
-  let colorScheme = useColorScheme();
-
+  const colorScheme = useColorScheme();
   const [searchText, setSearchText] = useState('');
 
-  // Función para eliminar acentos y normalizar las cadenas
   const removeAccents = (str) => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
 
-  // Filtra las farmacias según el texto de búsqueda (ignorando mayúsculas y tildes)
   const filteredFarmacias = farmaciasHardcodeadas.filter(
     (item) =>
       removeAccents(item.name.toLowerCase()).includes(
@@ -108,14 +115,68 @@ export default function Admin() {
     </View>
   );
 
-  // Función para limpiar la búsqueda
   const clearSearch = () => {
     setSearchText('');
   };
 
+  const handleFileUpload = async () => {
+    try {
+      // Selecciona el archivo
+      const res = await DocumentPicker.getDocumentAsync({
+        type: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+      });
+
+      if (res.type === 'cancel') {
+        console.log('El usuario canceló la selección del archivo');
+        return;
+      }
+
+      // Verifica que la URI del archivo no sea nula
+      const fileUri = res.uri;
+      console.log('File URI:', fileUri); // Agregar console.log para verificar la URI
+      if (!fileUri) {
+        throw new Error('No se pudo obtener la URI del archivo');
+      }
+
+      // Lee el archivo Excel y conviértelo a JSON
+      const fileData = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const workbook = XLSX.read(fileData, { type: 'base64' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+      console.log('Excel parsed:', jsonData);
+
+      // Convierte cada farmacia a la estructura que Firebase espera
+      const pharmacies = jsonData.map(item => ({
+        year: item.año,
+        month: item.mes,
+        day: item.dia,
+        name: item.nombre,
+        address: item.direccion,
+        phone: item.telefono,
+      }));
+
+      // Guarda las farmacias en Firebase
+      try {
+        const pharmaciesCollection = collection(db, 'pharmacies');
+        for (const pharmacy of pharmacies) {
+          await addDoc(pharmaciesCollection, pharmacy);
+        }
+        console.log('Farmacias guardadas exitosamente en Firestore');
+      } catch (e) {
+        console.error('Error al guardar las farmacias en Firestore: ', e);
+      }
+    } catch (err) {
+      console.error('Error al seleccionar el archivo: ', err);
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
-      {/* Input de búsqueda */}
       <TextInput
         style={
           (colorScheme === 'light' && styles.inputLightView) ||
@@ -126,85 +187,27 @@ export default function Admin() {
         value={searchText}
         onChangeText={setSearchText}
       />
-
-      {/* Botón Limpiar Búsqueda */}
       <TouchableOpacity style={styles.clearButton} onPress={clearSearch}>
         <ThemedText style={styles.clearButtonText}>Limpiar Búsqueda</ThemedText>
       </TouchableOpacity>
-
-      {/* Lista filtrada */}
       <FlatList
         data={filteredFarmacias}
         renderItem={renderItem}
-        keyExtractor={(item) => item.phone} // Usamos el teléfono como clave única
+        keyExtractor={(item) => item.phone}
         ListHeaderComponent={
           <View style={styles.row}>
             <ThemedText style={[styles.cell, styles.header]}>Nombre</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Dirección
-            </ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Fecha de Turno
-            </ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Teléfono
-            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Dirección</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Fecha de Turno</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Teléfono</ThemedText>
           </View>
         }
       />
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+          <ThemedText style={styles.uploadButtonText}>Cargar Archivo</ThemedText>
+        </TouchableOpacity>
+      </View>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-
-    paddingHorizontal: 10,
-  },
-  inputLightView: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    color: '#000',
-  },
-  inputDarkView: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    color: '#fff',
-  },
-  clearButton: {
-    backgroundColor: '#007BFF', // Color azul
-    paddingVertical: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  row: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  cell: {
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  header: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
