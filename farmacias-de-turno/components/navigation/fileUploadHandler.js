@@ -5,12 +5,20 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/database/firebase';
 
 const validatePharmacyData = (pharmacy) => {
-  const { name, address, phone, day, month, year } = pharmacy;
-  if (!name || !address || !phone || !day || !month || !year) {
+  const { name, address, phone, turnDate } = pharmacy;
+  if (!name || !address || !phone || !turnDate) {
     return false;
   }
   // Puedes agregar más validaciones aquí si es necesario
   return true;
+};
+
+const convertExcelDateToJSDate = (excelDate) => {
+  const jsDate = new Date((excelDate - (25567 + 2)) * 86400 * 1000);
+  const year = jsDate.getFullYear();
+  const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+  const day = String(jsDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 export const handleFileUpload = async () => {
@@ -20,12 +28,11 @@ export const handleFileUpload = async () => {
       copyToCacheDirectory: true,
     });
 
-
     console.log('Resultado completo de DocumentPicker:', res);
 
     if (res.canceled || !res.assets || res.assets.length === 0) {
       console.log('El usuario canceló la selección del archivo o no se seleccionó ningún archivo');
-      return;
+      return [];
     }
 
     // Obtenemos la URI correcta del archivo
@@ -49,21 +56,19 @@ export const handleFileUpload = async () => {
     console.log('Datos del Excel:', jsonData);
 
     const pharmacies = jsonData
-    .map((item) => ({
-      year: item.year,
-      month: item.month,
-      day: item.day,
-      name: item.name,
-      address: item.address,
-      phone: item.phone,
-    }))
-    .filter(validatePharmacyData);
+      .map((item) => ({
+        turnDate: convertExcelDateToJSDate(item.turnDate),
+        name: item.name,
+        address: item.address,
+        phone: item.phone,
+      }))
+      .filter(validatePharmacyData);
 
     console.log('Datos parseados antes de la validación:', pharmacies);
 
     if (pharmacies.length === 0) {
       console.error('No se encontraron datos válidos en el archivo');
-      return;
+      return [];
     }
 
     // Guarda las farmacias en Firebase
@@ -78,7 +83,10 @@ export const handleFileUpload = async () => {
     } catch (e) {
       console.error('Error al guardar las farmacias en Firestore: ', e);
     }
+
+    return pharmacies;
   } catch (err) {
     console.error('Error al seleccionar el archivo: ', err);
+    return [];
   }
 };
