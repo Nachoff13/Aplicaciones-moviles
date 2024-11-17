@@ -25,14 +25,14 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        permissions: 'READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE',
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
       permissions: [
         'ACCESS_FINE_LOCATION',
         'ACCESS_COARSE_LOCATION',
-        'HIGH_SAMPLING_RATE_SENSORS',
+        'READ_EXTERNAL_STORAGE',
+        'WRITE_EXTERNAL_STORAGE',
       ],
       package: 'com.anonymous.farmaciasdeturno',
     },
