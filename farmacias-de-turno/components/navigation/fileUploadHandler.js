@@ -14,11 +14,19 @@ const validatePharmacyData = (pharmacy) => {
 };
 
 const convertExcelDateToJSDate = (excelDate) => {
-  const jsDate = new Date((excelDate - (25567 + 2)) * 86400 * 1000);
-  const year = jsDate.getFullYear();
-  const month = String(jsDate.getMonth() + 1).padStart(2, '0');
-  const day = String(jsDate.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  if (typeof excelDate === 'number') {
+    const jsDate = new Date((excelDate - (25567 + 2)) * 86400 * 1000);
+    const year = jsDate.getFullYear();
+    const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+    const day = String(jsDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } else if (typeof excelDate === 'string') {
+    // Asumimos que la fecha ya está en formato YYYY-MM-DD
+    return excelDate;
+  } else {
+    console.error('Fecha de Excel no válida:', excelDate);
+    return null;
+  }
 };
 
 export const handleFileUpload = async () => {
