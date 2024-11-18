@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import PlaceListView from '@/components/navigation/PlaceListView';
 import GoogleMapView from '@/components/navigation/GoogleMapView';
@@ -8,11 +8,15 @@ import Constants from 'expo-constants';
 import { ThemedView } from '@/components/ThemedView';
 import ShakeDetector from '@/components/navigation/ShakeDetector';
 import ShakeModal from '@/components/navigation/ShakeModal';
+import { PharmacyContext } from '@/context/PharmacyContext';
 
 export default function Index() {
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [placeList, setPlaceList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+
+  // Accedemos al contexto de farmacias
+  const { pharmacies } = useContext(PharmacyContext);
 
   const handlePlaceListUpdate = (places) => {
     setPlaceList(places);
@@ -25,6 +29,13 @@ export default function Index() {
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+
+  // Usamos useEffect para actualizar la lista de farmacias cuando cambia el estado global
+  useEffect(() => {
+    if (pharmacies && pharmacies.length > 0) {
+      console.log('Farmacias actualizadas:', pharmacies);
+    }
+  }, [pharmacies]);
 
   return (
     <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker }}>

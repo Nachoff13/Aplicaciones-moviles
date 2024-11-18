@@ -10,10 +10,8 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useContext } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { UserLocationProvider } from '@/context/UserLocationContext'; // Asegúrate de ajustar la ruta según tu estructura de carpetas
-
-import { UserLocationContext } from '@/context/UserLocationContext';
-import globalApi from '@/utils/globalApi';
+import { UserLocationProvider } from '@/context/UserLocationContext';
+import { PharmacyProvider } from '@/context/PharmacyContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -37,13 +35,15 @@ export default function RootLayout() {
 
   return (
     <UserLocationProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="admin" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ThemeProvider>
+      <PharmacyProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="admin" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ThemeProvider>
+      </PharmacyProvider>
     </UserLocationProvider>
   );
 }
