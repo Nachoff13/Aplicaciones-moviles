@@ -1,76 +1,81 @@
-import { View, Text, Dimensions, useColorScheme } from 'react-native';
+import { View, Text, Dimensions, useColorScheme, StyleSheet } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import { UserLocationContext } from '@/context/UserLocationContext';
 import globalApi from '@/utils/globalApi';
-import { StyleSheet } from 'react-native';
 import PlaceListView from './PlaceListView';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
 import darkMapStyle from './DarkMapStyle';
+import { PharmacyContext } from '@/context/PharmacyContext';
+import { usePharmacy } from '@/context/PharmacyContext';
 
+// Función para normalizar direcciones
+const normalizeAddress = (address) => {
+  return address.toLowerCase().replace(/[^a-z0-9\s]/gi, '').trim();
+};
+
+// Función para comparar direcciones normalizadas
+const compareAddresses = (address1, address2) => {
+  const normalizedAddress1 = normalizeAddress(address1);
+  const normalizedAddress2 = normalizeAddress(address2);
+  return normalizedAddress1 === normalizedAddress2;
+};
+
+// Componente principal de GoogleMapView
 export default function GoogleMapView() {
-  //Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
-  //Guarda la lista de lugares cercanos de la api
   const [placeList, setPlaceList] = useState([]);
-  //Guarda la región del mapa
   const [mapRegion, setMapRegion] = useState(null);
-  // Determina el esquema de color del dispositivo
   const colorScheme = useColorScheme();
   const [selectedMarker, setSelectedMarker] = useState([]);
   const [pharmaciesOnDuty, setPharmaciesOnDuty] = useState([]);
+  const { pharmacies } = usePharmacy();
 
-  // Función para obtener farmacias desde Firebase
+  useEffect(() => {
+    if (pharmacies.length > 0) {
+      console.log('Farmacias cargadas en GoogleMapView', pharmacies);
+    }
+  }, [pharmacies]);
+
   const fetchPharmaciesFromFirestore = async () => {
     try {
       const pharmaciesCollection = collection(db, 'pharmacies');
       const pharmacySnapshot = await getDocs(pharmaciesCollection);
-      const pharmacyList = pharmacySnapshot.docs.map(doc => doc.data());
-      return pharmacyList;
+      return pharmacySnapshot.docs.map(doc => doc.data());
     } catch (e) {
       console.error('Error al obtener las farmacias desde Firestore: ', e);
       return [];
     }
   };
 
-  // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasHardcodeadas
   const filterPharmaciesByAddressAndDate = (pharmacies, addresses) => {
     const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
-
-    return pharmacies.filter((pharmacy) => {
-      const match =
-        pharmacy.shortFormattedAddress &&
-        addresses.some((addressObj) => {
-          const address = addressObj.address;
-          const turnDate = addressObj.turnDate;
-          const addressMatch = pharmacy.shortFormattedAddress
-            .toLowerCase()
-            .includes(address.toLowerCase());
-          const dateMatch = turnDate === todayString;
-          return typeof address === 'string' && addressMatch && dateMatch;
-        });
-      return match;
+    const todayString = today.toISOString().split('T')[0];
+    return pharmacies.filter(pharmacy => {
+      return addresses.some(addressObj => {
+        const address = addressObj.address;
+        const turnDate = addressObj.turnDate;
+        const addressMatch = compareAddresses(pharmacy.shortFormattedAddress, address);
+        const dateMatch = turnDate === todayString;
+        return addressMatch && dateMatch;
+      });
     });
   };
 
   const filterIsOpenPharmacy = (pharmacies, pharmaciesOnDuty) => {
-    return pharmacies.filter((pharmacy) => {
+    return pharmacies.filter(pharmacy => {
       const isOpen = pharmacy.currentOpeningHours?.openNow === true;
-      const isOnDuty = pharmaciesOnDuty.some((dutyPharmacy) => {
-        const match =
-          dutyPharmacy.shortFormattedAddress === pharmacy.shortFormattedAddress;
-        return match;
-      });
+      const isOnDuty = pharmaciesOnDuty.some(dutyPharmacy => 
+        compareAddresses(dutyPharmacy.shortFormattedAddress, pharmacy.shortFormattedAddress)
+      );
       return isOpen || isOnDuty;
     });
   };
 
-  // Va a traer las farmacias cercanas
   const getNearbyPlace = async () => {
     try {
       const data = {
@@ -88,32 +93,34 @@ export default function GoogleMapView() {
       };
 
       const response = await globalApi.NewNearbyPlace(data);
-
       let pharmacies = response.data?.places;
+
+      //console.log('Farmacias obtenidas de la API:', pharmacies);
+
       const farmaciasHardcodeadas = await fetchPharmaciesFromFirestore();
-      setPharmaciesOnDuty(
-        filterPharmaciesByAddressAndDate(pharmacies, farmaciasHardcodeadas)
-      );
+      setPharmaciesOnDuty(filterPharmaciesByAddressAndDate(pharmacies, farmaciasHardcodeadas));
 
       pharmacies = filterIsOpenPharmacy(pharmacies, pharmaciesOnDuty);
 
-      // Actualiza el estado con las farmacias filtradas
-      setPlaceList(pharmacies);
+      const pharmaciesFromContext = filterIsOpenPharmacy(pharmacies, pharmaciesOnDuty);
+
+      const combinedPharmacies = [
+        ...pharmacies, 
+        ...pharmaciesFromContext, 
+      ];
+
+      const uniquePharmacies = [
+        ...new Map(combinedPharmacies.map(pharmacy => [pharmacy.address, pharmacy])).values()
+      ];
+
+      setPlaceList(uniquePharmacies);
+
     } catch (error) {
-      // Manejo de errores
-      if (error.response) {
-        console.error(
-          'Error al llamar a la API:',
-          error.response.data['error']['message']
-        );
-      } else {
-        console.error('Error al llamar a la API:', error.message);
-      }
+      console.error('Error al llamar a la API:', error.message);
     }
   };
 
   useEffect(() => {
-    // Inicializa el mapa con la ubicación del usuario
     if (location) {
       setMapRegion({
         latitude: location.coords.latitude,
@@ -124,7 +131,6 @@ export default function GoogleMapView() {
       getNearbyPlace();
     }
 
-    // Centra el mapa en el marcador seleccionado o en la farmacia seleccionada en el carrusel
     if (selectedMarker !== null && placeList[selectedMarker]) {
       const { latitude, longitude } = placeList[selectedMarker].location;
       setMapRegion((prevRegion) => ({
@@ -133,7 +139,7 @@ export default function GoogleMapView() {
         longitude,
       }));
     }
-  }, [location, selectedMarker]);
+  }, [location, selectedMarker, pharmacies]);
 
   if (!mapRegion) {
     return (
@@ -152,34 +158,34 @@ export default function GoogleMapView() {
       </ThemedView>
     );
   }
+
   return (
-    <SelectMarkerContext.Provider
-      value={{ selectedMarker, setSelectedMarker, setMapRegion }}
-    >
-      <ThemedView>
-        <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
-          <MapView
-            style={{
-              width: Dimensions.get('screen').width,
-              height: Dimensions.get('screen').height * 0.8,
-              borderRadius: 20,
-            }}
-            provider={PROVIDER_DEFAULT}
-            showsUserLocation={true}
-            region={mapRegion}
-            customMapStyle={colorScheme === 'dark' ? darkMapStyle : []} // Apply the dark mode style if in dark mode
-          >
-            {placeList &&
-              placeList.map((item, index) => (
+    <SelectMarkerContext.Provider value={{ selectedMarker, setSelectedMarker, setMapRegion }}>
+      <PharmacyContext.Provider value={{ pharmacies }}>
+        <ThemedView>
+          <ThemedView style={{ borderRadius: 20, overflow: 'hidden' }}>
+            <MapView
+              style={{
+                width: Dimensions.get('screen').width,
+                height: Dimensions.get('screen').height * 0.8,
+                borderRadius: 20,
+              }}
+              provider={PROVIDER_DEFAULT}
+              showsUserLocation={true}
+              region={mapRegion}
+              customMapStyle={colorScheme === 'dark' ? darkMapStyle : []}
+            >
+              {placeList && placeList.map((item, index) => (
                 <Markers key={index} place={item} index={index} />
               ))}
-          </MapView>
+            </MapView>
 
-          <View style={styles.placeListContainer}>
-            {placeList && <PlaceListView placeList={placeList}></PlaceListView>}
-          </View>
+            <View style={styles.placeListContainer}>
+              {placeList && <PlaceListView placeList={placeList}></PlaceListView>}
+            </View>
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
+      </PharmacyContext.Provider>
     </SelectMarkerContext.Provider>
   );
 }
