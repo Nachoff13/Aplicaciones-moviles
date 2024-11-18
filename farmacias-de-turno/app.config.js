@@ -5,6 +5,7 @@ export default {
     name: 'farmacias-de-turno',
     slug: 'farmacias-de-turno',
     version: '1.0.0',
+    newArchEnabled: true,
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     scheme: 'myapp',
