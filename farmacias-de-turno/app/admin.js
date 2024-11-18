@@ -36,19 +36,19 @@ export default function Admin() {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
 
-  const filteredFarmacias = farmacias.filter(
-    (item) =>
-      removeAccents(item.name.toLowerCase()).includes(
-        removeAccents(searchText.toLowerCase())
-      ) ||
-      removeAccents(item.address.toLowerCase()).includes(
-        removeAccents(searchText.toLowerCase())
-      ) ||
-      removeAccents(item.turnDate.toLowerCase()).includes(
-        removeAccents(searchText.toLowerCase())
-      ) ||
-      item.phone.includes(searchText)
-  );
+  const filteredFarmacias = farmacias.filter((item) => {
+    const name = item.name ? removeAccents(item.name.toLowerCase()) : '';
+    const address = item.address ? removeAccents(item.address.toLowerCase()) : '';
+    const turnDate = item.turnDate ? removeAccents(item.turnDate.toLowerCase()) : '';
+    const phone = item.phone ? item.phone : '';
+  
+    return (
+      name.includes(removeAccents(searchText.toLowerCase())) ||
+      address.includes(removeAccents(searchText.toLowerCase())) ||
+      turnDate.includes(removeAccents(searchText.toLowerCase())) ||
+      phone.includes(searchText)
+    );
+  });
 
   const renderItem = ({ item }) => (
     <View style={styles.row}>
