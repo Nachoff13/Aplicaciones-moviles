@@ -1,16 +1,16 @@
+import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import XLSX from 'xlsx';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/database/firebase';
+
+const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 const validatePharmacyData = (pharmacy) => {
   const { name, address, phone, turnDate } = pharmacy;
-  if (!name || !address || !phone || !turnDate) {
-    return false;
-  }
-  // Puedes agregar más validaciones aquí si es necesario
-  return true;
+  return !!(name && address && phone && turnDate);
 };
 
 const convertExcelDateToJSDate = (excelDate) => {
@@ -21,7 +21,6 @@ const convertExcelDateToJSDate = (excelDate) => {
     const day = String(jsDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   } else if (typeof excelDate === 'string') {
-    // Asumimos que la fecha ya está en formato YYYY-MM-DD
     return excelDate;
   } else {
     console.error('Fecha de Excel no válida:', excelDate);
@@ -29,51 +28,69 @@ const convertExcelDateToJSDate = (excelDate) => {
   }
 };
 
-const getExistingPharmacies = async () => {
-  const pharmaciesCollection = collection(db, 'pharmacies');
-  const pharmacySnapshot = await getDocs(pharmaciesCollection);
-  const pharmacyList = pharmacySnapshot.docs.map(doc => doc.data());
-  return pharmacyList;
-};
-
 const normalizeString = (str) => {
   return str.trim().toLowerCase().replace(/\s+/g, ' ');
 };
 
-export const handleFileUpload = async () => {
+const fetchPharmacyCoordinates = async (address) => {
+  console.log('Buscando coordenadas para:', address);
+  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json`;
   try {
+    const response = await axios.get(url, {
+      params: {
+        query: address,
+        key: API_KEY,
+      },
+    });
+    console.log('Respuesta de la API de Google Maps:', response.data);
+    const result = response.data.results[0];
+    if (result) {
+      const { geometry } = result;
+      return {
+        lat: geometry.location.lat,
+        lng: geometry.location.lng,
+      };
+    } else {
+      console.warn(`No se encontraron coordenadas para la dirección: "${address}"`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`Error al obtener coordenadas para la dirección "${address}":`, error);
+    return null;
+  }
+};
+
+export const handleFileUpload = async (setPharmacies, existingPharmacies) => {
+  try {
+    // Selección de archivo
     const res = await DocumentPicker.getDocumentAsync({
       type: ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
       copyToCacheDirectory: true,
     });
-
-    console.log('Resultado completo de DocumentPicker:', res);
 
     if (res.canceled || !res.assets || res.assets.length === 0) {
       console.log('El usuario canceló la selección del archivo o no se seleccionó ningún archivo');
       return [];
     }
 
-    // Obtenemos la URI correcta del archivo
-    const fileUri = res.assets[0].uri; // Accedemos a la URI desde "assets"
-    console.log('File URI:', fileUri);
+    const fileUri = res.assets[0].uri;
 
     if (!fileUri) {
       throw new Error('No se pudo obtener la URI del archivo');
     }
 
-    // Leer y procesar el archivo
+    // Leer el contenido del archivo
     const fileData = await FileSystem.readAsStringAsync(fileUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
 
+    // Parsear archivo Excel
     const workbook = XLSX.read(fileData, { type: 'base64' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-    console.log('Datos del Excel:', jsonData);
-
+    // Validar y filtrar farmacias
     const pharmacies = jsonData
       .map((item) => ({
         turnDate: convertExcelDateToJSDate(item.turnDate),
@@ -83,18 +100,32 @@ export const handleFileUpload = async () => {
       }))
       .filter(validatePharmacyData);
 
-    console.log('Datos parseados antes de la validación:', pharmacies);
-
     if (pharmacies.length === 0) {
       console.error('No se encontraron datos válidos en el archivo');
       return [];
     }
 
-    // Obtener farmacias existentes de Firestore
-    const existingPharmacies = await getExistingPharmacies();
-    console.log('Farmacias existentes en Firestore:', existingPharmacies);
+    // Enriquecer farmacias con coordenadas
+    const enrichedPharmacies = await Promise.all(
+      pharmacies.map(async (pharmacy) => {
+        console.log('Procesando farmacia:', pharmacy.name);
+        const coordinates = await fetchPharmacyCoordinates(pharmacy.address);
+        console.log('Coordenadas obtenidas para farmacia:', pharmacy.name, coordinates);
+        if (!coordinates) {
+          console.warn(`Farmacia sin coordenadas: ${pharmacy.name}`);
+        }
+        return {
+          ...pharmacy,
+          coordinates,
+        };
+      })
+    );
 
-    // Filtrar farmacias duplicadas
+    // Pasar las farmacias enriquecidas a GoogleMapView
+    console.log('Farmacias enriquecidas:', enrichedPharmacies);
+    setPharmacies(enrichedPharmacies);
+
+    // Filtrar farmacias nuevas para evitar duplicados
     const newPharmacies = pharmacies.filter((pharmacy) => {
       return !existingPharmacies.some((existingPharmacy) => {
         return (
@@ -106,28 +137,44 @@ export const handleFileUpload = async () => {
       });
     });
 
-    console.log('Nuevas farmacias a guardar:', newPharmacies);
-
-    if (newPharmacies.length === 0) {
-      console.log('No hay nuevas farmacias para guardar');
-      return [];
-    }
-
-    // Guarda las nuevas farmacias en Firebase
+    // Guardar nuevas farmacias en Firestore (solo si no son duplicadas)
     try {
       const pharmaciesCollection = collection(db, 'pharmacies');
       for (const pharmacy of newPharmacies) {
-        console.log('Guardando farmacia:', pharmacy);
         await addDoc(pharmaciesCollection, pharmacy);
       }
-      console.log('Farmacias guardadas exitosamente en Firestore');
+      console.log('Nuevas farmacias guardadas exitosamente en Firestore');
     } catch (e) {
       console.error('Error al guardar las farmacias en Firestore: ', e);
     }
 
-    return newPharmacies;
+    return enrichedPharmacies;
   } catch (err) {
-    console.error('Error al seleccionar el archivo: ', err);
+    console.error('Error al procesar el archivo: ', err);
     return [];
   }
+};
+
+// Hook que solo obtiene las farmacias de Firebase al montar el componente
+export const usePharmacies = () => {
+  const [pharmacies, setPharmacies] = useState([]);
+  const [existingPharmacies, setExistingPharmacies] = useState([]);
+
+  // Cargar farmacias desde Firebase solo cuando se sube un archivo
+  useEffect(() => {
+    const fetchPharmaciesFromFirebase = async () => {
+      try {
+        const pharmaciesCollection = collection(db, 'pharmacies');
+        const snapshot = await getDocs(pharmaciesCollection);
+        const loadedPharmacies = snapshot.docs.map((doc) => doc.data());
+        setExistingPharmacies(loadedPharmacies);
+      } catch (e) {
+        console.error('Error al obtener farmacias de Firebase: ', e);
+      }
+    };
+
+    fetchPharmaciesFromFirebase();
+  }, []);
+
+  return { pharmacies, setPharmacies, existingPharmacies };
 };
