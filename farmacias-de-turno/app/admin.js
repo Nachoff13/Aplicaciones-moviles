@@ -1,3 +1,4 @@
+// Admin.js
 import React, { useState, useEffect } from 'react';
 import {
   FlatList,
@@ -12,31 +13,32 @@ import styles from '@/components/AdminStyles.tsx';
 import { handleFileUpload } from '@/components/navigation/fileUploadHandler';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/database/firebase';
+import { usePharmacy } from '@/context/PharmacyContext';
 
 export default function Admin() {
+  const { pharmacies, setPharmacies } = usePharmacy();
   const colorScheme = useColorScheme();
   const [searchText, setSearchText] = useState('');
-  const [farmacias, setFarmacias] = useState([]);
 
   useEffect(() => {
     const fetchFarmacias = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'pharmacies'));
         const farmaciasData = querySnapshot.docs.map((doc) => doc.data());
-        setFarmacias(farmaciasData);
+        setPharmacies(farmaciasData); // Actualiza las farmacias en el contexto
       } catch (error) {
         console.error('Error al obtener las farmacias de Firestore: ', error);
       }
     };
 
     fetchFarmacias();
-  }, []);
+  }, [setPharmacies]);
 
   const removeAccents = (str) => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
 
-  const filteredFarmacias = farmacias.filter((item) => {
+  const filteredFarmacias = (pharmacies || []).filter((item) => {
     const name = item.name ? removeAccents(item.name.toLowerCase()) : '';
     const address = item.address ? removeAccents(item.address.toLowerCase()) : '';
     const turnDate = item.turnDate ? removeAccents(item.turnDate.toLowerCase()) : '';
@@ -64,19 +66,16 @@ export default function Admin() {
   };
 
   const handleUpload = async () => {
-    const newPharmacies = await handleFileUpload();
+    const newPharmacies = await handleFileUpload(setPharmacies, pharmacies);
     if (newPharmacies.length > 0) {
-      setFarmacias((prevFarmacias) => [...prevFarmacias, ...newPharmacies]);
+      console.log('Nuevas farmacias cargadas:', newPharmacies);
     }
   };
 
   return (
     <ThemedView style={styles.container}>
       <TextInput
-        style={
-          (colorScheme === 'light' && styles.inputLightView) ||
-          (colorScheme === 'dark' && styles.inputDarkView)
-        }
+        style={colorScheme === 'light' ? styles.inputLightView : styles.inputDarkView}
         placeholder="Buscar farmacia..."
         placeholderTextColor={colorScheme === 'dark' ? '#ccc' : '#999'}
         value={searchText}
