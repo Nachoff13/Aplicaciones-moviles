@@ -1,7 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import XLSX from 'xlsx';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/database/firebase';
 
 const validatePharmacyData = (pharmacy) => {
@@ -27,6 +27,17 @@ const convertExcelDateToJSDate = (excelDate) => {
     console.error('Fecha de Excel no válida:', excelDate);
     return null;
   }
+};
+
+const getExistingPharmacies = async () => {
+  const pharmaciesCollection = collection(db, 'pharmacies');
+  const pharmacySnapshot = await getDocs(pharmaciesCollection);
+  const pharmacyList = pharmacySnapshot.docs.map(doc => doc.data());
+  return pharmacyList;
+};
+
+const normalizeString = (str) => {
+  return str.trim().toLowerCase().replace(/\s+/g, ' ');
 };
 
 export const handleFileUpload = async () => {
@@ -79,20 +90,42 @@ export const handleFileUpload = async () => {
       return [];
     }
 
-    // Guarda las farmacias en Firebase
+    // Obtener farmacias existentes de Firestore
+    const existingPharmacies = await getExistingPharmacies();
+    console.log('Farmacias existentes en Firestore:', existingPharmacies);
+
+    // Filtrar farmacias duplicadas
+    const newPharmacies = pharmacies.filter((pharmacy) => {
+      return !existingPharmacies.some((existingPharmacy) => {
+        return (
+          normalizeString(existingPharmacy.name) === normalizeString(pharmacy.name) &&
+          normalizeString(existingPharmacy.address) === normalizeString(pharmacy.address) &&
+          normalizeString(existingPharmacy.phone) === normalizeString(pharmacy.phone) &&
+          existingPharmacy.turnDate === pharmacy.turnDate
+        );
+      });
+    });
+
+    console.log('Nuevas farmacias a guardar:', newPharmacies);
+
+    if (newPharmacies.length === 0) {
+      console.log('No hay nuevas farmacias para guardar');
+      return [];
+    }
+
+    // Guarda las nuevas farmacias en Firebase
     try {
       const pharmaciesCollection = collection(db, 'pharmacies');
-      for (const pharmacy of pharmacies) {
+      for (const pharmacy of newPharmacies) {
         console.log('Guardando farmacia:', pharmacy);
         await addDoc(pharmaciesCollection, pharmacy);
-        console.log('Colección de Farmacias:', pharmaciesCollection);
       }
       console.log('Farmacias guardadas exitosamente en Firestore');
     } catch (e) {
       console.error('Error al guardar las farmacias en Firestore: ', e);
     }
 
-    return pharmacies;
+    return newPharmacies;
   } catch (err) {
     console.error('Error al seleccionar el archivo: ', err);
     return [];
