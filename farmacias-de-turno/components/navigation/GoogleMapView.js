@@ -41,21 +41,35 @@ export default function GoogleMapView() {
   const filterPharmaciesByAddressAndDate = (pharmacies, addresses) => {
     const today = new Date();
     const todayString = today.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
-
+  
     return pharmacies.filter((pharmacy) => {
       const match =
         pharmacy.shortFormattedAddress &&
         addresses.some((addressObj) => {
           const address = addressObj.address || '';
           const turnDate = addressObj.turnDate || '';
-    
+  
           const addressMatch =
             typeof pharmacy.shortFormattedAddress === 'string' &&
-            pharmacy.shortFormattedAddress.toLowerCase().includes(address.toLowerCase());
+            pharmacy.shortFormattedAddress
+              .toLowerCase()
+              .includes(address.toLowerCase());
+  
           const dateMatch = turnDate === todayString;
-    
+  
+          // Console logs para ver los datos que se están comparando y el resultado
+          console.log(`Comparando dirección de la farmacia: ${pharmacy.shortFormattedAddress}`);
+          console.log(`Con la dirección de Firestore: ${address}`);
+          console.log(`¿Coincide la dirección? ${addressMatch}`);
+          //console.log(`Fecha de turno: ${turnDate}, Fecha actual: ${todayString}`);
+          //console.log(`¿Coincide la fecha? ${dateMatch}`);
+  
           return addressMatch && dateMatch;
         });
+  
+      // También puedes ver el resultado final para cada farmacia
+      console.log(`Farmacia ${pharmacy.name} coincide: ${match}`);
+      
       return match;
     });
   };
@@ -77,19 +91,21 @@ export default function GoogleMapView() {
     try {
       const data = {
         includedTypes: ['pharmacy'],
-        maxResultCount: 10,
+        maxResultCount: 20,
         locationRestriction: {
           circle: {
             center: {
               latitude: location?.coords.latitude,
               longitude: location?.coords.longitude,
             },
-            radius: 6000.0,
+            radius: 10000.0,
           },
         },
       };
 
       const response = await globalApi.NewNearbyPlace(data);
+
+      console.log("##################  RESPONSE:", response.data.places);
 
       let pharmacies = response.data?.places;
       const farmaciasFirebase = await fetchPharmaciesFromFirestore();
