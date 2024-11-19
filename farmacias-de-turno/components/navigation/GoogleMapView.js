@@ -37,7 +37,7 @@ export default function GoogleMapView() {
     }
   };
 
-  // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasHardcodeadas
+  // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasFirebase
   const filterPharmaciesByAddressAndDate = (pharmacies, addresses) => {
     const today = new Date();
     const todayString = today.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
@@ -90,9 +90,9 @@ export default function GoogleMapView() {
       const response = await globalApi.NewNearbyPlace(data);
 
       let pharmacies = response.data?.places;
-      const farmaciasHardcodeadas = await fetchPharmaciesFromFirestore();
+      const farmaciasFirebase = await fetchPharmaciesFromFirestore();
       setPharmaciesOnDuty(
-        filterPharmaciesByAddressAndDate(pharmacies, farmaciasHardcodeadas)
+        filterPharmaciesByAddressAndDate(pharmacies, farmaciasFirebase)
       );
 
       pharmacies = filterIsOpenPharmacy(pharmacies, pharmaciesOnDuty);
