@@ -22,10 +22,7 @@ export default function Admin() {
     const fetchFarmacias = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'pharmacies'));
-        const farmaciasData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const farmaciasData = querySnapshot.docs.map((doc) => doc.data());
         setFarmacias(farmaciasData);
       } catch (error) {
         console.error('Error al obtener las farmacias de Firestore: ', error);
@@ -91,7 +88,7 @@ export default function Admin() {
       <FlatList
         data={filteredFarmacias}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.phone}
         ListHeaderComponent={
           <View style={styles.row}>
             <ThemedText style={[styles.cell, styles.header]}>Nombre</ThemedText>
