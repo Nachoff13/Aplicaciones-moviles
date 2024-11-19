@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FlatList,
   View,
@@ -8,92 +8,47 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import styles from '@/components/AdminStyles.tsx'; // Importar estilos desde el archivo separado
-import { handleFileUpload } from '@/components/navigation/fileUploadHandler'; // Importar la función desde el nuevo archivo
+import styles from '@/components/AdminStyles.tsx';
+import { handleFileUpload } from '@/components/navigation/fileUploadHandler';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/database/firebase';
 
-const farmaciasHardcodeadas = [
-  {
-    address: 'Av. 60 Esq 10, La Plata',
-    turnDate: '2024-11-15',
-    name: 'Farmacia Argentina Homeopática',
-    phone: '221-422-1000',
-  },
-  {
-    address: 'Calle 50 1051 B1900ATO, La Plata',
-    turnDate: '2024-11-16',
-    name: 'Farmacia de Turno La Plata',
-    phone: '221-423-1000',
-  },
-  {
-    address: 'Av. 32 1200, La Plata',
-    turnDate: '2024-11-17',
-    name: 'Farmacia Plaza',
-    phone: '221-424-2000',
-  },
-  {
-    address: 'Calle 123 5500, La Plata',
-    turnDate: '2024-11-18',
-    name: 'Farmacia del Sol',
-    phone: '221-425-3000',
-  },
-  {
-    address: 'Calle 45 2200, La Plata',
-    turnDate: '2024-11-19',
-    name: 'Farmacia del Centro',
-    phone: '221-426-4000',
-  },
-  {
-    address: 'Av. 44 1000, La Plata',
-    turnDate: '2024-11-20',
-    name: 'Farmacia San Martín',
-    phone: '221-427-5000',
-  },
-  {
-    address: 'Calle 10 1200, La Plata',
-    turnDate: '2024-11-21',
-    name: 'Farmacia El Águila',
-    phone: '221-428-6000',
-  },
-  {
-    address: 'Calle 80 3100, La Plata',
-    turnDate: '2024-11-22',
-    name: 'Farmacia Santa Fe',
-    phone: '221-429-7000',
-  },
-  {
-    address: 'Av. 7 2000, La Plata',
-    turnDate: '2024-11-23',
-    name: 'Farmacia Los Andes',
-    phone: '221-430-8000',
-  },
-  {
-    address: 'Calle 61 4500, La Plata',
-    turnDate: '2024-11-24',
-    name: 'Farmacia del Norte',
-    phone: '221-431-9000',
-  },
-];
 export default function Admin() {
   const colorScheme = useColorScheme();
   const [searchText, setSearchText] = useState('');
+  const [farmacias, setFarmacias] = useState([]);
+
+  useEffect(() => {
+    const fetchFarmacias = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'pharmacies'));
+        const farmaciasData = querySnapshot.docs.map((doc) => doc.data());
+        setFarmacias(farmaciasData);
+      } catch (error) {
+        console.error('Error al obtener las farmacias de Firestore: ', error);
+      }
+    };
+
+    fetchFarmacias();
+  }, []);
 
   const removeAccents = (str) => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   };
 
-  const filteredFarmacias = farmaciasHardcodeadas.filter(
-    (item) =>
-      removeAccents(item.name.toLowerCase()).includes(
-        removeAccents(searchText.toLowerCase())
-      ) ||
-      removeAccents(item.address.toLowerCase()).includes(
-        removeAccents(searchText.toLowerCase())
-      ) ||
-      removeAccents(item.turnDate.toLowerCase()).includes(
-        removeAccents(searchText.toLowerCase())
-      ) ||
-      item.phone.includes(searchText)
-  );
+  const filteredFarmacias = farmacias.filter((item) => {
+    const name = item.name ? removeAccents(item.name.toLowerCase()) : '';
+    const address = item.address ? removeAccents(item.address.toLowerCase()) : '';
+    const turnDate = item.turnDate ? removeAccents(item.turnDate.toLowerCase()) : '';
+    const phone = item.phone ? item.phone : '';
+  
+    return (
+      name.includes(removeAccents(searchText.toLowerCase())) ||
+      address.includes(removeAccents(searchText.toLowerCase())) ||
+      turnDate.includes(removeAccents(searchText.toLowerCase())) ||
+      phone.includes(searchText)
+    );
+  });
 
   const renderItem = ({ item }) => (
     <View style={styles.row}>
@@ -106,6 +61,13 @@ export default function Admin() {
 
   const clearSearch = () => {
     setSearchText('');
+  };
+
+  const handleUpload = async () => {
+    const newPharmacies = await handleFileUpload();
+    if (newPharmacies.length > 0) {
+      setFarmacias((prevFarmacias) => [...prevFarmacias, ...newPharmacies]);
+    }
   };
 
   return (
@@ -137,7 +99,7 @@ export default function Admin() {
         }
       />
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
+        <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
           <ThemedText style={styles.uploadButtonText}>Cargar Archivo</ThemedText>
         </TouchableOpacity>
       </View>

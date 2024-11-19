@@ -5,38 +5,14 @@ import { UserLocationContext } from '@/context/UserLocationContext';
 import globalApi from '@/utils/globalApi';
 import { StyleSheet } from 'react-native';
 import PlaceListView from './PlaceListView';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { firebaseConfig } from '../../database/firebase';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { db } from '../../database/firebase';
 import Markers from './Markers';
 import { SelectMarkerContext } from '@/context/SelectMarkerContext';
 import { ThemedView } from '../ThemedView';
 import darkMapStyle from './DarkMapStyle';
-import { db } from '../../database/firebase';
-
-
-
 
 export default function GoogleMapView() {
-  const [farmaciasHardcodeadas, setFarmaciasHardcodeadas] = useState([
-    {
-      address: 'Av. 60 Esq 10, La Plata',
-      turnDate: '2024-11-15',
-      name: 'Farmacia Argentina Homeopática',
-      phone: '221-422-1000',
-      openingTime: '08:00 AM',
-      closingTime: '08:00 PM',
-    },
-    {
-      address: 'Calle 50 1051 B1900ATO, La Plata',
-      turnDate: '2024-11-16',
-      name: 'Farmacia de Turno La Plata',
-      phone: '221-423-1000',
-      openingTime: '09:00 AM',
-      closingTime: '09:00 PM',
-    },
-  ]);
-
   //Guarda ubicación actual
   const { location } = useContext(UserLocationContext);
   //Guarda la lista de lugares cercanos de la api
@@ -47,6 +23,19 @@ export default function GoogleMapView() {
   const colorScheme = useColorScheme();
   const [selectedMarker, setSelectedMarker] = useState([]);
   const [pharmaciesOnDuty, setPharmaciesOnDuty] = useState([]);
+
+  // Función para obtener farmacias desde Firebase
+  const fetchPharmaciesFromFirestore = async () => {
+    try {
+      const pharmaciesCollection = collection(db, 'pharmacies');
+      const pharmacySnapshot = await getDocs(pharmaciesCollection);
+      const pharmacyList = pharmacySnapshot.docs.map(doc => doc.data());
+      return pharmacyList;
+    } catch (e) {
+      console.error('Error al obtener las farmacias desde Firestore: ', e);
+      return [];
+    }
+  };
 
   // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasHardcodeadas
   const filterPharmaciesByAddressAndDate = (pharmacies, addresses) => {
@@ -59,65 +48,29 @@ export default function GoogleMapView() {
         addresses.some((addressObj) => {
           const address = addressObj.address;
           const turnDate = addressObj.turnDate;
-          // console.log(
-          //   `Comparando ${pharmacy.shortFormattedAddress} con ${address} y fecha ${turnDate}`
-          // );
           const addressMatch = pharmacy.shortFormattedAddress
             .toLowerCase()
             .includes(address.toLowerCase());
           const dateMatch = turnDate === todayString;
-          // console.log(
-          //   `Dirección coincide: ${addressMatch}, Fecha coincide: ${dateMatch}`
-          // );
           return typeof address === 'string' && addressMatch && dateMatch;
         });
-
-      // console.log(`¿Coincide ${pharmacy.shortFormattedAddress}? ${match}`);
       return match;
     });
   };
 
   const filterIsOpenPharmacy = (pharmacies, pharmaciesOnDuty) => {
     return pharmacies.filter((pharmacy) => {
-      //const isOpen = false; // Para probar que todas las farmacias están cerradas
       const isOpen = pharmacy.currentOpeningHours?.openNow === true;
       const isOnDuty = pharmaciesOnDuty.some((dutyPharmacy) => {
         const match =
           dutyPharmacy.shortFormattedAddress === pharmacy.shortFormattedAddress;
-        // console.log(
-        //   `Comparando ${pharmacy.shortFormattedAddress} con ${dutyPharmacy.shortFormattedAddress}: ${match}`
-        // );
         return match;
       });
-      // console.log(
-      //   `Farmacia: ${pharmacy.shortFormattedAddress}, isOpen: ${isOpen}, isOnDuty: ${isOnDuty}`
-      // );
       return isOpen || isOnDuty;
     });
   };
 
-  // Función para guardar farmacias en Firestore
-  const savePharmaciesToFirestore = async (pharmacies) => {
-    try {
-      const pharmaciesCollection = collection(db, 'pharmacies');
-      for (const pharmacy of pharmacies) {
-        const { displayName, formattedAddress, location } = pharmacy;
-        const { latitude, longitude } = location;
-        await addDoc(pharmaciesCollection, {
-          displayName,
-          formattedAddress,
-          latitude,
-          longitude,
-        });
-      }
-      console.log('Farmacias guardadas exitosamente en Firestore');
-    } catch (e) {
-      console.error('Error al guardar las farmacias en Firestore: ', e);
-    }
-  };
-
   // Va a traer las farmacias cercanas
-  // TODO: Poner restricción que sea solo farmacias de turno que vengan del csv
   const getNearbyPlace = async () => {
     try {
       const data = {
@@ -136,109 +89,16 @@ export default function GoogleMapView() {
 
       const response = await globalApi.NewNearbyPlace(data);
 
-      //console.log('Respuesta de la API:', response.data.places);
-
       let pharmacies = response.data?.places;
+      const farmaciasHardcodeadas = await fetchPharmaciesFromFirestore();
       setPharmaciesOnDuty(
         filterPharmaciesByAddressAndDate(pharmacies, farmaciasHardcodeadas)
       );
 
       pharmacies = filterIsOpenPharmacy(pharmacies, pharmaciesOnDuty);
-      // console.log('Farmacias filtradas:', pharmacies);
-
-      // Verificar las direcciones de las farmacias obtenidas
-      // pharmacies.forEach((pharmacy, index) => {
-      //   console.log(`Farmacia ${index + 1}:`, pharmacy.shortFormattedAddress);
-      // });
-
-      // Filtra las farmacias que estan de turno el dia de la consulta
-      // const filterPharmaciesByDay = () => {
-      //   const today = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato 'YYYY-MM-DD'
-
-      //   return farmaciasHardcodeadas.filter((pharmacy) => {
-      //     const pharmacyDate = pharmacy.turnDate;
-
-      //     // Compara la fecha de turno con la fecha actual
-      //     return pharmacyDate === today;
-      //   });
-      // };
-
-      //Función para verificar si una farmacia está abierta en el horario actual
-      // const isPharmacyOpen = (openingTime, closingTime) => {
-      //   const now = new Date();
-      //   const currentHour = now.getHours();
-      //   const currentMinute = now.getMinutes();
-      //   const currentTime = currentHour + currentMinute / 60; // Convierte la hora actual a formato decimal
-
-      //   // Convierte el horario de apertura y cierre de la farmacia a formato decimal
-      //   const [openingHour, openingMinute] = openingTime.split(':').map(Number);
-      //   const openingTimeDecimal = openingHour + openingMinute / 60;
-
-      //   const [closingHour, closingMinute] = closingTime.split(':').map(Number);
-      //   const closingTimeDecimal = closingHour + closingMinute / 60;
-
-      //   // Verifica si la hora actual está dentro del rango de apertura
-      //   return (
-      //     currentTime >= openingTimeDecimal && currentTime <= closingTimeDecimal
-      //   );
-      // };
-      //console.log('Está abierto?', pharmacies[0].currentOpeningHours.openNow);
-      // Filtra farmacias por direcciones en farmaciasHardcodeadas
-      // pharmacies = pharmacies.filter((pharmacy) => {
-      //   const match =
-      //     pharmacy.shortFormattedAddress &&
-      //     farmaciasHardcodeadas.some((addressObj) => {
-      //       const address = addressObj.address;
-      //       console.log(
-      //         `Comparando ${pharmacy.shortFormattedAddress} con ${address}`
-      //       );
-      //       return (
-      //         typeof address === 'string' &&
-      //         pharmacy.shortFormattedAddress
-      //           .toLowerCase()
-      //           .includes(address.toLowerCase())
-      //       );
-      //     });
-
-      //   // Compara si el dia actual es el mismo que el de turno de la farmacia
-      //   const isToday = filterPharmaciesByDay().some(
-      //     (pharmacyToday) =>
-      //       pharmacyToday.address === pharmacy.shortFormattedAddress
-      //   );
-
-      //   // Filtra por horario de apertura si está fuera de horario
-      //   const isOpen = isPharmacyOpen(
-      //     pharmacy.openingTime,
-      //     pharmacy.closingTime
-      //   );
-
-      //   console.log(
-      //     `¿Está abierta ${pharmacy.shortFormattedAddress}? ${isOpen}`
-      //   );
-      //   console.log(
-      //     `¿Es hoy el día de turno de ${pharmacy.shortFormattedAddress}? ${isToday}`
-      //   );
-
-      //   return match && isToday && isOpen; // Solo incluye la farmacia si la dirección, el dia de turno y el horario de apertura coinciden
-      // });
-
-      // Filtra farmacias por horario de apertura o si está de turno hoy
-
-      // const checkSomeOpenPharmacy = filterIsOpenPharmacy(pharmacies);
-      // if (checkSomeOpenPharmacy.length === 0) {
-      //   pharmacies = filterPharmaciesByAddressAndDate(
-      //     pharmacies,
-      //     farmaciasHardcodeadas
-      //   );
-      // } else {
-      //   pharmacies = checkSomeOpenPharmacy;
-      // }
 
       // Actualiza el estado con las farmacias filtradas
       setPlaceList(pharmacies);
-
-      // Guardar farmacias en Firestore
-      await savePharmaciesToFirestore(pharmacies);
     } catch (error) {
       // Manejo de errores
       if (error.response) {
