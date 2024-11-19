@@ -46,13 +46,15 @@ export default function GoogleMapView() {
       const match =
         pharmacy.shortFormattedAddress &&
         addresses.some((addressObj) => {
-          const address = addressObj.address;
-          const turnDate = addressObj.turnDate;
-          const addressMatch = pharmacy.shortFormattedAddress
-            .toLowerCase()
-            .includes(address.toLowerCase());
+          const address = addressObj.address || '';
+          const turnDate = addressObj.turnDate || '';
+    
+          const addressMatch =
+            typeof pharmacy.shortFormattedAddress === 'string' &&
+            pharmacy.shortFormattedAddress.toLowerCase().includes(address.toLowerCase());
           const dateMatch = turnDate === todayString;
-          return typeof address === 'string' && addressMatch && dateMatch;
+    
+          return addressMatch && dateMatch;
         });
       return match;
     });

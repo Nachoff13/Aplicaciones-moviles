@@ -37,7 +37,9 @@ const getExistingPharmacies = async () => {
 };
 
 const normalizeString = (str) => {
-  return str.trim().toLowerCase().replace(/\s+/g, ' ');
+  return typeof str === 'string' 
+    ? str.trim().toLowerCase().replace(/\s+/g, ' ') 
+    : '';
 };
 
 export const handleFileUpload = async () => {
