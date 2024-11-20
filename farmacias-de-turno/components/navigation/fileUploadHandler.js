@@ -118,11 +118,10 @@ export const handleFileUpload = async () => {
 
     console.log('Nuevas farmacias a guardar:', newPharmacies);
 
-    if (newPharmacies.length === 0) {
-      console.log('No hay nuevas farmacias para guardar');
-      alert('No hay nuevas farmacias para guardar');
-      return [];
-    }
+    // if (newPharmacies.length === 0) {
+    //   console.log('No hay nuevas farmacias para guardar');
+    //   return [];
+    // }
 
     // Guarda las nuevas farmacias en Firebase
     try {
@@ -139,8 +138,7 @@ export const handleFileUpload = async () => {
       );
       console.error('Error al guardar las farmacias en Firestore: ', e);
     }
-
-    return newPharmacies;
+    return pharmacies;
   } catch (err) {
     alert(
       'Ocurrió un error al seleccionar el archivo. Por favor, inténtalo de nuevo.'

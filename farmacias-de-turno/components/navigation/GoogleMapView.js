@@ -39,8 +39,10 @@ export default function GoogleMapView() {
 
   // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasFirebase
   const filterPharmaciesByAddressAndDate = (pharmacies, name) => {
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
+    const moment = require('moment-timezone');
+    const todayString = moment()
+      .tz('America/Argentina/Buenos_Aires')
+      .format('YYYY-MM-DD');
 
     const cleanPharmacyName = (name) => {
       if (!name) return '';
