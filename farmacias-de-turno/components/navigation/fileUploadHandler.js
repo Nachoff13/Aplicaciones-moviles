@@ -9,7 +9,6 @@ const validatePharmacyData = (pharmacy) => {
   if (!name || !address || !phone || !turnDate) {
     return false;
   }
-  // Puedes agregar más validaciones aquí si es necesario
   return true;
 };
 
@@ -118,11 +117,6 @@ export const handleFileUpload = async () => {
 
     console.log('Nuevas farmacias a guardar:', newPharmacies);
 
-    // if (newPharmacies.length === 0) {
-    //   console.log('No hay nuevas farmacias para guardar');
-    //   return [];
-    // }
-
     // Guarda las nuevas farmacias en Firebase
     try {
       const pharmaciesCollection = collection(db, 'pharmacies');
@@ -138,7 +132,9 @@ export const handleFileUpload = async () => {
       );
       console.error('Error al guardar las farmacias en Firestore: ', e);
     }
-    return pharmacies;
+
+    // Regresa solo las nuevas farmacias
+    return newPharmacies;
   } catch (err) {
     alert(
       'Ocurrió un error al seleccionar el archivo. Por favor, inténtalo de nuevo.'

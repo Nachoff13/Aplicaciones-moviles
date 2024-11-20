@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   useColorScheme,
+  Alert,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -17,20 +18,24 @@ export default function Admin() {
   const colorScheme = useColorScheme();
   const [searchText, setSearchText] = useState('');
   const [farmacias, setFarmacias] = useState([]);
+  const [origin, setOrigin] = useState('firestore'); // Alterna entre farmacias de firestore y las nuevas upload
 
+  // Carga farmacias desde Firestore
   useEffect(() => {
-    const fetchFarmacias = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'pharmacies'));
-        const farmaciasData = querySnapshot.docs.map((doc) => doc.data());
-        setFarmacias(farmaciasData);
-      } catch (error) {
-        console.error('Error al obtener las farmacias de Firestore: ', error);
-      }
-    };
+    if (origin === 'firestore') {
+      const fetchFarmacias = async () => {
+        try {
+          const querySnapshot = await getDocs(collection(db, 'pharmacies'));
+          const farmaciasData = querySnapshot.docs.map((doc) => doc.data());
+          setFarmacias(farmaciasData);
+        } catch (error) {
+          console.error('Error al obtener las farmacias de Firestore: ', error);
+        }
+      };
 
-    fetchFarmacias();
-  }, []);
+      fetchFarmacias();
+    }
+  }, [origin]);
 
   const removeAccents = (str) => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -71,6 +76,10 @@ export default function Admin() {
     const newPharmacies = await handleFileUpload();
     if (newPharmacies.length > 0) {
       setFarmacias(newPharmacies);
+      setOrigin('upload'); // Cambia el origen a upload despues de cargar el archivo
+      Alert.alert('Archivo cargado', 'Se mostrará la nueva lista de farmacias.');
+    } else {
+      Alert.alert('Error', 'No se cargaron farmacias válidas.');
     }
   };
 
@@ -92,19 +101,13 @@ export default function Admin() {
       <FlatList
         data={filteredFarmacias}
         renderItem={renderItem}
-        keyExtractor={(item) => item.phone}
+        keyExtractor={(item) => item.phone || Math.random().toString()}
         ListHeaderComponent={
           <View style={styles.row}>
             <ThemedText style={[styles.cell, styles.header]}>Nombre</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Dirección
-            </ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Fecha de Turno
-            </ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>
-              Teléfono
-            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Dirección</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Fecha de Turno</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>Teléfono</ThemedText>
           </View>
         }
       />
