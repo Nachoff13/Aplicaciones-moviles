@@ -29,7 +29,7 @@ export default function GoogleMapView() {
     try {
       const pharmaciesCollection = collection(db, 'pharmacies');
       const pharmacySnapshot = await getDocs(pharmaciesCollection);
-      const pharmacyList = pharmacySnapshot.docs.map(doc => doc.data());
+      const pharmacyList = pharmacySnapshot.docs.map((doc) => doc.data());
       return pharmacyList;
     } catch (e) {
       console.error('Error al obtener las farmacias desde Firestore: ', e);
@@ -37,25 +37,48 @@ export default function GoogleMapView() {
     }
   };
 
-  // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasHardcodeadas
-  const filterPharmaciesByAddressAndDate = (pharmacies, addresses) => {
+  // Función para filtrar farmacias por direcciones y si le corresponde estar de turno hoy en farmaciasFirebase
+  const filterPharmaciesByAddressAndDate = (pharmacies, name) => {
     const today = new Date();
     const todayString = today.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
 
+    const cleanPharmacyName = (name) => {
+      if (!name) return '';
+      return name
+        .toLowerCase()
+        .replace(/\bfarmacia\b/g, '')
+        .trim();
+    };
     return pharmacies.filter((pharmacy) => {
       const match =
-        pharmacy.shortFormattedAddress &&
-        addresses.some((addressObj) => {
-          const address = addressObj.address || '';
-          const turnDate = addressObj.turnDate || '';
-    
-          const addressMatch =
-            typeof pharmacy.shortFormattedAddress === 'string' &&
-            pharmacy.shortFormattedAddress.toLowerCase().includes(address.toLowerCase());
+        pharmacy.displayName?.text &&
+        name.some((nameObj) => {
+          const name = nameObj.name || '';
+          const turnDate = nameObj.turnDate || '';
+
+          const nameMatch =
+            typeof pharmacy.displayName?.text === 'string' &&
+            cleanPharmacyName(pharmacy.displayName?.text).includes(
+              cleanPharmacyName(name)
+            );
+
           const dateMatch = turnDate === todayString;
-    
-          return addressMatch && dateMatch;
+
+          // Console logs para ver los datos que se están comparando y el resultado
+          // console.log(
+          //   `Comparando dirección de la farmacia: ${pharmacy.shortFormattedAddress}`
+          // );
+          // console.log(`Con la dirección de Firestore: ${address}`);
+          // console.log(`¿Coincide la dirección? ${addressMatch}`);
+          //console.log(`Fecha de turno: ${turnDate}, Fecha actual: ${todayString}`);
+          //console.log(`¿Coincide la fecha? ${dateMatch}`);
+
+          return nameMatch && dateMatch;
         });
+
+      // También puedes ver el resultado final para cada farmacia
+      // console.log(`Farmacia ${pharmacy.displayName?.text} coincide: ${match}`);
+
       return match;
     });
   };
@@ -77,24 +100,27 @@ export default function GoogleMapView() {
     try {
       const data = {
         includedTypes: ['pharmacy'],
-        maxResultCount: 10,
+        maxResultCount: 20,
         locationRestriction: {
           circle: {
             center: {
               latitude: location?.coords.latitude,
               longitude: location?.coords.longitude,
             },
-            radius: 6000.0,
+            radius: 10000.0,
           },
         },
       };
 
       const response = await globalApi.NewNearbyPlace(data);
 
+      // console.log('##################  RESPONSE:', response.data.places);
+
       let pharmacies = response.data?.places;
-      const farmaciasHardcodeadas = await fetchPharmaciesFromFirestore();
+
+      const farmaciasFirebase = await fetchPharmaciesFromFirestore();
       setPharmaciesOnDuty(
-        filterPharmaciesByAddressAndDate(pharmacies, farmaciasHardcodeadas)
+        filterPharmaciesByAddressAndDate(pharmacies, farmaciasFirebase)
       );
 
       pharmacies = filterIsOpenPharmacy(pharmacies, pharmaciesOnDuty);

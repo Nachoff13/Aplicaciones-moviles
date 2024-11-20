@@ -32,27 +32,32 @@ const convertExcelDateToJSDate = (excelDate) => {
 const getExistingPharmacies = async () => {
   const pharmaciesCollection = collection(db, 'pharmacies');
   const pharmacySnapshot = await getDocs(pharmaciesCollection);
-  const pharmacyList = pharmacySnapshot.docs.map(doc => doc.data());
+  const pharmacyList = pharmacySnapshot.docs.map((doc) => doc.data());
   return pharmacyList;
 };
 
 const normalizeString = (str) => {
-  return typeof str === 'string' 
-    ? str.trim().toLowerCase().replace(/\s+/g, ' ') 
+  return typeof str === 'string'
+    ? str.trim().toLowerCase().replace(/\s+/g, ' ')
     : '';
 };
 
 export const handleFileUpload = async () => {
   try {
     const res = await DocumentPicker.getDocumentAsync({
-      type: ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+      type: [
+        'text/csv',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      ],
       copyToCacheDirectory: true,
     });
 
     console.log('Resultado completo de DocumentPicker:', res);
 
     if (res.canceled || !res.assets || res.assets.length === 0) {
-      console.log('El usuario canceló la selección del archivo o no se seleccionó ningún archivo');
+      console.log(
+        'El usuario canceló la selección del archivo o no se seleccionó ningún archivo'
+      );
       return [];
     }
 
@@ -100,9 +105,12 @@ export const handleFileUpload = async () => {
     const newPharmacies = pharmacies.filter((pharmacy) => {
       return !existingPharmacies.some((existingPharmacy) => {
         return (
-          normalizeString(existingPharmacy.name) === normalizeString(pharmacy.name) &&
-          normalizeString(existingPharmacy.address) === normalizeString(pharmacy.address) &&
-          normalizeString(existingPharmacy.phone) === normalizeString(pharmacy.phone) &&
+          normalizeString(existingPharmacy.name) ===
+            normalizeString(pharmacy.name) &&
+          normalizeString(existingPharmacy.address) ===
+            normalizeString(pharmacy.address) &&
+          normalizeString(existingPharmacy.phone) ===
+            normalizeString(pharmacy.phone) &&
           existingPharmacy.turnDate === pharmacy.turnDate
         );
       });
@@ -112,6 +120,7 @@ export const handleFileUpload = async () => {
 
     if (newPharmacies.length === 0) {
       console.log('No hay nuevas farmacias para guardar');
+      alert('No hay nuevas farmacias para guardar');
       return [];
     }
 
@@ -122,13 +131,20 @@ export const handleFileUpload = async () => {
         console.log('Guardando farmacia:', pharmacy);
         await addDoc(pharmaciesCollection, pharmacy);
       }
+      alert('Farmacias guardadas exitosamente');
       console.log('Farmacias guardadas exitosamente en Firestore');
     } catch (e) {
+      alert(
+        'Ocurrió un error al guardar las farmacias en la base de datos. Por favor, inténtalo de nuevo.'
+      );
       console.error('Error al guardar las farmacias en Firestore: ', e);
     }
 
     return newPharmacies;
   } catch (err) {
+    alert(
+      'Ocurrió un error al seleccionar el archivo. Por favor, inténtalo de nuevo.'
+    );
     console.error('Error al seleccionar el archivo: ', err);
     return [];
   }
