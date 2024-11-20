@@ -38,10 +38,14 @@ export default function Admin() {
 
   const filteredFarmacias = farmacias.filter((item) => {
     const name = item.name ? removeAccents(item.name.toLowerCase()) : '';
-    const address = item.address ? removeAccents(item.address.toLowerCase()) : '';
-    const turnDate = item.turnDate ? removeAccents(item.turnDate.toLowerCase()) : '';
+    const address = item.address
+      ? removeAccents(item.address.toLowerCase())
+      : '';
+    const turnDate = item.turnDate
+      ? removeAccents(item.turnDate.toLowerCase())
+      : '';
     const phone = item.phone ? item.phone : '';
-  
+
     return (
       name.includes(removeAccents(searchText.toLowerCase())) ||
       address.includes(removeAccents(searchText.toLowerCase())) ||
@@ -66,7 +70,7 @@ export default function Admin() {
   const handleUpload = async () => {
     const newPharmacies = await handleFileUpload();
     if (newPharmacies.length > 0) {
-      setFarmacias((prevFarmacias) => [...prevFarmacias, ...newPharmacies]);
+      setFarmacias(newPharmacies);
     }
   };
 
@@ -92,15 +96,23 @@ export default function Admin() {
         ListHeaderComponent={
           <View style={styles.row}>
             <ThemedText style={[styles.cell, styles.header]}>Nombre</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>Dirección</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>Fecha de Turno</ThemedText>
-            <ThemedText style={[styles.cell, styles.header]}>Teléfono</ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>
+              Dirección
+            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>
+              Fecha de Turno
+            </ThemedText>
+            <ThemedText style={[styles.cell, styles.header]}>
+              Teléfono
+            </ThemedText>
           </View>
         }
       />
       <View style={styles.footer}>
         <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-          <ThemedText style={styles.uploadButtonText}>Cargar Archivo</ThemedText>
+          <ThemedText style={styles.uploadButtonText}>
+            Cargar Archivo
+          </ThemedText>
         </TouchableOpacity>
       </View>
     </ThemedView>
